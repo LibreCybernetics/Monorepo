@@ -1,8 +1,8 @@
-package multiformats
+package multiformats.multibase
 
-abstract class Multibase(val code: Char) {
+abstract class MultibaseCodec(val code: Char) {
     abstract fun _encode(bytes: ByteArray): String
-    abstract fun _decode(str: String): ByteArray
+    abstract fun _decode(encoded: String): ByteArray
 
     fun encode(bytes: ByteArray): String = "$code${_encode(bytes)}"
     fun decode(str: String): ByteArray {
@@ -13,14 +13,14 @@ abstract class Multibase(val code: Char) {
     }
 
     init {
-        synchronized(Multibase) {
+        synchronized(MultibaseCodec) {
             require(!registered.contains(code))
-            registered.plusAssign(Pair(code, this))
+            registered.plusAssign(code to this)
         }
     }
 
     companion object {
-        private val registered: MutableMap<Char, Multibase> = mutableMapOf()
+        private val registered: MutableMap<Char, MultibaseCodec> = mutableMapOf()
 
         private val base16alphabet: CharArray = charArrayOf(
             '0',
@@ -42,7 +42,7 @@ abstract class Multibase(val code: Char) {
         )
 
         val Identity =
-            object : Multibase(0.toChar()) {
+            object : MultibaseCodec(0.toChar()) {
                 override fun _encode(bytes: ByteArray): String =
                     String(bytes, Charsets.US_ASCII)
                 override fun _decode(str: String): ByteArray =
@@ -51,7 +51,7 @@ abstract class Multibase(val code: Char) {
 
         @ExperimentalUnsignedTypes
         val Base16 =
-            object : Multibase('f') {
+            object : MultibaseCodec('f') {
                 override fun _encode(bytes: ByteArray): String =
                     bytes.map { it.toUByte() }.flatMap {
                         listOf(
@@ -65,22 +65,22 @@ abstract class Multibase(val code: Char) {
                     }.toUByteArray().toByteArray()
             }
 
-        // val Base16Upper = Multibase('F')
-        // val Base32 = Multibase('b')
-        // val Base32Upper = Multibase('B')
-        // val Base58BTC = Multibase('z')
-        // val Base64 = Multibase('m')
-        // val Base64Pad = Multibase('M')
-        // val Base64URL = Multibase('u')
-        // val Base64URLPad = Multibase('U')
+        // val Base16Upper = MultibaseCodec('F')
+        // val Base32 = MultibaseCodec('b')
+        // val Base32Upper = MultibaseCodec('B')
+        // val Base58BTC = MultibaseCodec('z')
+        // val Base64 = MultibaseCodec('m')
+        // val Base64Pad = MultibaseCodec('M')
+        // val Base64URL = MultibaseCodec('u')
+        // val Base64URLPad = MultibaseCodec('U')
 
-		fun getCodec(code: Char): Multibase = registered.getValue(code)
+        fun getCodec(code: Char): MultibaseCodec = registered.getValue(code)
 
         fun decode(str: String): ByteArray {
             require(str.isNotEmpty())
             require(registered.contains(str.first()))
 
-            return registered.getValue(str.first()).decode(str)
+            return getCodec(str.first()).decode(str)
         }
     }
 }
