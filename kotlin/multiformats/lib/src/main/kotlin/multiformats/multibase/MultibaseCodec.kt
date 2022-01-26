@@ -44,9 +44,9 @@ abstract class MultibaseCodec(val code: Char) {
         val Identity =
             object : MultibaseCodec(0.toChar()) {
                 override fun _encode(bytes: ByteArray): String =
-                    String(bytes, Charsets.US_ASCII)
+                    String(bytes, Charsets.ISO_8859_1)
                 override fun _decode(str: String): ByteArray =
-                    str.toByteArray(Charsets.US_ASCII)
+                    str.toByteArray(Charsets.ISO_8859_1)
             }
 
         @ExperimentalUnsignedTypes

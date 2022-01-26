@@ -1,6 +1,7 @@
 package multiformats.multibase
 
 import java.io.File
+import kotlin.random.Random
 import kotlin.test.*
 
 class MultibaseTest {
@@ -19,6 +20,45 @@ class MultibaseTest {
             val codec = MultibaseCodec.getCodec(encoded.first())
             assertEquals(encoded, Multibase(content1, codec).encoded)
             assertContentEquals(content1, Multibase.decode(encoded))
+        }
+    }
+
+    @Test
+    @ExperimentalUnsignedTypes
+    fun randomValues() {
+        for (i in 1..1000) {
+            val length = Random.nextInt(200)
+            val bytes = Random.nextBytes(length)
+            assertContentEquals(bytes, Multibase.decode(Multibase(bytes, MultibaseCodec.Identity).encoded))
+            assertContentEquals(bytes, Multibase.decode(Multibase(bytes, MultibaseCodec.Base16).encoded))
+        }
+    }
+
+    @Test
+    fun throwsErrors() {
+        assertFailsWith(IllegalArgumentException::class) {
+            Multibase.decode("")
+        }
+        assertFailsWith(IllegalArgumentException::class) {
+            MultibaseCodec.Identity.decode("")
+        }
+        assertFailsWith(IllegalArgumentException::class) {
+            MultibaseCodec.Base16.decode("")
+        }
+        assertFailsWith(IllegalArgumentException::class) {
+            Multibase.decode("3")
+        }
+        assertFailsWith(IllegalArgumentException::class) {
+            MultibaseCodec.Identity.decode("3")
+        }
+        assertFailsWith(IllegalArgumentException::class) {
+            MultibaseCodec.Base16.decode("3")
+        }
+        assertFailsWith(IllegalArgumentException::class) {
+            object : MultibaseCodec('f') {
+                override fun _encode(bytes: ByteArray): String = ""
+                override fun _decode(encoded: String): ByteArray = byteArrayOf()
+            }
         }
     }
 }
