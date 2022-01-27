@@ -14,7 +14,7 @@ class MultibaseTest {
                 .readLines()
                 .map { it.split(',') }
                 .map { Pair(it.component1().trim(), it.component2().trim()) }
-                .filter { !listOf("base36", "base36upper", "base58flickr", "base58btc", "base64", "base64pad", "base64url", "base64urlpad").contains(it.component1()) }
+                .filter { !listOf("base58flickr", "base58btc", "base64", "base64pad", "base64url", "base64urlpad").contains(it.component1()) }
 
         testVectors1.forEach { (_, encoded) ->
             val codec = Codec.getCodec(encoded.first())
@@ -42,7 +42,8 @@ class MultibaseTest {
             assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32HexLower).encoded).bytes)
             assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32HexUpper).encoded).bytes)
             assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32HexLowerPad).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32HexUpperPad).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base36Lower).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base36Upper).encoded).bytes)
             assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.ZBase32).encoded).bytes)
         }
     }

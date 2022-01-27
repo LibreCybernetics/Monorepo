@@ -245,6 +245,38 @@ abstract class Codec(val code: Char) {
                 override fun _decode(encoded: String): ByteArray = base32(encoded, Alphabet.Companion.ZBase32)
             }
 
+        @ExperimentalUnsignedTypes
+        val Base36Lower =
+            object : Codec('k') {
+                override fun _encode(bytes: ByteArray): String {
+                    val z = bytes.takeWhile { it == 0.toByte() }
+                    val nz = bytes.dropWhile { it == 0.toByte() }
+                    return z.map { '0' }.toCharArray().concatToString() + if (nz.isEmpty()) "" else base10(nz.toByteArray()).toString(36)
+                }
+
+                override fun _decode(encoded: String): ByteArray {
+                    val z = encoded.takeWhile { it == '0' }
+                    val nz = encoded.dropWhile { it == '0' }
+                    return (z.map { 0.toUByte() }.toUByteArray() + if (nz.isEmpty()) ubyteArrayOf() else base10(nz.toBigInteger(36))).toByteArray()
+                }
+            }
+
+        @ExperimentalUnsignedTypes
+        val Base36Upper =
+            object : Codec('K') {
+                override fun _encode(bytes: ByteArray): String {
+                    val z = bytes.takeWhile { it == 0.toByte() }
+                    val nz = bytes.dropWhile { it == 0.toByte() }
+                    return z.map { '0' }.toCharArray().concatToString() + if (nz.isEmpty()) "" else base10(nz.toByteArray()).toString(36).map { it.uppercase() }.reduce { a, b -> a + b }
+                }
+
+                override fun _decode(encoded: String): ByteArray {
+                    val z = encoded.takeWhile { it == '0' }
+                    val nz = encoded.dropWhile { it == '0' }.map { it.lowercase() }.reduceOrNull { a, b -> a + b } ?: ""
+                    return (z.map { 0.toUByte() }.toUByteArray() + if (nz.isEmpty()) ubyteArrayOf() else base10(nz.toBigInteger(36))).toByteArray()
+                }
+            }
+
         // val Base58BTC = Codec('z')
         // val Base64 = Codec('m')
         // val Base64Pad = Codec('M')
