@@ -14,7 +14,7 @@ class MultibaseTest {
                 .readLines()
                 .map { it.split(',') }
                 .map { Pair(it.component1().trim(), it.component2().trim()) }
-                .filter { listOf("identity", "base2", "base8", "base16", "base16upper").contains(it.component1()) }
+                .filter { listOf("identity", "base2", "base10", "base8", "base16", "base16upper").contains(it.component1()) }
 
         testVectors1.forEach { (_, encoded) ->
             val codec = Codec.getCodec(encoded.first())
@@ -27,11 +27,12 @@ class MultibaseTest {
     @ExperimentalUnsignedTypes
     fun randomValues() {
         for (i in 1..1000) {
-            val length = Random.nextInt(200)
+            val length = Random.nextInt(100)
             val bytes = Random.nextBytes(length)
             assertContentEquals(bytes, Multibase.decode(Multibase(bytes, Codec.Identity).encoded))
             assertContentEquals(bytes, Multibase.decode(Multibase(bytes, Codec.Base2).encoded))
             assertContentEquals(bytes, Multibase.decode(Multibase(bytes, Codec.Base8).encoded))
+            assertContentEquals(bytes, Multibase.decode(Multibase(bytes, Codec.Base10).encoded))
             assertContentEquals(bytes, Multibase.decode(Multibase(bytes, Codec.Base16Lower).encoded))
             assertContentEquals(bytes, Multibase.decode(Multibase(bytes, Codec.Base16Upper).encoded))
         }
@@ -53,6 +54,9 @@ class MultibaseTest {
             Codec.Base8.decode("")
         }
         assertFailsWith(IllegalArgumentException::class) {
+            Codec.Base10.decode("")
+        }
+        assertFailsWith(IllegalArgumentException::class) {
             Codec.Base16Lower.decode("")
         }
         assertFailsWith(IllegalArgumentException::class) {
@@ -69,6 +73,9 @@ class MultibaseTest {
         }
         assertFailsWith(IllegalArgumentException::class) {
             Codec.Base8.decode("3")
+        }
+        assertFailsWith(IllegalArgumentException::class) {
+            Codec.Base10.decode("3")
         }
         assertFailsWith(IllegalArgumentException::class) {
             Codec.Base16Lower.decode("3")

@@ -1,5 +1,7 @@
 package multiformats.multibase
 
+import java.math.BigInteger
+
 abstract class Codec(val code: Char) {
     abstract fun _encode(bytes: ByteArray): String
     abstract fun _decode(encoded: String): ByteArray
@@ -99,6 +101,32 @@ abstract class Codec(val code: Char) {
 
                         listOfNotNull(b1, b2, b3).map { it.toUByte() }
                     }.toUByteArray().toByteArray()
+            }
+
+        @ExperimentalUnsignedTypes
+        val Base10 =
+            object : Codec('9') {
+                private fun calc(bytes: ByteArray): BigInteger =
+                    if (bytes.isEmpty()) BigInteger.ZERO else
+                        bytes.last().toUByte().toInt().toBigInteger() + 256.toBigInteger() * calc(bytes.dropLast(1).toByteArray())
+
+                private fun calc(int: BigInteger): UByteArray = if (int < 256.toBigInteger()) ubyteArrayOf(int.intValueExact().toUByte()) else {
+                    val d = int.div(256.toBigInteger())
+                    val r = int.rem(256.toBigInteger()).intValueExact().toUByte()
+                    calc(d) + r
+                }
+
+                override fun _encode(bytes: ByteArray): String {
+                    val z = bytes.takeWhile { it == 0.toByte() }
+                    val nz = bytes.dropWhile { it == 0.toByte() }
+                    return z.map { '0' }.toCharArray().concatToString() + if (nz.isEmpty()) "" else calc(nz.toByteArray()).toString()
+                }
+
+                override fun _decode(encoded: String): ByteArray {
+                    val z = encoded.takeWhile { it == '0' }
+                    val nz = encoded.dropWhile { it == '0' }
+                    return (z.map { 0.toUByte() }.toUByteArray() + if (nz.isEmpty()) ubyteArrayOf() else calc(nz.toBigInteger())).toByteArray()
+                }
             }
 
         @ExperimentalUnsignedTypes
