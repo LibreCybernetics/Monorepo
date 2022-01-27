@@ -2,7 +2,6 @@ package multiformats.multibase
 
 internal open class Alphabet(private val alphabet: CharArray) {
     fun char(char: Char): UByte = alphabet.indexOf(char).toUByte()
-    fun char(ubyte: UByte): Char = alphabet[ubyte.toInt()]
     fun char(uint: UInt): Char = alphabet[uint.toInt()]
 
     companion object {

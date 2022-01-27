@@ -19,7 +19,7 @@ class MultibaseTest {
         testVectors1.forEach { (_, encoded) ->
             val codec = Codec.getCodec(encoded.first())
             assertEquals(encoded, Multibase(content1, codec).encoded)
-            assertContentEquals(content1, Multibase.decode(encoded))
+            assertContentEquals(content1, Multibase(encoded).bytes)
         }
     }
 
@@ -29,12 +29,12 @@ class MultibaseTest {
         for (i in 1..1000) {
             val length = Random.nextInt(100)
             val bytes = Random.nextBytes(length)
-            assertContentEquals(bytes, Multibase.decode(Multibase(bytes, Codec.Identity).encoded))
-            assertContentEquals(bytes, Multibase.decode(Multibase(bytes, Codec.Base2).encoded))
-            assertContentEquals(bytes, Multibase.decode(Multibase(bytes, Codec.Base8).encoded))
-            assertContentEquals(bytes, Multibase.decode(Multibase(bytes, Codec.Base10).encoded))
-            assertContentEquals(bytes, Multibase.decode(Multibase(bytes, Codec.Base16Lower).encoded))
-            assertContentEquals(bytes, Multibase.decode(Multibase(bytes, Codec.Base16Upper).encoded))
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Identity).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base2).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base8).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base10).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base16Lower).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base16Upper).encoded).bytes)
         }
     }
 
