@@ -22,30 +22,26 @@ abstract class MultibaseCodec(val code: Char) {
     companion object {
         private val registered: MutableMap<Char, MultibaseCodec> = mutableMapOf()
 
-        private val base2Alphabet: List<Char> = listOf('0', '1')
-        private val base8Alphabet: List<Char> = listOf('0', '1', '2', '3', '4', '5', '6', '7')
-        private val base16LowerAlphabet: CharArray = (base8Alphabet + listOf('8', '9', 'a', 'b', 'c', 'd', 'e', 'f')).toCharArray()
-        private val base16UpperAlphabet: CharArray = (base8Alphabet + listOf('8', '9', 'A', 'B', 'C', 'D', 'E', 'F')).toCharArray()
-
         @ExperimentalUnsignedTypes
-        private fun base16Encode(bytes: ByteArray, alphabet: CharArray) =
+        private fun base16Encode(bytes: ByteArray, alphabet: Alphabet) =
             bytes.map { it.toUByte() }.flatMap {
                 listOf(
-                    alphabet.get((it / 16.toUByte()).toInt()),
-                    alphabet.get(it.mod(16.toUByte()).toInt())
+                    alphabet.char((it / 16.toUByte())),
+                    alphabet.char(it.mod(16.toUByte()))
                 )
             }.toCharArray().concatToString()
 
         @ExperimentalUnsignedTypes
-        private fun base16Decode(encoded: String, alphabet: CharArray) =
-            encoded.map { alphabet.indexOf(it) }.chunked(2).map {
-                (it.component1() * 16 + it.component2()).toUByte()
+        private fun base16Decode(encoded: String, alphabet: Alphabet) =
+            encoded.map { alphabet.char(it) }.chunked(2).map {
+                (it.component1() * 16.toUByte() + it.component2()).toUByte()
             }.toUByteArray().toByteArray()
 
         val Identity =
             object : MultibaseCodec(0.toChar()) {
                 override fun _encode(bytes: ByteArray): String =
                     String(bytes, Charsets.ISO_8859_1)
+
                 override fun _decode(encoded: String): ByteArray =
                     encoded.toByteArray(Charsets.ISO_8859_1)
             }
@@ -59,16 +55,13 @@ abstract class MultibaseCodec(val code: Char) {
                     if (ubyte.and(pow.get(place)) > 0.toUByte()) '1' else '0'
 
                 private fun char(char: Char, place: Int): UByte =
-                    when (char) {
-                        '0' -> 0.toUByte()
-                        '1' -> pow.get(place)
-                        else -> throw IllegalArgumentException()
-                    }
+                    (Alphabet.Companion.Base2.char(char) * pow[place]).toUByte()
 
                 override fun _encode(bytes: ByteArray): String =
                     bytes.toUByteArray()
                         .map { ubyte -> (0..7).map { char(ubyte, 7 - it) }.toCharArray().concatToString() }
                         .reduceOrNull { a, b -> a + b } ?: ""
+
                 override fun _decode(encoded: String): ByteArray =
                     encoded.chunked(8)
                         .map { it.mapIndexed { idx, chr -> char(chr, 7 - idx) }.reduce { a, b -> (a + b).toUByte() } }
@@ -78,15 +71,15 @@ abstract class MultibaseCodec(val code: Char) {
         @ExperimentalUnsignedTypes
         val Base16Lower =
             object : MultibaseCodec('f') {
-                override fun _encode(bytes: ByteArray): String = base16Encode(bytes, base16LowerAlphabet)
-                override fun _decode(encoded: String): ByteArray = base16Decode(encoded, base16LowerAlphabet)
+                override fun _encode(bytes: ByteArray): String = base16Encode(bytes, Alphabet.Companion.Base16Lower)
+                override fun _decode(encoded: String): ByteArray = base16Decode(encoded, Alphabet.Companion.Base16Lower)
             }
 
         @ExperimentalUnsignedTypes
         val Base16Upper =
             object : MultibaseCodec('F') {
-                override fun _encode(bytes: ByteArray): String = base16Encode(bytes, base16UpperAlphabet)
-                override fun _decode(encoded: String): ByteArray = base16Decode(encoded, base16UpperAlphabet)
+                override fun _encode(bytes: ByteArray): String = base16Encode(bytes, Alphabet.Companion.Base16Upper)
+                override fun _decode(encoded: String): ByteArray = base16Decode(encoded, Alphabet.Companion.Base16Upper)
             }
 
         // val Base32 = MultibaseCodec('b')
