@@ -25,7 +25,19 @@ abstract class Codec(val code: Char) {
         private val registered: MutableMap<Char, Codec> = mutableMapOf()
 
         @ExperimentalUnsignedTypes
-        private fun base16Encode(bytes: ByteArray, alphabet: Alphabet) =
+        private fun base10(bytes: ByteArray): BigInteger =
+            if (bytes.isEmpty()) BigInteger.ZERO else
+                bytes.last().toUByte().toInt().toBigInteger() + 256.toBigInteger() * base10(bytes.dropLast(1).toByteArray())
+
+        @ExperimentalUnsignedTypes
+        private fun base10(int: BigInteger): UByteArray = if (int < 256.toBigInteger()) ubyteArrayOf(int.intValueExact().toUByte()) else {
+            val d = int.div(256.toBigInteger())
+            val r = int.rem(256.toBigInteger()).intValueExact().toUByte()
+            base10(d) + r
+        }
+
+        @ExperimentalUnsignedTypes
+        private fun base16(bytes: ByteArray, alphabet: Alphabet) =
             bytes.map { it.toUByte() }.flatMap {
                 listOf(
                     alphabet.char((it / 16u)),
@@ -34,7 +46,7 @@ abstract class Codec(val code: Char) {
             }.toCharArray().concatToString()
 
         @ExperimentalUnsignedTypes
-        private fun base16Decode(encoded: String, alphabet: Alphabet) =
+        private fun base16(encoded: String, alphabet: Alphabet) =
             encoded.map { alphabet.char(it) }.chunked(2).map {
                 (it.component1() * 16u + it.component2()).toUByte()
             }.toUByteArray().toByteArray()
@@ -106,41 +118,31 @@ abstract class Codec(val code: Char) {
         @ExperimentalUnsignedTypes
         val Base10 =
             object : Codec('9') {
-                private fun calc(bytes: ByteArray): BigInteger =
-                    if (bytes.isEmpty()) BigInteger.ZERO else
-                        bytes.last().toUByte().toInt().toBigInteger() + 256.toBigInteger() * calc(bytes.dropLast(1).toByteArray())
-
-                private fun calc(int: BigInteger): UByteArray = if (int < 256.toBigInteger()) ubyteArrayOf(int.intValueExact().toUByte()) else {
-                    val d = int.div(256.toBigInteger())
-                    val r = int.rem(256.toBigInteger()).intValueExact().toUByte()
-                    calc(d) + r
-                }
-
                 override fun _encode(bytes: ByteArray): String {
                     val z = bytes.takeWhile { it == 0.toByte() }
                     val nz = bytes.dropWhile { it == 0.toByte() }
-                    return z.map { '0' }.toCharArray().concatToString() + if (nz.isEmpty()) "" else calc(nz.toByteArray()).toString()
+                    return z.map { '0' }.toCharArray().concatToString() + if (nz.isEmpty()) "" else base10(nz.toByteArray()).toString()
                 }
 
                 override fun _decode(encoded: String): ByteArray {
                     val z = encoded.takeWhile { it == '0' }
                     val nz = encoded.dropWhile { it == '0' }
-                    return (z.map { 0.toUByte() }.toUByteArray() + if (nz.isEmpty()) ubyteArrayOf() else calc(nz.toBigInteger())).toByteArray()
+                    return (z.map { 0.toUByte() }.toUByteArray() + if (nz.isEmpty()) ubyteArrayOf() else base10(nz.toBigInteger())).toByteArray()
                 }
             }
 
         @ExperimentalUnsignedTypes
         val Base16Lower =
             object : Codec('f') {
-                override fun _encode(bytes: ByteArray): String = base16Encode(bytes, Alphabet.Companion.Base16Lower)
-                override fun _decode(encoded: String): ByteArray = base16Decode(encoded, Alphabet.Companion.Base16Lower)
+                override fun _encode(bytes: ByteArray): String = base16(bytes, Alphabet.Companion.Base16Lower)
+                override fun _decode(encoded: String): ByteArray = base16(encoded, Alphabet.Companion.Base16Lower)
             }
 
         @ExperimentalUnsignedTypes
         val Base16Upper =
             object : Codec('F') {
-                override fun _encode(bytes: ByteArray): String = base16Encode(bytes, Alphabet.Companion.Base16Upper)
-                override fun _decode(encoded: String): ByteArray = base16Decode(encoded, Alphabet.Companion.Base16Upper)
+                override fun _encode(bytes: ByteArray): String = base16(bytes, Alphabet.Companion.Base16Upper)
+                override fun _decode(encoded: String): ByteArray = base16(encoded, Alphabet.Companion.Base16Upper)
             }
 
         // val Base32 = Codec('b')
