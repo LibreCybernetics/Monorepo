@@ -14,7 +14,7 @@ class MultibaseTest {
                 .readLines()
                 .map { it.split(',') }
                 .map { Pair(it.component1().trim(), it.component2().trim()) }
-                .filter { listOf("identity", "base16", "base16upper").contains(it.component1()) }
+                .filter { listOf("identity", "base2", "base16", "base16upper").contains(it.component1()) }
 
         testVectors1.forEach { (_, encoded) ->
             val codec = MultibaseCodec.getCodec(encoded.first())
@@ -30,6 +30,7 @@ class MultibaseTest {
             val length = Random.nextInt(200)
             val bytes = Random.nextBytes(length)
             assertContentEquals(bytes, Multibase.decode(Multibase(bytes, MultibaseCodec.Identity).encoded))
+            assertContentEquals(bytes, Multibase.decode(Multibase(bytes, MultibaseCodec.Base2).encoded))
             assertContentEquals(bytes, Multibase.decode(Multibase(bytes, MultibaseCodec.Base16Lower).encoded))
             assertContentEquals(bytes, Multibase.decode(Multibase(bytes, MultibaseCodec.Base16Upper).encoded))
         }
@@ -45,6 +46,9 @@ class MultibaseTest {
             MultibaseCodec.Identity.decode("")
         }
         assertFailsWith(IllegalArgumentException::class) {
+            MultibaseCodec.Base2.decode("")
+        }
+        assertFailsWith(IllegalArgumentException::class) {
             MultibaseCodec.Base16Lower.decode("")
         }
         assertFailsWith(IllegalArgumentException::class) {
@@ -55,6 +59,9 @@ class MultibaseTest {
         }
         assertFailsWith(IllegalArgumentException::class) {
             MultibaseCodec.Identity.decode("3")
+        }
+        assertFailsWith(IllegalArgumentException::class) {
+            MultibaseCodec.Base2.decode("3")
         }
         assertFailsWith(IllegalArgumentException::class) {
             MultibaseCodec.Base16Lower.decode("3")

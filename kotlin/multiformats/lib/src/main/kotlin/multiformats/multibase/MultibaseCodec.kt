@@ -27,6 +27,7 @@ abstract class MultibaseCodec(val code: Char) {
         private val base16LowerAlphabet: CharArray = (base8Alphabet + listOf('8', '9', 'a', 'b', 'c', 'd', 'e', 'f')).toCharArray()
         private val base16UpperAlphabet: CharArray = (base8Alphabet + listOf('8', '9', 'A', 'B', 'C', 'D', 'E', 'F')).toCharArray()
 
+        @ExperimentalUnsignedTypes
         private fun base16Encode(bytes: ByteArray, alphabet: CharArray) =
             bytes.map { it.toUByte() }.flatMap {
                 listOf(
@@ -35,6 +36,7 @@ abstract class MultibaseCodec(val code: Char) {
                 )
             }.toCharArray().concatToString()
 
+        @ExperimentalUnsignedTypes
         private fun base16Decode(encoded: String, alphabet: CharArray) =
             encoded.map { alphabet.indexOf(it) }.chunked(2).map {
                 (it.component1() * 16 + it.component2()).toUByte()
@@ -46,6 +48,31 @@ abstract class MultibaseCodec(val code: Char) {
                     String(bytes, Charsets.ISO_8859_1)
                 override fun _decode(encoded: String): ByteArray =
                     encoded.toByteArray(Charsets.ISO_8859_1)
+            }
+
+        @ExperimentalUnsignedTypes
+        val Base2 =
+            object : MultibaseCodec('0') {
+                private val pow: UByteArray = arrayOf(1, 2, 4, 8, 16, 32, 64, 128).map { it.toUByte() }.toUByteArray()
+
+                private fun char(ubyte: UByte, place: Int): Char =
+                    if (ubyte.and(pow.get(place)) > 0.toUByte()) '1' else '0'
+
+                private fun char(char: Char, place: Int): UByte =
+                    when (char) {
+                        '0' -> 0.toUByte()
+                        '1' -> pow.get(place)
+                        else -> throw IllegalArgumentException()
+                    }
+
+                override fun _encode(bytes: ByteArray): String =
+                    bytes.toUByteArray()
+                        .map { ubyte -> (0..7).map { char(ubyte, 7 - it) }.toCharArray().concatToString() }
+                        .reduceOrNull { a, b -> a + b } ?: ""
+                override fun _decode(encoded: String): ByteArray =
+                    encoded.chunked(8)
+                        .map { it.mapIndexed { idx, chr -> char(chr, 7 - idx) }.reduce { a, b -> (a + b).toUByte() } }
+                        .toUByteArray().toByteArray()
             }
 
         @ExperimentalUnsignedTypes
