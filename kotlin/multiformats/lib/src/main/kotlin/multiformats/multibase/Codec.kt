@@ -1,6 +1,6 @@
 package multiformats.multibase
 
-abstract class MultibaseCodec(val code: Char) {
+abstract class Codec(val code: Char) {
     abstract fun _encode(bytes: ByteArray): String
     abstract fun _decode(encoded: String): ByteArray
 
@@ -13,14 +13,14 @@ abstract class MultibaseCodec(val code: Char) {
     }
 
     init {
-        synchronized(MultibaseCodec) {
+        synchronized(Codec) {
             require(!registered.contains(code))
             registered.plusAssign(code to this)
         }
     }
 
     companion object {
-        private val registered: MutableMap<Char, MultibaseCodec> = mutableMapOf()
+        private val registered: MutableMap<Char, Codec> = mutableMapOf()
 
         @ExperimentalUnsignedTypes
         private fun base16Encode(bytes: ByteArray, alphabet: Alphabet) =
@@ -38,7 +38,7 @@ abstract class MultibaseCodec(val code: Char) {
             }.toUByteArray().toByteArray()
 
         val Identity =
-            object : MultibaseCodec(0.toChar()) {
+            object : Codec(0.toChar()) {
                 override fun _encode(bytes: ByteArray): String =
                     String(bytes, Charsets.ISO_8859_1)
 
@@ -48,7 +48,7 @@ abstract class MultibaseCodec(val code: Char) {
 
         @ExperimentalUnsignedTypes
         val Base2 =
-            object : MultibaseCodec('0') {
+            object : Codec('0') {
                 private val pow: UByteArray = arrayOf(1, 2, 4, 8, 16, 32, 64, 128).map { it.toUByte() }.toUByteArray()
 
                 private fun char(ubyte: UByte, place: Int): Char =
@@ -70,27 +70,27 @@ abstract class MultibaseCodec(val code: Char) {
 
         @ExperimentalUnsignedTypes
         val Base16Lower =
-            object : MultibaseCodec('f') {
+            object : Codec('f') {
                 override fun _encode(bytes: ByteArray): String = base16Encode(bytes, Alphabet.Companion.Base16Lower)
                 override fun _decode(encoded: String): ByteArray = base16Decode(encoded, Alphabet.Companion.Base16Lower)
             }
 
         @ExperimentalUnsignedTypes
         val Base16Upper =
-            object : MultibaseCodec('F') {
+            object : Codec('F') {
                 override fun _encode(bytes: ByteArray): String = base16Encode(bytes, Alphabet.Companion.Base16Upper)
                 override fun _decode(encoded: String): ByteArray = base16Decode(encoded, Alphabet.Companion.Base16Upper)
             }
 
-        // val Base32 = MultibaseCodec('b')
-        // val Base32Upper = MultibaseCodec('B')
-        // val Base58BTC = MultibaseCodec('z')
-        // val Base64 = MultibaseCodec('m')
-        // val Base64Pad = MultibaseCodec('M')
-        // val Base64URL = MultibaseCodec('u')
-        // val Base64URLPad = MultibaseCodec('U')
+        // val Base32 = Codec('b')
+        // val Base32Upper = Codec('B')
+        // val Base58BTC = Codec('z')
+        // val Base64 = Codec('m')
+        // val Base64Pad = Codec('M')
+        // val Base64URL = Codec('u')
+        // val Base64URLPad = Codec('U')
 
-        fun getCodec(code: Char): MultibaseCodec = registered.getValue(code)
+        fun getCodec(code: Char): Codec = registered.getValue(code)
 
         fun decode(str: String): ByteArray {
             require(str.isNotEmpty())

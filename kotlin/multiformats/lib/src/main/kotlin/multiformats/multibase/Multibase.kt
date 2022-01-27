@@ -1,8 +1,8 @@
 package multiformats.multibase
 
-data class Multibase(val bytes: ByteArray, val codec: MultibaseCodec) {
+data class Multibase(val bytes: ByteArray, val codec: Codec) {
     companion object {
-        fun decode(str: String): ByteArray = MultibaseCodec.decode(str)
+        fun decode(str: String): ByteArray = Codec.decode(str)
     }
 
     val encoded by lazy { codec.encode(bytes) }
