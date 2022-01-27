@@ -88,6 +88,14 @@ abstract class Codec(val code: Char) {
                 listOfNotNull(b0, b1, b2, b3, b4).map { it.toUByte() }
             }.toUByteArray().toByteArray()
 
+        private fun base58(int: BigInteger, alphabet: Alphabet): String =
+            if (int < 58.toBigInteger()) alphabet.char(int.intValueExact()).toString() else
+                base58(int / 58.toBigInteger(), alphabet) + alphabet.char(int.rem(58.toBigInteger()).intValueExact())
+
+        private fun base58(encoded: String, alphabet: Alphabet): BigInteger =
+            if (encoded.isEmpty()) BigInteger.ZERO else
+                alphabet.char(encoded.last()).toUInt().toInt().toBigInteger() + 58.toBigInteger() * base58(encoded.dropLast(1), alphabet)
+
         val Identity =
             object : Codec(0.toChar()) {
                 override fun _encode(bytes: ByteArray): String =
@@ -277,7 +285,38 @@ abstract class Codec(val code: Char) {
                 }
             }
 
-        // val Base58BTC = Codec('z')
+        @ExperimentalUnsignedTypes
+        val Base58 =
+            object : Codec('z') {
+                override fun _encode(bytes: ByteArray): String {
+                    val z = bytes.takeWhile { it == 0.toByte() }
+                    val nz = bytes.dropWhile { it == 0.toByte() }
+                    return z.map { '1' }.toCharArray().concatToString() + if (nz.isEmpty()) "" else base58(base10(nz.toByteArray()), Alphabet.Companion.Base58)
+                }
+
+                override fun _decode(encoded: String): ByteArray {
+                    val z = encoded.takeWhile { it == '1' }
+                    val nz = encoded.dropWhile { it == '1' }
+                    return (z.map { 0.toUByte() }.toUByteArray() + if (nz.isEmpty()) ubyteArrayOf() else base10(base58(nz, Alphabet.Companion.Base58))).toByteArray()
+                }
+            }
+
+        @ExperimentalUnsignedTypes
+        val Base58Flickr =
+            object : Codec('Z') {
+                override fun _encode(bytes: ByteArray): String {
+                    val z = bytes.takeWhile { it == 0.toByte() }
+                    val nz = bytes.dropWhile { it == 0.toByte() }
+                    return z.map { '1' }.toCharArray().concatToString() + if (nz.isEmpty()) "" else base58(base10(nz.toByteArray()), Alphabet.Companion.Base58Flickr)
+                }
+
+                override fun _decode(encoded: String): ByteArray {
+                    val z = encoded.takeWhile { it == '1' }
+                    val nz = encoded.dropWhile { it == '1' }
+                    return (z.map { 0.toUByte() }.toUByteArray() + if (nz.isEmpty()) ubyteArrayOf() else base10(base58(nz, Alphabet.Companion.Base58Flickr))).toByteArray()
+                }
+            }
+
         // val Base64 = Codec('m')
         // val Base64Pad = Codec('M')
         // val Base64URL = Codec('u')
