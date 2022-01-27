@@ -14,7 +14,7 @@ class MultibaseTest {
                 .readLines()
                 .map { it.split(',') }
                 .map { Pair(it.component1().trim(), it.component2().trim()) }
-                .filter { listOf("identity", "base2", "base10", "base8", "base16", "base16upper").contains(it.component1()) }
+                .filter { !listOf("base36", "base36upper", "base58flickr", "base58btc", "base64", "base64pad", "base64url", "base64urlpad").contains(it.component1()) }
 
         testVectors1.forEach { (_, encoded) ->
             val codec = Codec.getCodec(encoded.first())
@@ -35,6 +35,15 @@ class MultibaseTest {
             assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base10).encoded).bytes)
             assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base16Lower).encoded).bytes)
             assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base16Upper).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32Lower).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32Upper).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32LowerPad).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32UpperPad).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32HexLower).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32HexUpper).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32HexLowerPad).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32HexUpperPad).encoded).bytes)
+            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.ZBase32).encoded).bytes)
         }
     }
 
@@ -48,40 +57,10 @@ class MultibaseTest {
             Codec.Identity.decode("")
         }
         assertFailsWith(IllegalArgumentException::class) {
-            Codec.Base2.decode("")
-        }
-        assertFailsWith(IllegalArgumentException::class) {
-            Codec.Base8.decode("")
-        }
-        assertFailsWith(IllegalArgumentException::class) {
-            Codec.Base10.decode("")
-        }
-        assertFailsWith(IllegalArgumentException::class) {
-            Codec.Base16Lower.decode("")
-        }
-        assertFailsWith(IllegalArgumentException::class) {
-            Codec.Base16Upper.decode("")
-        }
-        assertFailsWith(IllegalArgumentException::class) {
             Multibase.decode("3")
         }
         assertFailsWith(IllegalArgumentException::class) {
             Codec.Identity.decode("3")
-        }
-        assertFailsWith(IllegalArgumentException::class) {
-            Codec.Base2.decode("3")
-        }
-        assertFailsWith(IllegalArgumentException::class) {
-            Codec.Base8.decode("3")
-        }
-        assertFailsWith(IllegalArgumentException::class) {
-            Codec.Base10.decode("3")
-        }
-        assertFailsWith(IllegalArgumentException::class) {
-            Codec.Base16Lower.decode("3")
-        }
-        assertFailsWith(IllegalArgumentException::class) {
-            Codec.Base16Upper.decode("3")
         }
         assertFailsWith(IllegalArgumentException::class) {
             object : Codec('f') {

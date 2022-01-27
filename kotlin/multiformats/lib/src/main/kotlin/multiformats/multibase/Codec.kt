@@ -51,6 +51,43 @@ abstract class Codec(val code: Char) {
                 (it.component1() * 16u + it.component2()).toUByte()
             }.toUByteArray().toByteArray()
 
+        @ExperimentalUnsignedTypes
+        private fun base32(bytes: ByteArray, alphabet: Alphabet, pad: Boolean): String =
+            bytes.toUByteArray().chunked(5).map { chunk ->
+                val c0 = chunk[0] / 8u
+                val c1 = chunk[0].rem(8u) * 4u + (chunk.elementAtOrNull(1)?.div(64u) ?: 0u)
+                val c2 = if (chunk.size > 1) chunk[1].rem(64u) / 2u else null
+                val c3 = if (chunk.size > 1) chunk[1].rem(2u) * 16u + (chunk.elementAtOrNull(2)?.div(16u) ?: 0u) else null
+                val c4 = if (chunk.size > 2) chunk[2].rem(16u) * 2u + (chunk.elementAtOrNull(3)?.div(128u) ?: 0u) else null
+                val c5 = if (chunk.size > 3) chunk[3].rem(128u) / 4u else null
+                val c6 = if (chunk.size > 3) chunk[3].rem(4u) * 8u + (chunk.elementAtOrNull(4)?.div(32u) ?: 0u) else null
+                val c7 = if (chunk.size > 4) chunk[4].rem(32u) else null
+
+                arrayOf(c0, c1, c2, c3, c4, c5, c6, c7).mapNotNull {
+                    if (it != null) alphabet.char(it) else (if (pad) '=' else it)
+                }.toCharArray().concatToString()
+            }.reduceOrNull { a, b -> a + b } ?: ""
+
+        @ExperimentalUnsignedTypes
+        private fun base32(encoded: String, alphabet: Alphabet): ByteArray =
+            encoded.dropLastWhile { it == '=' }.chunked(8).flatMap { chunk ->
+                val b0 = alphabet.char(chunk[0]) * 8u + alphabet.char(chunk[1]) / 4u
+                val b1 = if (chunk.length > 2) {
+                    alphabet.char(chunk[1]).rem(4u) * 64u + alphabet.char(chunk[2]) * 2u + alphabet.char(chunk[3]) / 16u
+                } else null
+                val b2 = if (chunk.length > 4) {
+                    alphabet.char(chunk[3]).rem(16u) * 16u + alphabet.char(chunk[4]) / 2u
+                } else null
+                val b3 = if (chunk.length > 5) {
+                    alphabet.char(chunk[4]).rem(2u) * 128u + alphabet.char(chunk[5]) * 4u + alphabet.char(chunk[6]) / 8u
+                } else null
+                val b4 = if (chunk.length > 7) {
+                    alphabet.char(chunk[6]).rem(8u) * 32u + alphabet.char(chunk[7])
+                } else null
+
+                listOfNotNull(b0, b1, b2, b3, b4).map { it.toUByte() }
+            }.toUByteArray().toByteArray()
+
         val Identity =
             object : Codec(0.toChar()) {
                 override fun _encode(bytes: ByteArray): String =
@@ -145,8 +182,69 @@ abstract class Codec(val code: Char) {
                 override fun _decode(encoded: String): ByteArray = base16(encoded, Alphabet.Companion.Base16Upper)
             }
 
-        // val Base32 = Codec('b')
-        // val Base32Upper = Codec('B')
+        @ExperimentalUnsignedTypes
+        val Base32Lower =
+            object : Codec('b') {
+                override fun _encode(bytes: ByteArray): String = base32(bytes, Alphabet.Companion.Base32Lower, false)
+                override fun _decode(encoded: String): ByteArray = base32(encoded, Alphabet.Companion.Base32Lower)
+            }
+
+        @ExperimentalUnsignedTypes
+        val Base32Upper =
+            object : Codec('B') {
+                override fun _encode(bytes: ByteArray): String = base32(bytes, Alphabet.Companion.Base32Upper, false)
+                override fun _decode(encoded: String): ByteArray = base32(encoded, Alphabet.Companion.Base32Upper)
+            }
+
+        @ExperimentalUnsignedTypes
+        val Base32LowerPad =
+            object : Codec('c') {
+                override fun _encode(bytes: ByteArray): String = base32(bytes, Alphabet.Companion.Base32Lower, true)
+                override fun _decode(encoded: String): ByteArray = base32(encoded, Alphabet.Companion.Base32Lower)
+            }
+
+        @ExperimentalUnsignedTypes
+        val Base32UpperPad =
+            object : Codec('C') {
+                override fun _encode(bytes: ByteArray): String = base32(bytes, Alphabet.Companion.Base32Upper, true)
+                override fun _decode(encoded: String): ByteArray = base32(encoded, Alphabet.Companion.Base32Upper)
+            }
+
+        @ExperimentalUnsignedTypes
+        val Base32HexLower =
+            object : Codec('v') {
+                override fun _encode(bytes: ByteArray): String = base32(bytes, Alphabet.Companion.Base32HexLower, false)
+                override fun _decode(encoded: String): ByteArray = base32(encoded, Alphabet.Companion.Base32HexLower)
+            }
+
+        @ExperimentalUnsignedTypes
+        val Base32HexUpper =
+            object : Codec('V') {
+                override fun _encode(bytes: ByteArray): String = base32(bytes, Alphabet.Companion.Base32HexUpper, false)
+                override fun _decode(encoded: String): ByteArray = base32(encoded, Alphabet.Companion.Base32HexUpper)
+            }
+
+        @ExperimentalUnsignedTypes
+        val Base32HexLowerPad =
+            object : Codec('t') {
+                override fun _encode(bytes: ByteArray): String = base32(bytes, Alphabet.Companion.Base32HexLower, true)
+                override fun _decode(encoded: String): ByteArray = base32(encoded, Alphabet.Companion.Base32HexLower)
+            }
+
+        @ExperimentalUnsignedTypes
+        val Base32HexUpperPad =
+            object : Codec('T') {
+                override fun _encode(bytes: ByteArray): String = base32(bytes, Alphabet.Companion.Base32HexUpper, true)
+                override fun _decode(encoded: String): ByteArray = base32(encoded, Alphabet.Companion.Base32HexUpper)
+            }
+
+        @ExperimentalUnsignedTypes
+        val ZBase32 =
+            object : Codec('h') {
+                override fun _encode(bytes: ByteArray): String = base32(bytes, Alphabet.Companion.ZBase32, false)
+                override fun _decode(encoded: String): ByteArray = base32(encoded, Alphabet.Companion.ZBase32)
+            }
+
         // val Base58BTC = Codec('z')
         // val Base64 = Codec('m')
         // val Base64Pad = Codec('M')
