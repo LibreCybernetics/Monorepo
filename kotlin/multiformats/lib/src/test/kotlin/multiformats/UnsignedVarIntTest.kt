@@ -17,11 +17,11 @@ class UnsignedVarIntTest {
     @Test
     fun exampleValuesFromSpec() {
         val testVectors: List<Pair<BigInteger, ByteArray>> =
-                File("../../../spec/multiformats/unsigned-varint-examples.csv")
-                        .readLines()
-                        .map { it.split(',') }
-                        .map { Pair(it.component1().trim(), it.component2().trim()) }
-                        .map { (int, bytes) -> Pair(int.toBigInteger(), decoder.decode(bytes)) }
+            File("../../../spec/multiformats/unsigned-varint-examples.csv")
+                .readLines()
+                .map { it.split(',') }
+                .map { Pair(it.component1().trim(), it.component2().trim()) }
+                .map { (int, bytes) -> Pair(int.toBigInteger(), decoder.decode(bytes)) }
 
         testVectors.forEach { (int, bytes) ->
             assertContentEquals(bytes, UnsignedVarInt(int).bytes)
@@ -35,8 +35,8 @@ class UnsignedVarIntTest {
             val cieling = min(Long.MAX_VALUE, UnsignedVarInt.PRACTICAL_MAX.toLong())
             val random = Random.nextLong(cieling)
             assertEquals(
-                    random,
-                    UnsignedVarInt(UnsignedVarInt(random.toBigInteger()).bytes).int.toLong()
+                random,
+                UnsignedVarInt(UnsignedVarInt(random.toBigInteger()).bytes).int.toLong()
             )
         }
     }
@@ -74,21 +74,23 @@ class UnsignedVarIntTest {
         // Last should be less than 128
         for (i in 2..UnsignedVarInt.PRACTICAL_MAX_BYTES) {
             assertFailsWith(IllegalArgumentException::class) {
-                UnsignedVarInt(ByteArray(i) { 128.toUByte().toByte() })
+                UnsignedVarInt(ByteArray(i) { 128u.toByte() })
             }
         }
 
         // PRACTICAL_MAX_BYTES is tipping point
         UnsignedVarInt(
-                (UByteArray(UnsignedVarInt.PRACTICAL_MAX_BYTES - 1) { 255.toUByte() } +
-                                ubyteArrayOf(127.toUByte()))
-                        .toByteArray()
+            (
+                UByteArray(UnsignedVarInt.PRACTICAL_MAX_BYTES - 1) { 255u } +
+                    ubyteArrayOf(127u)
+                ).toByteArray()
         )
         assertFailsWith(IllegalArgumentException::class) {
             UnsignedVarInt(
-                    (UByteArray(UnsignedVarInt.PRACTICAL_MAX_BYTES) { 255.toUByte() } +
-                                    ubyteArrayOf(127.toUByte()))
-                            .toByteArray()
+                (
+                    UByteArray(UnsignedVarInt.PRACTICAL_MAX_BYTES) { 255u } +
+                        ubyteArrayOf(127u)
+                    ).toByteArray()
             )
         }
     }
