@@ -9,9 +9,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: kotlin/multiformats
 
     steps:
     - uses: actions/checkout@v2
@@ -25,3 +22,4 @@ jobs:
       with:
         arguments: test
         gradle-version: current
+        build-root-directory: kotlin/multiformats
