@@ -137,31 +137,16 @@ fun baseHelper(encoded: String, alphabet: Alphabet, radix: Int): BigInteger =
     if (encoded.isEmpty()) BigInteger.ZERO else
         alphabet.char(encoded.last()).toUInt().toInt().toBigInteger() + radix.toBigInteger() * baseHelper(encoded.dropLast(1), alphabet, radix)
 
-fun base36(bytes: ByteArray, alphabet: Alphabet): String {
+fun genericNonPower2Base(bytes: ByteArray, alphabet: Alphabet, radix: Int): String {
     val z = bytes.takeWhile { it == 0.toByte() }
     val nz = bytes.dropWhile { it == 0.toByte() }
     return z.map { alphabet.char(0) }.toCharArray().concatToString() +
-        if (nz.isEmpty()) "" else baseHelper(base10Helper(nz.toByteArray()), alphabet, 36)
+        if (nz.isEmpty()) "" else baseHelper(base10Helper(nz.toByteArray()), alphabet, radix)
 }
 
-@ExperimentalUnsignedTypes
-fun base36(encoded: String, alphabet: Alphabet): ByteArray {
-    val z = encoded.takeWhile { it == alphabet.char(0) }
-    val nz = encoded.dropWhile { it == alphabet.char(0) }
-    return (z.map { 0.toUByte() }.toUByteArray() + if (nz.isEmpty()) ubyteArrayOf() else base10Helper(baseHelper(nz, alphabet, 36))).toByteArray()
-}
-
-fun base58(bytes: ByteArray, alphabet: Alphabet): String {
-    val z = bytes.takeWhile { it == 0.toByte() }
-    val nz = bytes.dropWhile { it == 0.toByte() }
-    return z.map { alphabet.char(0) }.toCharArray().concatToString() +
-        if (nz.isEmpty()) "" else baseHelper(base10Helper(nz.toByteArray()), alphabet, 58)
-}
-
-@ExperimentalUnsignedTypes
-fun base58(encoded: String, alphabet: Alphabet): ByteArray {
+fun genericNonPower2Base(encoded: String, alphabet: Alphabet, radix: Int): ByteArray {
     val z = encoded.takeWhile { it == alphabet.char(0) }
     val nz = encoded.dropWhile { it == alphabet.char(0) }
     return (z.map { 0.toUByte() }.toUByteArray() +
-        if (nz.isEmpty()) ubyteArrayOf() else base10Helper(baseHelper(nz, alphabet, 58))).toByteArray()
+        if (nz.isEmpty()) ubyteArrayOf() else base10Helper(baseHelper(nz, alphabet, radix))).toByteArray()
 }

@@ -92,26 +92,26 @@ object Codecs {
 
     @ExperimentalUnsignedTypes
     val Base36Lower = object : Codec('k') {
-        override fun directEncode(bytes: ByteArray): String = base36(bytes, Alphabet.Companion.Base36Lower)
-        override fun directDecode(encoded: String): ByteArray = base36(encoded, Alphabet.Companion.Base36Lower)
+        override fun directEncode(bytes: ByteArray): String = genericNonPower2Base(bytes, Alphabet.Companion.Base36Lower, 36)
+        override fun directDecode(encoded: String): ByteArray = genericNonPower2Base(encoded, Alphabet.Companion.Base36Lower, 36)
     }
 
     @ExperimentalUnsignedTypes
     val Base36Upper = object : Codec('K') {
-        override fun directEncode(bytes: ByteArray): String = base36(bytes, Alphabet.Companion.Base36Upper)
-        override fun directDecode(encoded: String): ByteArray = base36(encoded, Alphabet.Companion.Base36Upper)
+        override fun directEncode(bytes: ByteArray): String = genericNonPower2Base(bytes, Alphabet.Companion.Base36Upper, 36)
+        override fun directDecode(encoded: String): ByteArray = genericNonPower2Base(encoded, Alphabet.Companion.Base36Upper, 36)
     }
 
     @ExperimentalUnsignedTypes
     val Base58 = object : Codec('z') {
-        override fun directEncode(bytes: ByteArray): String = base58(bytes, Alphabet.Companion.Base58)
-        override fun directDecode(encoded: String): ByteArray = base58(encoded, Alphabet.Companion.Base58)
+        override fun directEncode(bytes: ByteArray): String = genericNonPower2Base(bytes, Alphabet.Companion.Base58, 58)
+        override fun directDecode(encoded: String): ByteArray = genericNonPower2Base(encoded, Alphabet.Companion.Base58, 58)
     }
 
     @ExperimentalUnsignedTypes
     val Base58Flickr = object : Codec('Z') {
-        override fun directEncode(bytes: ByteArray): String = base58(bytes, Alphabet.Companion.Base58Flickr)
-        override fun directDecode(encoded: String): ByteArray = base58(encoded, Alphabet.Companion.Base58Flickr)
+        override fun directEncode(bytes: ByteArray): String = genericNonPower2Base(bytes, Alphabet.Companion.Base58Flickr, 58)
+        override fun directDecode(encoded: String): ByteArray = genericNonPower2Base(encoded, Alphabet.Companion.Base58Flickr, 58)
     }
 
     private val base64encoder = java.util.Base64.getEncoder()
