@@ -7,22 +7,22 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
+val decoder = java.util.Base64.getDecoder()
 
 class MultibaseTest {
     @Test
     @ExperimentalUnsignedTypes
     fun exampleValuesFromSpec() {
-        val content1: ByteArray = arrayOf(121, 101, 115, 32, 109, 97, 110, 105, 32, 33).map { it.toByte() }.toByteArray()
-        val testVectors1: List<Pair<String, String>> =
-            File("../../../spec/multiformats/multibase-basic.csv")
+        val testVectors: List<Pair<ByteArray, String>> =
+            File("../../../spec/multiformats/multibase.csv")
                 .readLines()
                 .map { it.split(',') }
-                .map { Pair(it.component1().trim(), it.component2().trim()) }
+                .map { decoder.decode(it.component2().trim()) to it.component3().trim() }
 
-        testVectors1.forEach { (_, encoded) ->
+        testVectors.forEach { (bytes, encoded) ->
             val codec = Codec.getCodec(encoded.first())
-            assertEquals(encoded, Multibase(content1, codec).encoded)
-            assertContentEquals(content1, Multibase(encoded).bytes)
+            assertEquals(encoded, Multibase(bytes, codec).encoded)
+            assertContentEquals(bytes, Multibase(encoded).bytes)
         }
     }
 
