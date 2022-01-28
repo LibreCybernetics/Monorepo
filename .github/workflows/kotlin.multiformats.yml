@@ -3,16 +3,21 @@ name: Kotlin Multiformats
 on:
   push:
     paths:
+    - '.github/workflows/'
     - 'kotlin/multiformats/**.kt'
     - 'spec/multiformats/'
   pull_request:
     branches: [ main ]
     paths:
+    - '.github/workflows/'
     - 'kotlin/multiformats/**.kt'
     - 'spec/multiformats/'
 
 jobs:
-  build:
+  test:
+    defaults:
+      run:
+        working-directory: kotlin/multiformats
     runs-on: ubuntu-latest
 
     steps:
