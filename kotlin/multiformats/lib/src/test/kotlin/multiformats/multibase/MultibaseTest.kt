@@ -2,7 +2,11 @@ package multiformats.multibase
 
 import java.io.File
 import kotlin.random.Random
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+
 
 class MultibaseTest {
     @Test
@@ -14,7 +18,6 @@ class MultibaseTest {
                 .readLines()
                 .map { it.split(',') }
                 .map { Pair(it.component1().trim(), it.component2().trim()) }
-                .filter { !listOf("base64", "base64pad", "base64url", "base64urlpad").contains(it.component1()) }
 
         testVectors1.forEach { (_, encoded) ->
             val codec = Codec.getCodec(encoded.first())
@@ -29,25 +32,34 @@ class MultibaseTest {
         for (i in 1..1000) {
             val length = Random.nextInt(100)
             val bytes = Random.nextBytes(length)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Identity).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base2).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base8).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base10).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base16Lower).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base16Upper).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32Lower).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32Upper).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32LowerPad).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32UpperPad).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32HexLower).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32HexUpper).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32HexLowerPad).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base32HexUpperPad).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base36Lower).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base36Upper).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base58).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.Base58Flickr).encoded).bytes)
-            assertContentEquals(bytes, Multibase(Multibase(bytes, Codec.ZBase32).encoded).bytes)
+
+            Codec.Companion.getCodecs().forEach { codec ->
+                assertContentEquals(bytes, Multibase(Multibase(bytes, codec).encoded).bytes)
+            }
+
+            Codecs.Identity
+            Codecs.Base2
+            Codecs.Base8
+            Codecs.Base10
+            Codecs.Base16Lower
+            Codecs.Base16Upper
+            Codecs.Base32Lower
+            Codecs.Base32Upper
+            Codecs.Base32LowerPad
+            Codecs.Base32UpperPad
+            Codecs.Base32HexLower
+            Codecs.Base32HexUpper
+            Codecs.Base32HexLowerPad
+            Codecs.Base32HexUpperPad
+            Codecs.Base36Lower
+            Codecs.Base36Upper
+            Codecs.Base58
+            Codecs.Base58Flickr
+            Codecs.ZBase32
+            Codecs.Base64
+            Codecs.Base64Pad
+            Codecs.Base64URL
+            Codecs.Base64URLPad
         }
     }
 
@@ -58,18 +70,18 @@ class MultibaseTest {
             Multibase.decode("")
         }
         assertFailsWith(IllegalArgumentException::class) {
-            Codec.Identity.decode("")
+            Codecs.Identity.decode("")
         }
         assertFailsWith(IllegalArgumentException::class) {
             Multibase.decode("3")
         }
         assertFailsWith(IllegalArgumentException::class) {
-            Codec.Identity.decode("3")
+            Codecs.Identity.decode("3")
         }
         assertFailsWith(IllegalArgumentException::class) {
             object : Codec('f') {
-                override fun _encode(bytes: ByteArray): String = ""
-                override fun _decode(encoded: String): ByteArray = byteArrayOf()
+                override fun directEncode(bytes: ByteArray): String = ""
+                override fun directDecode(encoded: String): ByteArray = byteArrayOf()
             }
         }
     }
