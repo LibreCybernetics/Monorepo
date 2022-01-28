@@ -7,6 +7,8 @@ open class Alphabet(private val alphabet: CharArray) {
     fun char(int: Int): Char = alphabet[int]
     fun char(uint: UInt): Char = char(uint.toInt())
 
+    val radix: Int by lazy { alphabet.size }
+
     companion object {
         internal object Base2 : Alphabet("01")
         internal object Base8 : Alphabet("01234567")

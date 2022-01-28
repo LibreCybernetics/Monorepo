@@ -129,24 +129,25 @@ fun base32(encoded: String, alphabet: Alphabet): ByteArray =
         listOfNotNull(b0, b1, b2, b3, b4).map { it.toUByte() }
     }.toUByteArray().toByteArray()
 
-fun baseHelper(int: BigInteger, alphabet: Alphabet, radix: Int): String =
-    if (int < radix.toBigInteger()) alphabet.char(int.intValueExact()).toString() else
-        baseHelper(int / radix.toBigInteger(), alphabet, radix) + alphabet.char(int.rem(radix.toBigInteger()).intValueExact())
+fun baseHelper(int: BigInteger, alphabet: Alphabet): String =
+    if (int < alphabet.radix.toBigInteger()) alphabet.char(int.intValueExact()).toString() else
+        baseHelper(int / alphabet.radix.toBigInteger(), alphabet) + alphabet.char(int.rem(alphabet.radix.toBigInteger()).intValueExact())
 
-fun baseHelper(encoded: String, alphabet: Alphabet, radix: Int): BigInteger =
+fun baseHelper(encoded: String, alphabet: Alphabet): BigInteger =
     if (encoded.isEmpty()) BigInteger.ZERO else
-        alphabet.char(encoded.last()).toUInt().toInt().toBigInteger() + radix.toBigInteger() * baseHelper(encoded.dropLast(1), alphabet, radix)
+        alphabet.char(encoded.last()).toUInt().toInt().toBigInteger() + alphabet.radix.toBigInteger() * baseHelper(encoded.dropLast(1), alphabet)
 
-fun genericNonPower2Base(bytes: ByteArray, alphabet: Alphabet, radix: Int): String {
+fun genericNonPower2Base(bytes: ByteArray, alphabet: Alphabet): String {
     val z = bytes.takeWhile { it == 0.toByte() }
     val nz = bytes.dropWhile { it == 0.toByte() }
     return z.map { alphabet.char(0) }.toCharArray().concatToString() +
-        if (nz.isEmpty()) "" else baseHelper(base10Helper(nz.toByteArray()), alphabet, radix)
+        if (nz.isEmpty()) "" else baseHelper(base10Helper(nz.toByteArray()), alphabet)
 }
 
-fun genericNonPower2Base(encoded: String, alphabet: Alphabet, radix: Int): ByteArray {
+@ExperimentalUnsignedTypes
+fun genericNonPower2Base(encoded: String, alphabet: Alphabet): ByteArray {
     val z = encoded.takeWhile { it == alphabet.char(0) }
     val nz = encoded.dropWhile { it == alphabet.char(0) }
     return (z.map { 0.toUByte() }.toUByteArray() +
-        if (nz.isEmpty()) ubyteArrayOf() else base10Helper(baseHelper(nz, alphabet, radix))).toByteArray()
+        if (nz.isEmpty()) ubyteArrayOf() else base10Helper(baseHelper(nz, alphabet))).toByteArray()
 }
