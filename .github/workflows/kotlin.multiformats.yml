@@ -17,9 +17,17 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-    - name: Build with Gradle
+    - name: Test with Gradle
       uses: gradle/gradle-build-action@v2
       with:
         arguments: test
         gradle-version: current
         build-root-directory: kotlin/multiformats
+    - name: Code Climate
+      uses: paambaati/codeclimate-action@v3.0.0
+      env:
+        CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+        JACOCO_SOURCE_PATH: "${{github.workspace}}/kotlin/multiformats/lib/src/main/kotlin"
+      with:
+        coverageLocations: |
+          ${{github.workspace}}/kotlin/multiformats/**/jacoco/jacoco.xml:jacoco
