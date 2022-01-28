@@ -27,7 +27,6 @@ jobs:
       uses: paambaati/codeclimate-action@v3.0.0
       env:
         CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
-        JACOCO_SOURCE_PATH: "${{github.workspace}}/kotlin/multiformats/lib/src/main/kotlin"
+        JACOCO_SOURCE_PATH: ${{github.workspace}}/kotlin/multiformats/lib/src/main/kotlin
       with:
-        coverageLocations: |
-          ${{github.workspace}}/kotlin/multiformats/**/jacoco/jacoco.xml:jacoco
+        coverageLocations: ${{github.workspace}}/kotlin/multiformats/lib/build/reports/jacoco/test/jacocoTestReport.xml:jacoco

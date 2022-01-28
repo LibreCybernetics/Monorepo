@@ -19,6 +19,14 @@ tasks.withType<AbstractTestTask> { testLogging { showStandardStreams = true } }
 
 tasks.test { finalizedBy(tasks.jacocoTestReport) }
 
-tasks.jacocoTestReport { dependsOn(tasks.test) }
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
 
-jacoco { toolVersion = "0.8.7" }
+    reports {
+        xml.required.set(true)
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+}
