@@ -1,12 +1,14 @@
 package multiformats.multibase
 
+import util.types.NonEmptyString
+
 data class Multibase(val bytes: ByteArray, val codec: Codec) {
-    constructor(encoded: String) : this(decode(encoded), getCodec(encoded))
+    constructor(encoded: NonEmptyString) : this(decode(encoded), getCodec(encoded))
 
     companion object {
-        fun decode(str: String): ByteArray = Codec.decode(str)
-        fun getCodec(str: String): Codec = Codec.getCodec(str.first())
+        fun decode(nestr: NonEmptyString): ByteArray = Codec.decode(nestr)
+        fun getCodec(nestr: NonEmptyString): Codec = Codec.getCodec(nestr.str.first())
     }
 
-    val encoded by lazy { codec.encode(bytes) }
+    val encoded: NonEmptyString by lazy { codec.encode(bytes) }
 }

@@ -1,5 +1,7 @@
 package multiformats.multibase
 
+import util.types.NonEmptyString
+
 abstract class Codec(val code: Char) {
     init {
         synchronized(Codec) {
@@ -11,12 +13,11 @@ abstract class Codec(val code: Char) {
     abstract fun directEncode(bytes: ByteArray): String
     abstract fun directDecode(encoded: String): ByteArray
 
-    fun encode(bytes: ByteArray): String = "$code${directEncode(bytes)}"
-    fun decode(str: String): ByteArray {
-        require(str.isNotEmpty())
-        require(str.first() == code)
+    fun encode(bytes: ByteArray): NonEmptyString = NonEmptyString("$code${directEncode(bytes)}")
+    fun decode(nestr: NonEmptyString): ByteArray {
+        require(nestr.str.first() == code)
 
-        return directDecode(str.drop(1))
+        return directDecode(nestr.str.drop(1))
     }
 
     companion object {
@@ -25,11 +26,10 @@ abstract class Codec(val code: Char) {
         fun getCodec(code: Char): Codec = registered.getValue(code)
         fun getCodecs(): Collection<Codec> = registered.values
 
-        fun decode(str: String): ByteArray {
-            require(str.isNotEmpty())
-            require(registered.contains(str.first()))
+        fun decode(nestr: NonEmptyString): ByteArray {
+            require(registered.contains(nestr.str.first()))
 
-            return getCodec(str.first()).decode(str)
+            return getCodec(nestr.str.first()).decode(nestr)
         }
     }
 }

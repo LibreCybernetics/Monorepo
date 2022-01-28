@@ -1,3 +1,6 @@
+group = "dev.librecybernetics"
+version = "0.1.0"
+
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.6.10"
     `java-library`
@@ -10,8 +13,6 @@ dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-
-    implementation("dev.librecybernetics:util")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 }

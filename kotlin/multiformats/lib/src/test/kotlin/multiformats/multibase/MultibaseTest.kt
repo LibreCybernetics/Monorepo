@@ -7,20 +7,22 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
+import util.types.NonEmptyString
+
 val decoder = java.util.Base64.getDecoder()
 
 class MultibaseTest {
     @Test
     @ExperimentalUnsignedTypes
     fun exampleValuesFromSpec() {
-        val testVectors: List<Pair<ByteArray, String>> =
+        val testVectors: List<Pair<ByteArray, NonEmptyString>> =
             File("../../../spec/multiformats/multibase.csv")
                 .readLines()
                 .map { it.split(',') }
-                .map { decoder.decode(it.component2().trim()) to it.component3().trim() }
+                .map { decoder.decode(it.component2().trim()) to NonEmptyString(it.component3().trim()) }
 
         testVectors.forEach { (bytes, encoded) ->
-            val codec = Codec.getCodec(encoded.first())
+            val codec = Multibase.getCodec(encoded)
             assertEquals(encoded, Multibase(bytes, codec).encoded)
             assertContentEquals(bytes, Multibase(encoded).bytes)
         }
@@ -67,16 +69,10 @@ class MultibaseTest {
     @ExperimentalUnsignedTypes
     fun throwsErrors() {
         assertFailsWith(IllegalArgumentException::class) {
-            Multibase.decode("")
+            Multibase.decode(NonEmptyString("3"))
         }
         assertFailsWith(IllegalArgumentException::class) {
-            Codecs.Identity.decode("")
-        }
-        assertFailsWith(IllegalArgumentException::class) {
-            Multibase.decode("3")
-        }
-        assertFailsWith(IllegalArgumentException::class) {
-            Codecs.Identity.decode("3")
+            Codecs.Identity.decode(NonEmptyString("3"))
         }
         assertFailsWith(IllegalArgumentException::class) {
             object : Codec('f') {
