@@ -54,7 +54,7 @@ fun base8(encoded: String): ByteArray =
     }.toUByteArray().toByteArray()
 
 fun base10Helper(bytes: ByteArray): BigInteger =
-        if (bytes.isEmpty()) BigInteger.ZERO else
+    if (bytes.isEmpty()) BigInteger.ZERO else
         bytes.last().toUByte().toInt().toBigInteger() + 256.toBigInteger() *
             base10Helper(bytes.dropLast(1).toByteArray())
 
