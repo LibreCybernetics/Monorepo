@@ -3,7 +3,7 @@ package util.types
 import kotlin.random.Random
 import kotlin.test.*
 
-class UnsignedVarIntTest {
+class NonEmptyStringTest {
     @Test
     fun throwsErrors() {
         assertFailsWith(IllegalArgumentException::class) {
