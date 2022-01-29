@@ -4,7 +4,15 @@ import util.extensions.pow
 import util.types.NonNegativeBigInteger
 
 // NOTE: ULong (64-bits) is more than enough to meet current spec of maximum 9 bytes (7-bits)
-data class UnsignedVarInt(val int: ULong) {
+data class UnsignedVarInt(val ulong: ULong) {
+    constructor(bytes: ByteArray) : this(decode(bytes))
+    constructor(ushort: UShort) : this(ushort.toULong())
+    constructor(nnint: NonNegativeBigInteger) : this(nnint.int.longValueExact().toULong())
+
+    init {
+        require(ulong <= PRACTICAL_MAX)
+    }
+
     companion object {
         const val PRACTICAL_MAX_BYTES: Int = 9
         val PRACTICAL_MAX: ULong = 128.toULong().pow(PRACTICAL_MAX_BYTES) - 1u
@@ -42,12 +50,5 @@ data class UnsignedVarInt(val int: ULong) {
         }
     }
 
-    constructor(bytes: ByteArray) : this(decode(bytes))
-    constructor(nnint: NonNegativeBigInteger) : this(nnint.int.longValueExact().toULong())
-
-    init {
-        require(int <= PRACTICAL_MAX)
-    }
-
-    val bytes: ByteArray by lazy { encode(int) }
+    val bytes: ByteArray by lazy { encode(ulong) }
 }

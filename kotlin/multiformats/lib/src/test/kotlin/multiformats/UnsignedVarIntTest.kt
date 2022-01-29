@@ -24,7 +24,7 @@ class UnsignedVarIntTest {
 
         testVectors.forEach { (nnint, bytes) ->
             assertContentEquals(bytes, UnsignedVarInt(nnint).bytes)
-            assertEquals(nnint.int, UnsignedVarInt(bytes).int.toLong().toBigInteger())
+            assertEquals(nnint.int, UnsignedVarInt(bytes).ulong.toLong().toBigInteger())
         }
     }
 
@@ -35,7 +35,7 @@ class UnsignedVarIntTest {
             val random = Random.nextLong(cieling).toULong()
             assertEquals(
                 random,
-                UnsignedVarInt(UnsignedVarInt(random).bytes).int
+                UnsignedVarInt(UnsignedVarInt(random).bytes).ulong
             )
         }
     }
