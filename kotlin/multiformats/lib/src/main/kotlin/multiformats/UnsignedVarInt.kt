@@ -1,58 +1,53 @@
 package multiformats
 
-import java.math.BigInteger
+import util.extensions.pow
 import util.types.NonNegativeBigInteger
 
-data class UnsignedVarInt(val nnint: NonNegativeBigInteger) {
+// NOTE: ULong (64-bits) is more than enough to meet current spec of maximum 9 bytes (7-bits)
+data class UnsignedVarInt(val int: ULong) {
     companion object {
         const val PRACTICAL_MAX_BYTES: Int = 9
-        val PRACTICAL_MAX: NonNegativeBigInteger =
-            NonNegativeBigInteger(128.toBigInteger().pow(PRACTICAL_MAX_BYTES) - 1.toBigInteger())
+        val PRACTICAL_MAX: ULong = 128.toULong().pow(PRACTICAL_MAX_BYTES) - 1u
 
-        @JvmStatic
-        fun digits(nnint: NonNegativeBigInteger): Int {
-            require(nnint.int <= PRACTICAL_MAX.int)
+        fun digits(int: ULong): Int {
+            require(int <= PRACTICAL_MAX)
 
-            var exp: Int = 0
-            while (128.toBigInteger().pow(exp) - 1.toBigInteger() < nnint.int) exp += 1
+            var exp = 0
+            while ((128.toULong().pow(exp) - 1u) < int) exp += 1
 
             return exp
         }
 
-        @JvmStatic
-        fun encode(nnint: NonNegativeBigInteger): ByteArray {
-            require(nnint.int <= PRACTICAL_MAX.int)
+        fun encode(int: ULong): ByteArray {
+            require(int <= PRACTICAL_MAX)
 
-            val digits = digits(nnint)
-            return ByteArray(digits) { idx ->
-                (
-                    nnint.int.divide(128.toBigInteger().pow(idx))
-                        .mod(128.toBigInteger())
-                        .toInt().toUByte() + if (idx == digits - 1) 0u else 128u
-                    ).toByte()
+            val digits = digits(int)
+            return ByteArray(digits) { idx -> (
+                int.div((128.toULong().pow(idx)))
+                    .rem(128u) + if (idx == digits - 1) 0u else 128u
+                ).toByte()
             }
         }
 
         @JvmStatic
-        fun decode(bytes: ByteArray): NonNegativeBigInteger {
-            require(bytes.size > 0)
+        fun decode(bytes: ByteArray): ULong {
+            require(bytes.isNotEmpty())
             require(bytes.size <= PRACTICAL_MAX_BYTES)
             require(bytes.dropLast(1).all { it.toUByte() >= 128u })
             require(bytes.last().toUByte() < 128u)
 
-            val result = bytes.mapIndexed { idx, byte ->
-                128.toBigInteger().pow(idx) * byte.toUByte().mod(128u).toInt().toBigInteger()
+            return bytes.mapIndexed { idx, byte ->
+                128.toULong().pow(idx) * byte.toUByte().mod(128u)
             }.reduce { a, b -> a + b }
-
-            return NonNegativeBigInteger(result)
         }
     }
 
     constructor(bytes: ByteArray) : this(decode(bytes))
+    constructor(nnint: NonNegativeBigInteger) : this(nnint.int.longValueExact().toULong())
 
     init {
-        require(nnint.int <= PRACTICAL_MAX.int)
+        require(int <= PRACTICAL_MAX)
     }
 
-    val bytes: ByteArray by lazy { encode(nnint) }
+    val bytes: ByteArray by lazy { encode(int) }
 }

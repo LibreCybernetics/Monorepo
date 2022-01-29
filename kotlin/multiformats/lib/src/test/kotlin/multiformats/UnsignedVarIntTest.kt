@@ -1,19 +1,17 @@
 package multiformats
 
+import util.types.NonNegativeBigInteger
 import java.io.File
-import java.math.BigInteger
-import java.util.Base64
-import kotlin.ExperimentalUnsignedTypes
+import java.util.*
 import kotlin.math.min
 import kotlin.random.Random
-import kotlin.test.*
 import kotlin.test.Test
-import kotlin.ubyteArrayOf
-import util.types.NonNegativeBigInteger
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 val decoder = Base64.getDecoder()
 
-@kotlin.ExperimentalUnsignedTypes
 class UnsignedVarIntTest {
     @Test
     fun exampleValuesFromSpec() {
@@ -24,37 +22,38 @@ class UnsignedVarIntTest {
                 .map { Pair(it.component1().trim(), it.component2().trim()) }
                 .map { (int, bytes) -> Pair(NonNegativeBigInteger(int.toBigInteger()), decoder.decode(bytes)) }
 
-        testVectors.forEach { (int, bytes) ->
-            assertContentEquals(bytes, UnsignedVarInt(int).bytes)
-            assertEquals(int, UnsignedVarInt(bytes).nnint)
+        testVectors.forEach { (nnint, bytes) ->
+            assertContentEquals(bytes, UnsignedVarInt(nnint).bytes)
+            assertEquals(nnint.int, UnsignedVarInt(bytes).int.toLong().toBigInteger())
         }
     }
 
     @Test
     fun randomValues() {
         for (i in 1..1000) {
-            val cieling = min(Long.MAX_VALUE, UnsignedVarInt.PRACTICAL_MAX.int.toLong())
-            val random = NonNegativeBigInteger(Random.nextLong(cieling).toBigInteger())
+            val cieling = min(Long.MAX_VALUE, UnsignedVarInt.PRACTICAL_MAX.toLong())
+            val random = Random.nextLong(cieling).toULong()
             assertEquals(
                 random,
-                UnsignedVarInt(UnsignedVarInt(random).bytes).nnint
+                UnsignedVarInt(UnsignedVarInt(random).bytes).int
             )
         }
     }
 
     @Test
+    @ExperimentalUnsignedTypes
     fun throwsErrors() {
         // PRACTICAL_MAX is tipping point
         UnsignedVarInt(UnsignedVarInt.PRACTICAL_MAX)
         UnsignedVarInt(UnsignedVarInt(UnsignedVarInt.PRACTICAL_MAX).bytes)
         assertFailsWith(IllegalArgumentException::class) {
-            UnsignedVarInt(NonNegativeBigInteger(UnsignedVarInt.PRACTICAL_MAX.int + 1.toBigInteger()))
+            UnsignedVarInt(UnsignedVarInt.PRACTICAL_MAX + 1u)
         }
         assertFailsWith(IllegalArgumentException::class) {
-            UnsignedVarInt.digits(NonNegativeBigInteger(UnsignedVarInt.PRACTICAL_MAX.int + 1.toBigInteger()))
+            UnsignedVarInt.digits(UnsignedVarInt.PRACTICAL_MAX + 1u)
         }
         assertFailsWith(IllegalArgumentException::class) {
-            UnsignedVarInt.encode(NonNegativeBigInteger(UnsignedVarInt.PRACTICAL_MAX.int + 1.toBigInteger()))
+            UnsignedVarInt.encode(UnsignedVarInt.PRACTICAL_MAX + 1u)
         }
 
         // Empty nor several nulls are valid
