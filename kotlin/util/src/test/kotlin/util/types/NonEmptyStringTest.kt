@@ -1,6 +1,5 @@
 package util.types
 
-import kotlin.random.Random
 import kotlin.test.*
 
 class NonEmptyStringTest {

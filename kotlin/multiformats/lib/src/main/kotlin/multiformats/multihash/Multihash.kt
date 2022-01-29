@@ -1,6 +1,7 @@
 package multiformats.multihash
 
 import multiformats.UnsignedVarInt
+import util.types.NonEmptyByteArray
 import multiformats.Multicodec.Companion.Multihash as MCMultihash
 
 data class Multihash(
@@ -16,7 +17,7 @@ data class Multihash(
         fun decode(bytes: ByteArray): Multihash = TODO()
     }
 
-    val bytes: ByteArray by lazy {
-        UnsignedVarInt(algorithm.code).bytes + UnsignedVarInt(size).bytes + digest
+    val nebytes: NonEmptyByteArray by lazy {
+        UnsignedVarInt(algorithm.code).nebytes + UnsignedVarInt(size).nebytes + digest
     }
 }

@@ -27,9 +27,9 @@ abstract class Codec(val code: Char) {
         fun getCodecs(): Collection<Codec> = registered.values
 
         fun decode(nestr: NonEmptyString): ByteArray {
-            require(registered.contains(nestr.str.first()))
+            require(registered.contains(nestr.first()))
 
-            return getCodec(nestr.str.first()).decode(nestr)
+            return getCodec(nestr.first()).decode(nestr)
         }
     }
 }

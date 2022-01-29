@@ -1,5 +1,6 @@
 package multiformats
 
+import util.types.NonEmptyByteArray
 import util.types.NonNegativeBigInteger
 import java.io.File
 import java.util.*
@@ -15,16 +16,16 @@ val decoder = Base64.getDecoder()
 class UnsignedVarIntTest {
     @Test
     fun exampleValuesFromSpec() {
-        val testVectors: List<Pair<NonNegativeBigInteger, ByteArray>> =
+        val testVectors: List<Pair<NonNegativeBigInteger, NonEmptyByteArray>> =
             File("../../../spec/multiformats/unsigned-varint-examples.csv")
                 .readLines()
                 .map { it.split(',') }
                 .map { Pair(it.component1().trim(), it.component2().trim()) }
-                .map { (int, bytes) -> Pair(NonNegativeBigInteger(int.toBigInteger()), decoder.decode(bytes)) }
+                .map { (int, bytes) -> NonNegativeBigInteger(int.toBigInteger()) to NonEmptyByteArray(decoder.decode(bytes)) }
 
-        testVectors.forEach { (nnint, bytes) ->
-            assertContentEquals(bytes, UnsignedVarInt(nnint).bytes)
-            assertEquals(nnint.int, UnsignedVarInt(bytes).ulong.toLong().toBigInteger())
+        testVectors.forEach { (nnint, nebytes) ->
+            assertContentEquals(nebytes.bytes, UnsignedVarInt(nnint).nebytes.bytes)
+            assertEquals(nnint, UnsignedVarInt(nebytes).nnint)
         }
     }
 
@@ -35,7 +36,7 @@ class UnsignedVarIntTest {
             val random = Random.nextLong(cieling).toULong()
             assertEquals(
                 random,
-                UnsignedVarInt(UnsignedVarInt(random).bytes).ulong
+                UnsignedVarInt(UnsignedVarInt(random).nebytes).ulong
             )
         }
     }
@@ -44,8 +45,10 @@ class UnsignedVarIntTest {
     @ExperimentalUnsignedTypes
     fun throwsErrors() {
         // PRACTICAL_MAX is tipping point
-        UnsignedVarInt(UnsignedVarInt.PRACTICAL_MAX)
-        UnsignedVarInt(UnsignedVarInt(UnsignedVarInt.PRACTICAL_MAX).bytes)
+        assertEquals(
+            UnsignedVarInt.PRACTICAL_MAX,
+            UnsignedVarInt(UnsignedVarInt(UnsignedVarInt.PRACTICAL_MAX).nebytes).ulong
+        )
         assertFailsWith(IllegalArgumentException::class) {
             UnsignedVarInt(UnsignedVarInt.PRACTICAL_MAX + 1u)
         }
@@ -56,33 +59,28 @@ class UnsignedVarIntTest {
             UnsignedVarInt.encode(UnsignedVarInt.PRACTICAL_MAX + 1u)
         }
 
-        // Empty nor several nulls are valid
-        assertFailsWith(IllegalArgumentException::class) { UnsignedVarInt(byteArrayOf()) }
+        // several nulls aren't valid
         for (i in 2..UnsignedVarInt.PRACTICAL_MAX_BYTES) {
-            assertFailsWith(IllegalArgumentException::class) { UnsignedVarInt(ByteArray(i) { 0 }) }
+            assertFailsWith(IllegalArgumentException::class) { UnsignedVarInt(NonEmptyByteArray(ByteArray(i) { 0 })) }
         }
 
         // Last should be less than 128
         for (i in 2..UnsignedVarInt.PRACTICAL_MAX_BYTES) {
             assertFailsWith(IllegalArgumentException::class) {
-                UnsignedVarInt(ByteArray(i) { 128u.toByte() })
+                UnsignedVarInt(NonEmptyByteArray(ByteArray(i) { 128u.toByte() }))
             }
         }
 
         // PRACTICAL_MAX_BYTES is tipping point
-        UnsignedVarInt(
-            (
-                UByteArray(UnsignedVarInt.PRACTICAL_MAX_BYTES - 1) { 255u } +
-                    ubyteArrayOf(127u)
-                ).toByteArray()
-        )
+        UnsignedVarInt(NonEmptyByteArray((
+            UByteArray(UnsignedVarInt.PRACTICAL_MAX_BYTES - 1) { 255u } +
+                ubyteArrayOf(127u)
+            ).toByteArray()))
         assertFailsWith(IllegalArgumentException::class) {
-            UnsignedVarInt(
-                (
-                    UByteArray(UnsignedVarInt.PRACTICAL_MAX_BYTES) { 255u } +
-                        ubyteArrayOf(127u)
-                    ).toByteArray()
-            )
+            UnsignedVarInt(NonEmptyByteArray((
+                UByteArray(UnsignedVarInt.PRACTICAL_MAX_BYTES) { 255u } +
+                    ubyteArrayOf(127u)
+                ).toByteArray()))
         }
     }
 }

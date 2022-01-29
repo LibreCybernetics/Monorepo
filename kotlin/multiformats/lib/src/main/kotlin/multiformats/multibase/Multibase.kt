@@ -7,7 +7,7 @@ data class Multibase(val bytes: ByteArray, val codec: Codec) {
 
     companion object {
         fun decode(nestr: NonEmptyString): ByteArray = Codec.decode(nestr)
-        fun getCodec(nestr: NonEmptyString): Codec = Codec.getCodec(nestr.str.first())
+        fun getCodec(nestr: NonEmptyString): Codec = Codec.getCodec(nestr.first())
     }
 
     val encoded: NonEmptyString by lazy { codec.encode(bytes) }

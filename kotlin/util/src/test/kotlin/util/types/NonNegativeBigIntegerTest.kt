@@ -1,7 +1,6 @@
 package util.types
 
 import java.math.BigInteger
-import kotlin.random.Random
 import kotlin.test.*
 
 class NonNegativeBigIntegerTest {
