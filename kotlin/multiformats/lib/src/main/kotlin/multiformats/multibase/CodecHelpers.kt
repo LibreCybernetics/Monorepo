@@ -1,9 +1,10 @@
 package multiformats.multibase
 
+import util.extensions.takeDropWhile
 import java.math.BigInteger
 
 @ExperimentalUnsignedTypes
-private val base2pow: UByteArray = arrayOf(1, 2, 4, 8, 16, 32, 64, 128).map { it.toUByte() }.toUByteArray()
+private val base2pow: UByteArray = ubyteArrayOf(1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u)
 
 @ExperimentalUnsignedTypes
 fun base2(bytes: ByteArray): String =
@@ -17,8 +18,8 @@ fun base2(bytes: ByteArray): String =
 fun base2(encoded: String): ByteArray =
     encoded.chunked(8).map {
         it.mapIndexed { idx, char ->
-            (Alphabet.Companion.Base2.char(char) * base2pow[7 - idx]).toUByte()
-        }.reduce { a, b -> (a + b).toUByte() }
+            (Alphabet.Companion.Base2.char(char) * base2pow[7 - idx])
+        }.reduce { a, b -> a + b }.toUByte()
     }.toUByteArray().toByteArray()
 
 @ExperimentalUnsignedTypes
@@ -42,12 +43,19 @@ fun base8(bytes: ByteArray): String =
 fun base8(encoded: String): ByteArray =
     encoded.chunked(8).flatMap { chunk ->
         val alphabet = Alphabet.Companion.Base8
-        val b1 = alphabet.char(chunk[0]) * 32u + alphabet.char(chunk[1]) * 4u + alphabet.char(chunk[2]) / 2u
+        val b1 = alphabet.char(chunk[0]) * 32u +
+            alphabet.char(chunk[1]) * 4u +
+            alphabet.char(chunk[2]) / 2u
         val b2 = if (chunk.length > 3) {
-            alphabet.char(chunk[2]).rem(2u) * 128u + alphabet.char(chunk[3]) * 16u + alphabet.char(chunk[4]) * 2u + alphabet.char(chunk[5]) / 4u
+            alphabet.char(chunk[2]).rem(2u) * 128u +
+                alphabet.char(chunk[3]) * 16u +
+                alphabet.char(chunk[4]) * 2u +
+                alphabet.char(chunk[5]) / 4u
         } else null
         val b3 = if (chunk.length > 6) {
-            alphabet.char(chunk[5]).rem(128u) * 64u + alphabet.char(chunk[6]) * 8u + alphabet.char(chunk[7])
+            alphabet.char(chunk[5]).rem(128u) * 64u +
+                alphabet.char(chunk[6]) * 8u +
+                alphabet.char(chunk[7])
         } else null
 
         listOfNotNull(b1, b2, b3).map { it.toUByte() }
@@ -67,16 +75,14 @@ fun base10Helper(int: BigInteger): UByteArray =
     }
 
 fun base10(bytes: ByteArray): String {
-    val z = bytes.takeWhile { it == 0.toByte() }
-    val nz = bytes.dropWhile { it == 0.toByte() }
+    val (z, nz) = bytes.takeDropWhile { it == 0.toByte() }
     return z.map { '0' }.toCharArray().concatToString() +
-        if (nz.isEmpty()) "" else base10Helper(nz.toByteArray()).toString()
+        if (nz.isEmpty()) "" else base10Helper(nz).toString()
 }
 
 @ExperimentalUnsignedTypes
 fun base10(encoded: String): ByteArray {
-    val z = encoded.takeWhile { it == '0' }
-    val nz = encoded.dropWhile { it == '0' }
+    val (z, nz) = encoded.takeDropWhile { it == '0' }
     return (z.map { 0.toUByte() }.toUByteArray() +
         if (nz.isEmpty()) ubyteArrayOf() else base10Helper(nz.toBigInteger())).toByteArray()
 }
@@ -138,16 +144,14 @@ fun baseHelper(encoded: String, alphabet: Alphabet): BigInteger =
         alphabet.char(encoded.last()).toUInt().toInt().toBigInteger() + alphabet.radix.toBigInteger() * baseHelper(encoded.dropLast(1), alphabet)
 
 fun genericNonPower2Base(bytes: ByteArray, alphabet: Alphabet): String {
-    val z = bytes.takeWhile { it == 0.toByte() }
-    val nz = bytes.dropWhile { it == 0.toByte() }
+    val (z, nz) = bytes.takeDropWhile { it == 0.toByte() }
     return z.map { alphabet.char(0) }.toCharArray().concatToString() +
-        if (nz.isEmpty()) "" else baseHelper(base10Helper(nz.toByteArray()), alphabet)
+        if (nz.isEmpty()) "" else baseHelper(base10Helper(nz), alphabet)
 }
 
 @ExperimentalUnsignedTypes
 fun genericNonPower2Base(encoded: String, alphabet: Alphabet): ByteArray {
-    val z = encoded.takeWhile { it == alphabet.char(0) }
-    val nz = encoded.dropWhile { it == alphabet.char(0) }
+    val (z, nz) = encoded.takeDropWhile { it == alphabet.char(0) }
     return (z.map { 0.toUByte() }.toUByteArray() +
         if (nz.isEmpty()) ubyteArrayOf() else base10Helper(baseHelper(nz, alphabet))).toByteArray()
 }
