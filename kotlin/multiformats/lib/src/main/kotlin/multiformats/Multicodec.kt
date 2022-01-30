@@ -18,19 +18,33 @@ sealed class Multicodec {
             }
 
             companion object {
+                // Network Layer
+                val IPv4: Multiaddr = Multiaddr(4u)
+                val IPv6: Multiaddr = Multiaddr(41u)
+                // Transport Layer
+                val QUIC: Multiaddr by lazy { Multiaddr(460u) }
+                val TCP: Multiaddr = Multiaddr(6u)
+                val UDP: Multiaddr = Multiaddr(273u)
+                // Application Layer
                 val DNS: Multiaddr by lazy { Multiaddr(53u) }
                 val DNS4: Multiaddr by lazy { Multiaddr(54u) }
                 val DNS6: Multiaddr by lazy { Multiaddr(55u) }
                 val DNSAddr: Multiaddr by lazy { Multiaddr(56u) }
-                val IPv4: Multiaddr by lazy { Multiaddr(4u) }
-                val IPv6: Multiaddr by lazy { Multiaddr(41u) }
-                val P2P: Multiaddr by lazy { Multiaddr(421u) }
-                val P2PCircuit: Multiaddr by lazy { Multiaddr(290u) }
-                val QUIC: Multiaddr by lazy { Multiaddr(460u) }
-                val TCP: Multiaddr by lazy { Multiaddr(6u) }
-                val UNIX: Multiaddr by lazy { Multiaddr(400u) }
                 val WebSocket: Multiaddr by lazy { Multiaddr(477u) }
                 val WebSocketSecure: Multiaddr by lazy { Multiaddr(478u) }
+                // Other
+                val P2P: Multiaddr by lazy { Multiaddr(421u) }
+                val P2PCircuit: Multiaddr by lazy { Multiaddr(290u) }
+                val UNIX: Multiaddr by lazy { Multiaddr(400u) }
+
+                fun get(ushort: UShort): Multiaddr {
+                    require(registered.contains(ushort))
+                    require(registered.getValue(ushort) is Multiaddr)
+                    return registered.getValue(ushort) as Multiaddr
+                }
+
+                fun getProtocols(): Collection<Multiaddr> =
+                    registered.values.filterIsInstance<Multiaddr>()
             }
         }
 
