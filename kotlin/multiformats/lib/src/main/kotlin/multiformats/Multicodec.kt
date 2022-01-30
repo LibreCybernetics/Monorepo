@@ -44,28 +44,25 @@ sealed class Multicodec {
 
 
             companion object {
-                val MD4: Multihash by lazy { Multihash(212u) }
-                val MD5: Multihash by lazy { Multihash(213u) }
-                val Murmur3_x86_64: Multihash by lazy { Multihash(34u) }
-                val Murmur3_i686: Multihash by lazy { Multihash(35u) }
-                val SHA1: Multihash = Multihash(17.toUShort())
-                val SHA2_256: Multihash by lazy { Multihash(18u) }
-                val SHA2_384: Multihash by lazy { Multihash(32u) }
-                val SHA2_512: Multihash by lazy { Multihash(19u) }
-                val SHA3_224: Multihash by lazy { Multihash(23u) }
-                val SHA3_256: Multihash by lazy { Multihash(22u) }
-                val SHA3_384: Multihash by lazy { Multihash(21u) }
-                val SHA3_512: Multihash by lazy { Multihash(20u) }
+                val MD5: Multihash = Multihash(213u)
+                val SHA1: Multihash = Multihash(17u)
+                val SHA2_256: Multihash =  Multihash(18u)
+                val SHA2_384: Multihash = Multihash(32u)
+                val SHA2_512: Multihash = Multihash(19u)
+                val SHA3_224: Multihash = Multihash(23u)
+                val SHA3_256: Multihash = Multihash(22u)
+                val SHA3_384: Multihash = Multihash(21u)
+                val SHA3_512: Multihash = Multihash(20u)
 
                 fun get(ushort: UShort): Multihash {
                     require(registered.contains(ushort))
                     require(registered.getValue(ushort) is Multihash)
-
                     return registered.getValue(ushort) as Multihash
                 }
+
+                fun getAlgorithms(): Collection<Multihash> =
+                    registered.values.filterIsInstance<Multihash>()
             }
         }
-
-        fun contains(ushort: UShort): Boolean = registered.contains(ushort)
     }
 }
