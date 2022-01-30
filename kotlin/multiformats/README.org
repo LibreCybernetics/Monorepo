@@ -1,0 +1,22 @@
+#+TITLE: README
+
+* Introduction
+
+This is work in progress implementation of multiformats ( /ipns/multiformats.io/
+or https://multiformats.io/ ) intended for multiplatform ( AOSP / Desktop /
+Backend / Web )
+
+* Progress
+** JVM
+- [X] Unsigned Var Int
+- [-] Multicodec (Types)
+- [X] Multibase
+- [-] Multihash
+- [ ] Muiltaddr
+** Native
+No progress
+** WASM
+No Progress
+* License
+The code will be available in several copy far left licenses when it gets closer
+to release.
