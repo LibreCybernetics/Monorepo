@@ -1,19 +1,22 @@
 package multiformats
 
+import multiformats.multihash.Multihash
+
 sealed class Multicodec {
     abstract val code: UShort
 
-    init {
-        synchronized(Multicodec) {
-            require(!registered.contains(code))
-            registered.plusAssign(code to this)
-        }
-    }
 
     companion object {
         private val registered: MutableMap<UShort, Multicodec> = mutableMapOf()
 
         protected data class Multiaddr(override val code: UShort) : Multicodec() {
+            init {
+                synchronized(Multicodec) {
+                    require(!registered.contains(code))
+                    registered.plusAssign(code to this)
+                }
+            }
+
             companion object {
                 val DNS: Multiaddr by lazy { Multiaddr(53u) }
                 val DNS4: Multiaddr by lazy { Multiaddr(54u) }
@@ -32,12 +35,20 @@ sealed class Multicodec {
         }
 
         data class Multihash(override val code: UShort) : Multicodec() {
+            init {
+                synchronized(Multicodec) {
+                    require(!registered.contains(code))
+                    registered.plusAssign(code to this)
+                }
+            }
+
+
             companion object {
                 val MD4: Multihash by lazy { Multihash(212u) }
                 val MD5: Multihash by lazy { Multihash(213u) }
                 val Murmur3_x86_64: Multihash by lazy { Multihash(34u) }
                 val Murmur3_i686: Multihash by lazy { Multihash(35u) }
-                val SHA1: Multihash by lazy { Multihash(17u) }
+                val SHA1: Multihash = Multihash(17.toUShort())
                 val SHA2_256: Multihash by lazy { Multihash(18u) }
                 val SHA2_384: Multihash by lazy { Multihash(32u) }
                 val SHA2_512: Multihash by lazy { Multihash(19u) }
@@ -45,7 +56,16 @@ sealed class Multicodec {
                 val SHA3_256: Multihash by lazy { Multihash(22u) }
                 val SHA3_384: Multihash by lazy { Multihash(21u) }
                 val SHA3_512: Multihash by lazy { Multihash(20u) }
+
+                fun get(ushort: UShort): Multihash {
+                    require(registered.contains(ushort))
+                    require(registered.getValue(ushort) is Multihash)
+
+                    return registered.getValue(ushort) as Multihash
+                }
             }
         }
+
+        fun contains(ushort: UShort): Boolean = registered.contains(ushort)
     }
 }

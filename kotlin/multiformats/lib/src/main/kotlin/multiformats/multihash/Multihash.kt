@@ -1,6 +1,8 @@
 package multiformats.multihash
 
 import multiformats.UnsignedVarInt
+import parser.ParserError
+import parser.ParserSuccess
 import util.types.NonEmptyByteArray
 import multiformats.Multicodec.Companion.Multihash as MCMultihash
 
@@ -14,7 +16,12 @@ data class Multihash(
     }
 
     companion object {
-        fun decode(bytes: ByteArray): Multihash = TODO()
+        fun decode(bytes: ByteArray): Multihash {
+            return when(val result = MultihashBinaryParser.parse(bytes)) {
+                is ParserSuccess -> result.output
+                is ParserError -> throw IllegalArgumentException(result.toString())
+            }
+        }
     }
 
     val nebytes: NonEmptyByteArray by lazy {
