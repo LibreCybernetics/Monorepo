@@ -1,12 +1,11 @@
-package multiformats.multihash
+package multiformats.parser
 
 import multiformats.Multicodec
-import multiformats.UnsignedVarInt
-import multiformats.UnsignedVarIntParser
+import multiformats.multihash.Multihash
 import parser.GenericParser
 import parser.bytearray.Any
 
-val MultihashBinaryParser: GenericParser<ByteArray, Multihash> =
+val MultihashParser: GenericParser<ByteArray, Multihash> =
     (UnsignedVarIntParser seq (UnsignedVarIntParser.flatMap { size ->
         Any.repExactly(size.uint).map { size to it }
     })).map {

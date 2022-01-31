@@ -1,5 +1,6 @@
-package multiformats
+package multiformats.parser
 
+import multiformats.UnsignedVarInt
 import parser.GenericParser
 import parser.bytearray.Cond
 import util.types.NonEmptyByteArray

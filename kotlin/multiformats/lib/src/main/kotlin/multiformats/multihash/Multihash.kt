@@ -4,6 +4,7 @@ import java.security.MessageDigest
 
 import multiformats.Multicodec.Companion.Multihash as MCMultihash
 import multiformats.UnsignedVarInt
+import multiformats.parser.MultihashParser
 import parser.ParserError
 import parser.ParserSuccess
 import util.types.NonEmptyByteArray
@@ -20,7 +21,7 @@ data class Multihash(
 
     companion object {
         fun decode(bytes: ByteArray): Multihash {
-            when (val result = MultihashBinaryParser.parse(bytes)) {
+            when (val result = MultihashParser.parse(bytes)) {
                 is ParserSuccess -> {
                     require(result.remaining.isEmpty())
                     return result.output

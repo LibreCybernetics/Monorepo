@@ -1,5 +1,6 @@
-package multiformats
+package multiformats.parser
 
+import multiformats.UnsignedVarInt
 import parser.ParserSuccess
 import kotlin.test.Test
 import kotlin.test.assertEquals
