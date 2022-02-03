@@ -63,7 +63,7 @@ data class Multihash(
     fun check(bytes: ByteArray): Boolean =
         hasher(algorithm).digest(bytes).take(size.toInt()) == digest.toList()
 
-val nebytes: NonEmptyByteArray by lazy {
+    val nebytes: NonEmptyByteArray by lazy {
         UnsignedVarInt(algorithm.code).nebytes + UnsignedVarInt(size).nebytes + digest
     }
     val bytes: ByteArray by lazy { nebytes.bytes }

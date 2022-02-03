@@ -39,29 +39,29 @@ class MultibaseTest {
                 assertContentEquals(bytes, Multibase(Multibase(bytes, codec).encoded).bytes)
             }
 
-            Codecs.Identity
-            Codecs.Base2
-            Codecs.Base8
-            Codecs.Base10
-            Codecs.Base16Lower
-            Codecs.Base16Upper
-            Codecs.Base32Lower
-            Codecs.Base32Upper
-            Codecs.Base32LowerPad
-            Codecs.Base32UpperPad
-            Codecs.Base32HexLower
-            Codecs.Base32HexUpper
-            Codecs.Base32HexLowerPad
-            Codecs.Base32HexUpperPad
-            Codecs.Base36Lower
-            Codecs.Base36Upper
-            Codecs.Base58
-            Codecs.Base58Flickr
-            Codecs.ZBase32
-            Codecs.Base64
-            Codecs.Base64Pad
-            Codecs.Base64URL
-            Codecs.Base64URLPad
+            Identity
+            Base2
+            Base8
+            Base10
+            Base16Lower
+            Base16Upper
+            Base32Lower
+            Base32Upper
+            Base32LowerPad
+            Base32UpperPad
+            Base32HexLower
+            Base32HexUpper
+            Base32HexLowerPad
+            Base32HexUpperPad
+            Base36Lower
+            Base36Upper
+            Base58
+            Base58Flickr
+            ZBase32
+            Base64
+            Base64Pad
+            Base64URL
+            Base64URLPad
         }
     }
 
@@ -72,7 +72,7 @@ class MultibaseTest {
             Multibase.decode(NonEmptyString("3"))
         }
         assertFailsWith(IllegalArgumentException::class) {
-            Codecs.Identity.decode(NonEmptyString("3"))
+            Identity.decode(NonEmptyString("3"))
         }
         assertFailsWith(IllegalArgumentException::class) {
             object : Codec('f') {
