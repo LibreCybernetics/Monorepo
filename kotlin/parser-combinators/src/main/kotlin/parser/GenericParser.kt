@@ -1,7 +1,10 @@
 package parser
 
 interface GenericParser<Input, Output> {
+    // Main function to implement low level parsers
     fun parse(input: Input): ParserResult<Input, Output>
+
+    // Util functions
 
     fun <R> map(f: (Output) -> R): GenericParser<Input, R> {
         val self = this
@@ -19,6 +22,21 @@ interface GenericParser<Input, Output> {
                         f(result.output).parse(result.remaining)
                     is ParserError ->
                         SequenceError(result)
+                }
+        }
+    }
+
+    // Util combinators
+
+    infix fun or(other: GenericParser<Input, Output>): GenericParser<Input, Output> {
+        val self = this
+        return object : GenericParser<Input, Output> {
+            override fun parse(input: Input): ParserResult<Input, Output> =
+                when(val result = self.parse(input)) {
+                    is ParserSuccess ->
+                        result
+                    is ParserError ->
+                        other.parse(input)
                 }
         }
     }
