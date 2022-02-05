@@ -4,17 +4,19 @@ import parser.*
 
 interface StringParser<Output> : GenericParser<String, Output> {
     override fun <R> map(f: (Output) -> R): StringParser<R> =
-            super.map(f) as StringParser<R>
+        super.map(f) as StringParser<R>
     override fun <R> flatMap(f: (Output) -> GenericParser<String, R>): StringParser<R> =
-            super.flatMap(f) as StringParser<R>
+        super.flatMap(f) as StringParser<R>
 
-    override fun rep(): StringParser<List<Output>> =
-            super.rep() as StringParser<List<Output>>
-    override fun repExactly(n: UInt): StringParser<List<Output>> =
-            super.repExactly(n) as StringParser<List<Output>>
-
-    override fun <Output2> seq(second: GenericParser<String, Output2>): StringParser<Pair<Output, Output2>> =
-            super.seq(second) as StringParser<Pair<Output, Output2>>
+//    override fun rep(): StringParser<List<Output>> =
+//        super.rep() as StringParser<List<Output>>
+//    override fun repExactly(n: UInt): StringParser<List<Output>> =
+//        super.repExactly(n) as StringParser<List<Output>>
+//
+//    override infix fun or(other: GenericParser<String, Output>): StringParser<Output> =
+//            super.or(other) as StringParser<Output>
+//    override infix fun <Output2> seq(second: GenericParser<String, Output2>): StringParser<Pair<Output, Output2>> =
+//        super.seq(second) as StringParser<Pair<Output, Output2>>
 }
 
 object Any : StringParser<Char> {
