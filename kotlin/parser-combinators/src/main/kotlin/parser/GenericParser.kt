@@ -56,6 +56,52 @@ interface GenericParser<Input, Output> {
         }
     }
 
+    fun rep(sep: GenericParser<Input, Unit>, max: Int?): GenericParser<Input, List<Output>> {
+        val self = this
+        return object : GenericParser<Input, List<Output>> {
+            override fun parse(input: Input): ParserResult<Input, List<Output>> {
+                var done = false
+                val acc = mutableListOf<Output>()
+                var cont: Input = input
+
+                while(!done) {
+                    when(val result = self.parse(cont)) {
+                        is ParserSuccess -> {
+                            acc.plusAssign(result.output)
+                            cont = result.remaining
+                            if (max != null && acc.size >= max) done = true
+                            when(val resultSep = sep.parse(cont)) {
+                                is ParserSuccess -> cont = resultSep.remaining
+                                is ParserError -> done = true
+                            }
+                        }
+                        is ParserError -> done = true
+                    }
+                }
+
+                return ParserSuccess(acc, cont)
+            }
+        }
+    }
+
+    fun rep(sep: GenericParser<Input, Unit>, min: Int, max: Int?): GenericParser<Input, List<Output>> {
+        val self = this
+        return object : GenericParser<Input, List<Output>> {
+            override fun parse(input: Input): ParserResult<Input, List<Output>> =
+                when(val result = self.rep(sep, max).parse(input)) {
+                    is ParserSuccess -> {
+                        if (result.output.size >= min)
+                            ParserSuccess(result.output, result.remaining)
+                        else self.parse(result.remaining).map { listOf(it) } as ParserError
+                    }
+                    else -> result
+                }
+        }
+    }
+
+    fun repExactly(sep: GenericParser<Input, Unit>, n: Int): GenericParser<Input, List<Output>> =
+        rep(sep, n, n)
+
     fun rep(max: Int? = null): GenericParser<Input, List<Output>> {
         val self = this
         return object : GenericParser<Input, List<Output>> {
@@ -81,7 +127,7 @@ interface GenericParser<Input, Output> {
         }
     }
 
-    fun rep(min: Int, max: Int): GenericParser<Input, List<Output>> {
+    fun rep(min: Int, max: Int?): GenericParser<Input, List<Output>> {
         val self = this
         return object : GenericParser<Input, List<Output>> {
             override fun parse(input: Input): ParserResult<Input, List<Output>> =
