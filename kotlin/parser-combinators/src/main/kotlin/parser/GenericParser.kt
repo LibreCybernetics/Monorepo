@@ -28,6 +28,19 @@ interface GenericParser<Input, Output> {
 
     // Util combinators
 
+    fun optional(): GenericParser<Input, Output?> {
+        val self = this
+        return object : GenericParser<Input, Output?> {
+            override fun parse(input: Input): ParserResult<Input, Output?> =
+                when(val result = self.parse(input)) {
+                    is ParserSuccess ->
+                        result
+                    is ParserError ->
+                        ParserSuccess(null, input)
+                }
+        }
+    }
+
     infix fun or(other: GenericParser<Input, Output>): GenericParser<Input, Output> {
         val self = this
         return object : GenericParser<Input, Output> {

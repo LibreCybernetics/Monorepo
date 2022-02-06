@@ -3,10 +3,10 @@ package parser.string
 import parser.*
 
 interface StringParser<Output> : GenericParser<String, Output> {
-    override fun <R> map(f: (Output) -> R): StringParser<R> =
-        super.map(f) as StringParser<R>
-    override fun <R> flatMap(f: (Output) -> GenericParser<String, R>): StringParser<R> =
-        super.flatMap(f) as StringParser<R>
+    override fun <R> map(f: (Output) -> R) =
+        super.map(f)
+    override fun <R> flatMap(f: (Output) -> GenericParser<String, R>) =
+        super.flatMap(f)
 
 //    override fun rep(): StringParser<List<Output>> =
 //        super.rep() as StringParser<List<Output>>

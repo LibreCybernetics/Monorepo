@@ -1,9 +1,19 @@
 package parser.string
 
 val DigitParser = Cond { it.isDigit() }
-val LetterParser = Cond { it.isLetter() ; it.isWhitespace()}
+val LetterParser = Cond { it.isLetter() }
+val WhitespaceParser = Cond { it.isWhitespace() }
 
-val NaturalNumberParser =
+val NaturalParser =
     (Cond { it.isDigit() && it != '0' } seq DigitParser.rep())
-        .map { it.first + it.second.joinToString { "" }} or
+        .map { (listOf(it.first) + it.second).toCharArray().concatToString() } or
         Exact('0').map { it.toString() }
+
+val IntegerParser = (Exact('-').optional() seq NaturalParser).map {
+    if (it.first == null)
+        it.second
+    else
+        "${it.first}${it.second}"
+}
+
+val WordParser = LetterParser.rep()
