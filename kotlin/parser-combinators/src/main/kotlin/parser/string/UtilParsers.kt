@@ -2,6 +2,7 @@ package parser.string
 
 val DigitParser = Cond { it.isDigit() }
 val LetterParser = Cond { it.isLetter() }
+val AlphaNumericParser = Cond { it.isDigit() || it.isLetter() }
 val WhitespaceParser = Cond { it.isWhitespace() }
 
 val NaturalParser =
@@ -16,4 +17,5 @@ val IntegerParser = (Exact('-').optional() seq NaturalParser).map {
         "${it.first}${it.second}"
 }
 
-val WordParser = LetterParser.rep()
+val WordParser = LetterParser.rep(min = 1, null).map { it.toCharArray().concatToString() }
+val AlphaNumericWordParser = AlphaNumericParser.rep(min = 1, null).map { it.toCharArray().concatToString() }

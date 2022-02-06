@@ -9,7 +9,7 @@ sealed class Multicodec {
     companion object {
         private val registered: MutableMap<UShort, Multicodec> = mutableMapOf()
 
-        protected data class Multiaddr(override val code: UShort) : Multicodec() {
+        data class Multiaddr(override val code: UShort, val string: String) : Multicodec() {
             init {
                 synchronized(Multicodec) {
                     require(!registered.contains(code))
@@ -19,23 +19,23 @@ sealed class Multicodec {
 
             companion object {
                 // Network Layer
-                val IPv4: Multiaddr = Multiaddr(4u)
-                val IPv6: Multiaddr = Multiaddr(41u)
+                val IPv4: Multiaddr = Multiaddr(4u, "ip4")
+                val IPv6: Multiaddr = Multiaddr(41u, "ip6")
                 // Transport Layer
-                val QUIC: Multiaddr by lazy { Multiaddr(460u) }
-                val TCP: Multiaddr = Multiaddr(6u)
-                val UDP: Multiaddr = Multiaddr(273u)
+                val QUIC: Multiaddr by lazy { Multiaddr(460u, "quic") }
+                val TCP: Multiaddr = Multiaddr(6u, "tcp")
+                val UDP: Multiaddr = Multiaddr(273u, "udp")
                 // Application Layer
-                val DNS: Multiaddr by lazy { Multiaddr(53u) }
-                val DNS4: Multiaddr by lazy { Multiaddr(54u) }
-                val DNS6: Multiaddr by lazy { Multiaddr(55u) }
-                val DNSAddr: Multiaddr by lazy { Multiaddr(56u) }
-                val WebSocket: Multiaddr by lazy { Multiaddr(477u) }
-                val WebSocketSecure: Multiaddr by lazy { Multiaddr(478u) }
+                val DNS: Multiaddr by lazy { Multiaddr(53u, "dns") }
+                val DNS4: Multiaddr by lazy { Multiaddr(54u, "dns4") }
+                val DNS6: Multiaddr by lazy { Multiaddr(55u, "dns6") }
+                val DNSAddr: Multiaddr by lazy { Multiaddr(56u, "dnsaddr") }
+                val WebSocket: Multiaddr by lazy { Multiaddr(477u, "ws") }
+                val WebSocketSecure: Multiaddr by lazy { Multiaddr(478u, "wss") }
                 // Other
-                val P2P: Multiaddr by lazy { Multiaddr(421u) }
-                val P2PCircuit: Multiaddr by lazy { Multiaddr(290u) }
-                val UNIX: Multiaddr by lazy { Multiaddr(400u) }
+                val P2P: Multiaddr by lazy { Multiaddr(421u, "p2p") }
+                val P2PCircuit: Multiaddr by lazy { Multiaddr(290u, "p2p-circuit") }
+                val UNIX: Multiaddr by lazy { Multiaddr(400u, "unix") }
 
                 fun get(ushort: UShort): Multiaddr {
                     require(registered.contains(ushort))
@@ -45,6 +45,12 @@ sealed class Multicodec {
 
                 fun getProtocols(): Collection<Multiaddr> =
                     registered.values.filterIsInstance<Multiaddr>()
+
+                fun get(string: String): Multiaddr {
+                    val candidates = getProtocols().filter { it.string == string}
+                    assert(candidates.size == 1)
+                    return candidates.first()
+                }
             }
         }
 
