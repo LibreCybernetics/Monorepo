@@ -45,44 +45,58 @@ interface GenericParser<Input, Output> {
         val self = this
         return object : GenericParser<Input, Output> {
             override fun parse(input: Input): ParserResult<Input, Output> =
-                when(val result = self.parse(input)) {
-                    is ParserSuccess ->
-                        result
+                when(val first = self.parse(input)) {
+                    is ParserSuccess -> first
                     is ParserError ->
-                        other.parse(input)
+                        when(val second = other.parse(input)) {
+                            is ParserSuccess -> second
+                            is ParserError -> AlternativeError(first, second)
+                        }
                 }
         }
     }
 
-    fun rep(): GenericParser<Input, List<Output>> {
+    fun rep(max: Int? = null): GenericParser<Input, List<Output>> {
         val self = this
         return object : GenericParser<Input, List<Output>> {
-            override fun parse(input: Input): ParserResult<Input, List<Output>> =
-                when(val result = self.parse(input)) {
-                    is ParserSuccess ->
-                        this.parse(result.remaining).map { listOf(result.output) + it }
-                    is ParserError ->
-                        ParserSuccess(listOf(), input)
-                }
-        }
-    }
+            override fun parse(input: Input): ParserResult<Input, List<Output>> {
+                var done = false
+                val acc = mutableListOf<Output>()
+                var cont: Input = input
 
-    fun repExactly(n: UInt): GenericParser<Input, List<Output>> {
-        val self = this
-        return object : GenericParser<Input, List<Output>> {
-            override fun parse(input: Input): ParserResult<Input, List<Output>> =
-                if (n == 0u) {
-                    ParserSuccess(listOf(), input)
-                } else {
-                    when(val result = self.parse(input)) {
-                        is ParserSuccess ->
-                            self.repExactly(n - 1u).parse(result.remaining).map { listOf(result.output) + it }
+                while(!done) {
+                    when(val result = self.parse(cont)) {
+                        is ParserSuccess -> {
+                            acc.plusAssign(result.output)
+                            cont = result.remaining
+                            if (max != null && acc.size >= max) done = true
+                        }
                         is ParserError ->
-                            CondError(input)
+                            done = true
                     }
                 }
+
+                return ParserSuccess(acc, cont)
+            }
         }
     }
+
+    fun rep(min: Int, max: Int): GenericParser<Input, List<Output>> {
+        val self = this
+        return object : GenericParser<Input, List<Output>> {
+            override fun parse(input: Input): ParserResult<Input, List<Output>> =
+                when(val result = self.rep(max).parse(input)) {
+                    is ParserSuccess -> {
+                        if (result.output.size >= min)
+                            ParserSuccess(result.output, result.remaining)
+                        else self.parse(result.remaining).map { listOf(it) } as ParserError
+                    }
+                    else -> result
+                }
+        }
+    }
+
+    fun repExactly(n: Int): GenericParser<Input, List<Output>> = rep(n, n)
 
     infix fun <Output2> seq(second: GenericParser<Input, Output2>): GenericParser<Input, Pair<Output, Output2>> {
         val self = this

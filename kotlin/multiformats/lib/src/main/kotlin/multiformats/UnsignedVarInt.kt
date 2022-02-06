@@ -53,6 +53,7 @@ data class UnsignedVarInt(val ulong: ULong) {
     val nebytes: NonEmptyByteArray by lazy { encode(ulong) }
     val ushort: UShort by lazy { ulong.toUShort() }
     val uint: UInt by lazy { ulong.toUInt() }
+    val int: Int by lazy { ulong.toInt() }
     val long: Long by lazy { ulong.toLong() }
     val nnint: NonNegativeBigInteger by lazy { NonNegativeBigInteger(long.toBigInteger()) }
 }
