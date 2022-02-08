@@ -2,22 +2,7 @@ package parser.bytearray
 
 import parser.*
 
-interface ByteArrayParser<Output> : GenericParser<ByteArray, Output> {
-    override fun <R> map(f: (Output) -> R): ByteArrayParser<R> =
-        super.map(f) as ByteArrayParser<R>
-    override fun <R> flatMap(f: (Output) -> GenericParser<ByteArray, R>): ByteArrayParser<R> =
-        super.flatMap(f) as ByteArrayParser<R>
-
-//    override fun rep(): ByteArrayParser<List<Output>> =
-//        super.rep() as ByteArrayParser<List<Output>>
-//    override fun repExactly(n: UInt): ByteArrayParser<List<Output>> =
-//        super.repExactly(n) as ByteArrayParser<List<Output>>
-//
-//    override infix fun or(other: GenericParser<ByteArray, Output>): ByteArrayParser<Output> =
-//        super.or(other) as ByteArrayParser<Output>
-//    override infix fun <Output2> seq(second: GenericParser<ByteArray, Output2>): ByteArrayParser<Pair<Output, Output2>> =
-//        super.seq(second) as ByteArrayParser<Pair<Output, Output2>>
-}
+typealias ByteArrayParser<Output> = GenericParser<ByteArray, Output>
 
 object Any : ByteArrayParser<Byte> {
     override fun parse(input: ByteArray): ParserResult<ByteArray, Byte> =

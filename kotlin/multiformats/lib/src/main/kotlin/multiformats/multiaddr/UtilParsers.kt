@@ -1,28 +1,28 @@
 package multiformats.multiaddr
 
-import parser.GenericParser
 import parser.string.Exact
 import parser.string.NaturalParser
+import parser.string.StringParser
 
-val DotParser : GenericParser<String, Unit> =
+val DotParser : StringParser<Unit> =
     Exact('.').map { }
 
-val SlashParser : GenericParser<String, Unit> =
+val SlashParser : StringParser<Unit> =
     Exact('/').map { }
 
-val OctetParser : GenericParser<String, UByte> =
+val OctetParser : StringParser<UByte> =
     NaturalParser.map { it.toUByte() }
 
-val ShortParser : GenericParser<String, UShort> =
+val ShortParser : StringParser<UShort> =
     NaturalParser.map { it.toUShort() }
 
 @ExperimentalUnsignedTypes
-val PortParser : GenericParser<String, ByteArray> =
+val PortParser : StringParser<ByteArray> =
     ShortParser.map { ubyteArrayOf(
         it.div(256u).toUByte(),
         it.rem(256u).toUByte()
     ).toByteArray() }
 
 @ExperimentalUnsignedTypes
-val IPv4Parser: GenericParser<String, UByteArray> =
+val IPv4Parser: StringParser<UByteArray> =
     OctetParser.repExactly(DotParser, 4).map { it.toUByteArray() }
