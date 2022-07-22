@@ -2,12 +2,6 @@ package parsers
 
 typealias StringParser<Output> = GenericParser<String, Output>
 
-fun <R> pass(r: R): StringParser<R> = GenericParser {
-	ParserSuccess(r, it)
-}
-
-val unit: StringParser<Unit> = pass(Unit)
-
 val anyChar: StringParser<Char> = GenericParser {
 	if (it.isEmpty()) EndOfInputError() else ParserSuccess(it.first(), it.drop(1))
 }
@@ -44,6 +38,9 @@ fun stringMatch(expected: String): StringParser<String> = GenericParser {
 
 fun takeWhile(p: (Char) -> Boolean): StringParser<String> =
 	charPred(p).rep().map { it.toCharArray().concatToString() }
+
+val space: StringParser<Char> =
+	charMatch(' ')
 
 val letter: StringParser<Char> =
 	charPred { it.isLetter() }

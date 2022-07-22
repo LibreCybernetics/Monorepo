@@ -27,6 +27,26 @@ fun <Input, Output, Output1> GenericParser<Input, Output>.bind(
 	}
 }
 
+fun <Input, R> pass(r: R): GenericParser<Input, R> = GenericParser {
+	ParserSuccess(r, it)
+}
+
+val unit: StringParser<Unit> = pass(Unit)
+
+fun <Input, Output> GenericParser<Input, Output>.unit(): GenericParser<Input, Unit> =
+	this.map { }
+
+fun <Input, Output> GenericParser<Input, Output>.not(): GenericParser<Input, Unit> {
+	val self = this
+
+	return GenericParser<Input, Unit> { input ->
+		when(self.parse(input)) {
+			is ParserSuccess -> CondError(input)
+			is ParserError   -> ParserSuccess(Unit, input)
+		}
+	}
+}
+
 infix fun <Input, Output> GenericParser<Input, Output>.or(
 	other: GenericParser<Input, Output>
 ): GenericParser<Input, Output> {
@@ -64,23 +84,27 @@ infix fun <Input, Output, Output1> GenericParser<Input, Output>.seqRight(
 	other: GenericParser<Input, Output1>
 ): GenericParser<Input, Output1> = (this seq other).map { it.second }
 
+fun <Input, Output> lookahead(parser: GenericParser<Input, Output>): GenericParser<Input, Unit> =
+	GenericParser {
+	  when(val r = parser.parse(it)) {
+		is ParserSuccess -> ParserSuccess(Unit, it)
+		is ParserError -> r.map { }
+	}
+}
+
+fun <Input, Output> negativeLookahead(parser: GenericParser<Input, Output>): GenericParser<Input, Unit> =
+	lookahead(parser.not())
+
 infix fun <Input, Output, Output1> GenericParser<Input, Output>.lookahead(
 	other: GenericParser<Input, Output1>
 ): GenericParser<Input, Output> {
-	val self = this
-
-	return GenericParser {
-		when(val first = self.parse(it)) {
-			is ParserSuccess -> {
-				when(val second = other.parse(first.remaining)) {
-					is ParserSuccess -> first
-					is ParserError -> SeqError(second)
-				}
-			}
-			is ParserError -> first
-		}
-	}
+	return this seqLeft (parsers.lookahead(other))
 }
+
+infix fun <Input, Output, Output1> GenericParser<Input, Output>.negativeLookahead(
+	other: GenericParser<Input, Output1>
+): GenericParser<Input, Output> =
+	this lookahead (other.not())
 
 fun <Input, Output> GenericParser<Input, Output>.rep(
 	sep: GenericParser<Input, Unit>, min: UInt?, max: UInt?
