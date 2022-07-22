@@ -1,10 +1,11 @@
 package parsers.common
 
 import parsers.*
+import util.types.NonEmptyString
 import kotlin.test.*
 
 class DomainNameTest {
-	private fun successTest(input: String, expected: List<String>) {
+	private fun successTest(input: String, expected: List<NonEmptyString>) {
 		val result = DomainName.parse(input)
 		assert(result is ParserSuccess)
 		result as ParserSuccess
@@ -12,7 +13,7 @@ class DomainNameTest {
 		assert(result.remaining == "")
 	}
 
-	private fun failureTest(input: String, expected: ParserError<String, List<String>>) {
+	private fun failureTest(input: String, expected: ParserError<String, List<NonEmptyString>>) {
 		val result = DomainName.parse(input)
 		assert(result is ParserError)
 		assert(result == expected)
@@ -20,15 +21,14 @@ class DomainNameTest {
 
 	@Test
 	fun withoutTld() {
-		successTest("cooperative", listOf("cooperative"))
-		successTest("localhost", listOf("localhost"))
-		successTest("my-domain", listOf("my-domain"))
-		successTest("my-123domain", listOf("my-123domain"))
+		listOf("cooperative", "localhost", "my-domain", "my-123domain").map {
+			successTest(it, listOf(NonEmptyString(it)))
+		}
 	}
 
 	@Test
 	fun withTld() {
-		successTest("orbea.com", listOf("orbea", "com"))
+		successTest("orbea.com", listOf("orbea", "com").map { NonEmptyString(it) })
 	}
 
 	@Test

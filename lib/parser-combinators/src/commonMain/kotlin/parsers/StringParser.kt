@@ -1,46 +1,46 @@
 package parsers
 
-object StringParser {
-	fun <R> pass(r: R): GenericParser<String, R> = GenericParser {
-		ParserSuccess(r, it)
-	}
+typealias StringParser<Output> = GenericParser<String, Output>
 
-	val unit: GenericParser<String, Unit> = pass(Unit)
-
-	val anyChar: GenericParser<String, Char> = GenericParser {
-		if (it.isEmpty()) EndOfInputError() else ParserSuccess(it.first(), it.drop(1))
-	}
-
-	val end: GenericParser<String, Unit> = GenericParser {
-		if (it.isEmpty()) ParserSuccess(Unit, it) else CondError(it)
-	}
-
-	fun charMatch(expected: Char): GenericParser<String, Char> = GenericParser {
-		when (val actual = anyChar.parse(it)) {
-			is ParserError -> actual
-			is ParserSuccess ->
-				if (actual.output == expected) ParserSuccess(expected, actual.remaining)
-				else MatchError(expected.toString(), actual.output.toString())
-		}
-	}
-
-	fun charPred(p: (Char) -> Boolean): GenericParser<String, Char> = GenericParser {
-		if(it.isEmpty()) EndOfInputError()
-		else if(p(it.first())) ParserSuccess(it.first(), it.drop(1))
-		else CondError(it.take(1))
-	}
-
-	fun <Output> GenericParser<String, Output>.rep(
-		min: UInt? = null, max: UInt? = null
-	): GenericParser<String, List<Output>> =
-		this.rep(unit, min, max)
-
-	fun stringMatch(expected: String): GenericParser<String, String> = GenericParser {
-		if(it.startsWith(expected)) ParserSuccess(expected, it.drop(expected.length))
-		else if(it.isEmpty()) EndOfInputError()
-		else MatchError(expected, it.take(expected.length))
-	}
-
-	fun takeWhile(p: (Char) -> Boolean): GenericParser<String, String> =
-		charPred(p).rep().map { it.toCharArray().concatToString() }
+fun <R> pass(r: R): StringParser<R> = GenericParser {
+	ParserSuccess(r, it)
 }
+
+val unit: StringParser<Unit> = pass(Unit)
+
+val anyChar: StringParser<Char> = GenericParser {
+	if (it.isEmpty()) EndOfInputError() else ParserSuccess(it.first(), it.drop(1))
+}
+
+val end: StringParser<Unit> = GenericParser {
+	if (it.isEmpty()) ParserSuccess(Unit, it) else CondError(it)
+}
+
+fun charMatch(expected: Char): StringParser<Char> = GenericParser {
+	when (val actual = anyChar.parse(it)) {
+		is ParserError -> actual
+		is ParserSuccess ->
+			if (actual.output == expected) ParserSuccess(expected, actual.remaining)
+			else MatchError(expected.toString(), actual.output.toString())
+	}
+}
+
+fun charPred(p: (Char) -> Boolean): StringParser<Char> = GenericParser {
+	if (it.isEmpty()) EndOfInputError()
+	else if (p(it.first())) ParserSuccess(it.first(), it.drop(1))
+	else CondError(it.take(1))
+}
+
+fun <Output> StringParser<Output>.rep(
+	min: UInt? = null, max: UInt? = null
+): GenericParser<String, List<Output>> =
+	this.rep(unit, min, max)
+
+fun stringMatch(expected: String): StringParser<String> = GenericParser {
+	if (it.startsWith(expected)) ParserSuccess(expected, it.drop(expected.length))
+	else if (it.isEmpty()) EndOfInputError()
+	else MatchError(expected, it.take(expected.length))
+}
+
+fun takeWhile(p: (Char) -> Boolean): StringParser<String> =
+	charPred(p).rep().map { it.toCharArray().concatToString() }

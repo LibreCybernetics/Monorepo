@@ -13,6 +13,11 @@ kotlin {
 	jvm()
 
 	sourceSets {
+		val commonMain by getting {
+			dependencies {
+				implementation("dev.librecybernetics:util")
+			}
+		}
 		val commonTest by getting {
 			dependencies {
 				implementation("org.jetbrains.kotlin:kotlin-test")
