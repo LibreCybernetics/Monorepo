@@ -56,6 +56,14 @@ infix fun <Input, Output, Output1> GenericParser<Input, Output>.seq(
 	}
 }
 
+infix fun <Input, Output, Output1> GenericParser<Input, Output>.seqLeft(
+	other: GenericParser<Input, Output1>
+): GenericParser<Input, Output> = (this seq other).map { it.first }
+
+infix fun <Input, Output, Output1> GenericParser<Input, Output>.seqRight(
+	other: GenericParser<Input, Output1>
+): GenericParser<Input, Output1> = (this seq other).map { it.second }
+
 infix fun <Input, Output, Output1> GenericParser<Input, Output>.lookahead(
 	other: GenericParser<Input, Output1>
 ): GenericParser<Input, Output> {

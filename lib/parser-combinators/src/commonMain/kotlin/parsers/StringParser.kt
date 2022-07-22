@@ -44,3 +44,12 @@ fun stringMatch(expected: String): StringParser<String> = GenericParser {
 
 fun takeWhile(p: (Char) -> Boolean): StringParser<String> =
 	charPred(p).rep().map { it.toCharArray().concatToString() }
+
+val letter: StringParser<Char> =
+	charPred { it.isLetter() }
+
+val digit: StringParser<Char> =
+	charPred { it.isDigit() }
+
+val letterOrDigit: StringParser<Char> =
+	charPred { it.isLetterOrDigit() }
