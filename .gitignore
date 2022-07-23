@@ -5,3 +5,6 @@
 # Directories
 build/
 gradle/
+
+# Windows
+gradlew.bat
