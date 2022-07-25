@@ -1,5 +1,7 @@
 package parsers
 
+import util.types.NonEmptyString
+
 typealias StringParser<Output> = GenericParser<String, Output>
 
 val anyChar: StringParser<Char> = GenericParser {
@@ -42,8 +44,14 @@ fun takeWhile(p: (Char) -> Boolean): StringParser<String> =
 val space: StringParser<Char> =
 	charMatch(' ')
 
+val newline: StringParser<Char> =
+	charMatch('\n')
+
 val letter: StringParser<Char> =
 	charPred { it.isLetter() }
+
+val letters: StringParser<NonEmptyString> =
+	letter.rep(min = 1u).map { NonEmptyString(it.toCharArray().concatToString()) }
 
 val digit: StringParser<Char> =
 	charPred { it.isDigit() }
