@@ -1,4 +1,4 @@
-package util.types
+package types
 
 data class NestedMap<K, V>(val content: Map<K, Either<V, NestedMap<K, V>>>) : Map<K, Either<V, NestedMap<K, V>>> {
 

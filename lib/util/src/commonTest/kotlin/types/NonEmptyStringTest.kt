@@ -1,5 +1,6 @@
-package util.types
+package types
 
+import types.NonEmptyString
 import kotlin.test.*
 
 class NonEmptyStringTest {

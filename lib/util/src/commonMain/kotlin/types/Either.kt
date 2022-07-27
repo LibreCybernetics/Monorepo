@@ -1,4 +1,4 @@
-package util.types
+package types
 
 sealed interface Either<Left, Right>
 data class Left<Left, Right>(val left: Left) : Either<Left, Right>

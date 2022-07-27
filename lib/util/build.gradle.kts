@@ -11,14 +11,25 @@ plugins {
 
 kotlin {
 	jvm()
+	linuxX64()
 
 	sourceSets {
+		val commonMain by getting
 		val commonTest by getting {
 			dependencies {
 				implementation("org.jetbrains.kotlin:kotlin-test")
 			}
 		}
+
+		val linuxX64Main by getting
+
+		val nonJvmMain by creating {
+			dependsOn(commonMain)
+			linuxX64Main.dependsOn(this)
+		}
 	}
+
+
 }
 
 tasks.withType<AbstractTestTask> {
