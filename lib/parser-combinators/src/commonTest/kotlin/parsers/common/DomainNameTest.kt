@@ -1,22 +1,22 @@
 package parsers.common
 
-import parsers.*
-import util.types.NonEmptyString
 import kotlin.test.*
+
+import parsers.*
+import types.NonEmptyString
 
 class DomainNameTest {
 	private fun successTest(input: String, expected: List<NonEmptyString>) {
 		val result = DomainName.parse(input)
-		assert(result is ParserSuccess)
 		result as ParserSuccess
-		assert(result.output == expected)
-		assert(result.remaining == "")
+		assertEquals(result.output, expected)
+		assertEquals(result.remaining, "")
 	}
 
 	private fun failureTest(input: String, expected: ParserError<String, List<NonEmptyString>>) {
 		val result = DomainName.parse(input)
-		assert(result is ParserError)
-		assert(result == expected)
+		result as ParserError
+		assertEquals(result, expected)
 	}
 
 	@Test

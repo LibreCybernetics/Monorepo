@@ -1,6 +1,6 @@
 package parsers
 
-import util.types.NonEmptyString
+import types.NonEmptyString
 
 typealias StringParser<Output> = GenericParser<String, Output>
 

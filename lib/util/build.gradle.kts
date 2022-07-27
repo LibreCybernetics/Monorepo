@@ -14,7 +14,7 @@ rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJ
 }
 
 kotlin {
-	js {
+	js(IR) {
 		browser {
 			testTask {
 				useKarma {

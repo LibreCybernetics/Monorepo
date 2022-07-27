@@ -9,13 +9,28 @@ plugins {
 	id("java-library")
 }
 
+rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin> {
+	rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().download = false
+}
+
 kotlin {
+	js(IR) {
+		browser {
+			testTask {
+				useKarma {
+					useFirefox()
+				}
+			}
+		}
+		nodejs()
+	}
+
 	jvm()
 
 	sourceSets {
 		val commonMain by getting {
 			dependencies {
-				implementation("dev.librecybernetics:util")
+				implementation("dev.librecybernetics:util-kt")
 			}
 		}
 		val commonTest by getting {
