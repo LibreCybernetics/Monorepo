@@ -1,7 +1,8 @@
 package parsers
 
-import util.types.NonEmptyString
 import kotlin.test.*
+
+import types.NonEmptyString
 
 class IniTest {
 	@Test
@@ -11,13 +12,10 @@ class IniTest {
 				|key=value
 			""".trimMargin()
 
-		println(text)
 		val parsed = Ini.section.parse(text)
-		assert(parsed is ParserSuccess)
 		parsed as ParserSuccess
 		val output = parsed.output
-		println(output.name.first().value)
-		assert(output.name == listOf(NonEmptyString("section")))
-		assert(output.values == mapOf(Pair(NonEmptyString("key"), "value")))
+		assertEquals(output.name, listOf(NonEmptyString("section")))
+		assertEquals(output.values, mapOf(Pair(NonEmptyString("key"), "value")))
 	}
 }

@@ -1,6 +1,6 @@
 package parsers
 
-import util.types.NonEmptyString
+import types.NonEmptyString
 
 data class Section(val name: List<NonEmptyString>, val values: Map<NonEmptyString, String>)
 
