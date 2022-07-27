@@ -1,2 +1,2 @@
-rootProject.name = "util"
+rootProject.name = "util-kt"
 include("util")

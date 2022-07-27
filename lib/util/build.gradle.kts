@@ -9,9 +9,23 @@ plugins {
 	id("java-library")
 }
 
+rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin> {
+    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().download = false
+}
+
 kotlin {
+	js {
+		browser {
+			testTask {
+				useKarma {
+					useFirefox()
+				}
+			}
+		}
+		nodejs()
+	}
+
 	jvm()
-	linuxX64()
 
 	sourceSets {
 		val commonMain by getting
@@ -21,11 +35,12 @@ kotlin {
 			}
 		}
 
-		val linuxX64Main by getting
+		val jsMain by getting
 
 		val nonJvmMain by creating {
 			dependsOn(commonMain)
-			linuxX64Main.dependsOn(this)
+
+			jsMain.dependsOn(this)
 		}
 	}
 
