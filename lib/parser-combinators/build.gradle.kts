@@ -27,6 +27,10 @@ kotlin {
 
 	jvm()
 
+	linuxX64 {
+		binaries.sharedLib()
+	}
+
 	sourceSets {
 		val commonMain by getting {
 			dependencies {

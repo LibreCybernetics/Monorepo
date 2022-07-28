@@ -10,7 +10,7 @@ plugins {
 }
 
 rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin> {
-    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().download = false
+	rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().download = false
 }
 
 kotlin {
@@ -27,6 +27,10 @@ kotlin {
 
 	jvm()
 
+	linuxX64 {
+		binaries.sharedLib()
+	}
+
 	sourceSets {
 		val commonMain by getting
 		val commonTest by getting {
@@ -36,11 +40,13 @@ kotlin {
 		}
 
 		val jsMain by getting
+		val linuxX64Main by getting
 
 		val nonJvmMain by creating {
 			dependsOn(commonMain)
 
 			jsMain.dependsOn(this)
+			linuxX64Main.dependsOn(this)
 		}
 	}
 
