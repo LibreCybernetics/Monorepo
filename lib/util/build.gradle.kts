@@ -38,19 +38,7 @@ kotlin {
 				implementation("org.jetbrains.kotlin:kotlin-test")
 			}
 		}
-
-		val jsMain by getting
-		val linuxX64Main by getting
-
-		val nonJvmMain by creating {
-			dependsOn(commonMain)
-
-			jsMain.dependsOn(this)
-			linuxX64Main.dependsOn(this)
-		}
 	}
-
-
 }
 
 tasks.withType<AbstractTestTask> {
