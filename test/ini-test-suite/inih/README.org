@@ -1,0 +1,8 @@
+Test cases under this directory are lincesed New BSD and taken from:
+
+* inih (INI Not Invented Here)
+Author: Ben Hoyt & Contributors
+Date of last revision: 12 July 2022
+Date retrived: 30 July 2022
+Permanent link: https://github.com/benhoyt/inih/tree/5e1d9e2625842dddb3f9c086a50f22e4f45dfc2b
+Primary contributors: https://github.com/benhoyt/inih/graphs/contributors

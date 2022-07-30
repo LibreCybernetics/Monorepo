@@ -1,0 +1,9 @@
+Test cases under this directory are lincesed CC-BY-SA 3.0 and taken from:
+
+* INI File
+Author: Wikipedia contributors
+Publisher: Wikipedia, The Free Encyclopedia
+Date of last revision: 19 July 2022
+Date retrieved: 30 July 2022
+Permanent link: https://en.wikipedia.org/w/index.php?title=INI_file&oldid=1099185449
+Primary contributors: https://xtools.wmflabs.org/articleinfo/en.wikipedia.org/INI_file

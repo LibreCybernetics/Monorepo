@@ -1,0 +1,8 @@
+Test cases under this directory have the license MIT and taken from:
+
+* Iniparser 4
+Author: Nicolas D. & Contributors
+Date of last revision: 16 March 2022
+Date retrived: 30 July 2022
+Permanent link: https://github.com/ndevilla/iniparser/tree/deb85ad4936d4ca32cc2260ce43323d47936410d
+Primary contributors: https://github.com/ndevilla/iniparser/graphs/contributors
