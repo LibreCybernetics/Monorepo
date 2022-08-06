@@ -7,7 +7,7 @@ import types.NonEmptyString
  *
  * Related RFC: 1035
  */
-object DomainName : GenericParser<String, List<NonEmptyString>> {
+object DomainName : StringParser<List<NonEmptyString>> {
 	val hyphen: StringParser<Char> =
 		charMatch('-')
 
@@ -30,6 +30,6 @@ object DomainName : GenericParser<String, List<NonEmptyString>> {
 				(charMatch('.') seqRight label).rep(max = 127u)
 				).map { (d, ds) -> listOf(d) + ds }
 
-	override fun parse(input: String): ParserResult<String, List<NonEmptyString>> =
-		(domainName seqLeft end).parse(input)
+	override fun parse(input: String, column: Column, row: Row): ParserResult<String, List<NonEmptyString>> =
+		(domainName seqLeft end).parse(input, column, row)
 }

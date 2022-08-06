@@ -3,20 +3,22 @@ package parsers.common
 import kotlin.test.*
 
 import parsers.*
+import parsers.Column
+import parsers.Row
 import types.NonEmptyString
 
 class DomainNameTest {
 	private fun successTest(input: String, expected: List<NonEmptyString>) {
-		val result = DomainName.parse(input)
+		val result = DomainName.parse(input, Column(1u), Row(1u))
 		result as ParserSuccess
-		assertEquals(result.output, expected)
+		assertEquals(expected, result.output)
 		assertEquals(result.remaining, "")
 	}
 
 	private fun failureTest(input: String, expected: ParserError<String, List<NonEmptyString>>) {
-		val result = DomainName.parse(input)
+		val result = DomainName.parse(input, Column(1u), Row(1u))
 		result as ParserError
-		assertEquals(result, expected)
+		assertEquals(expected, result)
 	}
 
 	@Test
@@ -33,10 +35,17 @@ class DomainNameTest {
 
 	@Test
 	fun reject() {
-		failureTest("", EndOfInputError())
-		failureTest(".", CondError("."))
-		failureTest("1", CondError("1"))
-		failureTest("-domain", CondError("-"))
-		failureTest("domain-", CondError("-"))
+		failureTest("", EndOfInputError(Column(1u), Row(1u)))
+		failureTest(".", CondError(".", Column(1u), Row(1u)))
+		failureTest("1", CondError("1", Column(1u), Row(1u)))
+		failureTest("-domain", CondError("-", Column(1u), Row(1u)))
+		failureTest(
+			"domain-",
+			SeqError<String, List<NonEmptyString>, String>(
+				CondError("-", Column(1u), Row(7u)),
+				Column(1u),
+				Row(1u)
+			)
+		)
 	}
 }

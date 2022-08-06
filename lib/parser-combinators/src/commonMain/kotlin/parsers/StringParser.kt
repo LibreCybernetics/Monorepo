@@ -4,27 +4,28 @@ import types.NonEmptyString
 
 typealias StringParser<Output> = GenericParser<String, Output>
 
-val anyChar: StringParser<Char> = GenericParser {
-	if (it.isEmpty()) EndOfInputError() else ParserSuccess(it.first(), it.drop(1))
+fun charPred(p: (Char) -> Boolean): StringParser<Char> = object : StringParser<Char> {
+	override fun parse(input: String, column: Column, row: Row): ParserResult<String, Char> =
+		if (input.isEmpty()) EndOfInputError(column, row)
+		else if (p(input.first())) {
+			val first = input.first()
+			val newColumn = if(first == '\n') Column(1u) else column
+			val newRow = if(first == '\n') Row(1u) else row + Row(1u)
+			ParserSuccess(input.first(), input.drop(1), newColumn, newRow)
+		}
+		else CondError(input.take(1), column, row)
 }
 
-val end: StringParser<Unit> = GenericParser {
-	if (it.isEmpty()) ParserSuccess(Unit, it) else CondError(it)
-}
+val anyChar: StringParser<Char> =
+	charPred { true }
 
-fun charMatch(expected: Char): StringParser<Char> = GenericParser {
-	when (val actual = anyChar.parse(it)) {
-		is ParserError -> actual
-		is ParserSuccess ->
-			if (actual.output == expected) ParserSuccess(expected, actual.remaining)
-			else MatchError(expected.toString(), actual.output.toString())
-	}
-}
+fun charMatch(expected: Char): StringParser<Char> =
+	charPred { it == expected }
 
-fun charPred(p: (Char) -> Boolean): StringParser<Char> = GenericParser {
-	if (it.isEmpty()) EndOfInputError()
-	else if (p(it.first())) ParserSuccess(it.first(), it.drop(1))
-	else CondError(it.take(1))
+val end: StringParser<Unit> = object : StringParser<Unit> {
+	override fun parse(input: String, column: Column, row: Row): ParserResult<String, Unit> =
+		if (input.isEmpty()) ParserSuccess(Unit, input, column, row)
+		else CondError(input, column, row)
 }
 
 fun <Output> StringParser<Output>.rep(
@@ -32,10 +33,11 @@ fun <Output> StringParser<Output>.rep(
 ): GenericParser<String, List<Output>> =
 	this.rep(unit, min, max)
 
-fun stringMatch(expected: String): StringParser<String> = GenericParser {
-	if (it.startsWith(expected)) ParserSuccess(expected, it.drop(expected.length))
-	else if (it.isEmpty()) EndOfInputError()
-	else MatchError(expected, it.take(expected.length))
+fun stringMatch(expected: String): StringParser<String> = object : StringParser<String> {
+	override fun parse(input: String, column: Column, row: Row): ParserResult<String, String> =
+		if (input.startsWith(expected)) ParserSuccess(expected, input.drop(expected.length), TODO(), TODO())
+		else if (input.isEmpty()) EndOfInputError(TODO(), TODO())
+		else CondError(input.take(expected.length), TODO(), TODO())
 }
 
 fun takeWhile(p: (Char) -> Boolean): StringParser<String> =
