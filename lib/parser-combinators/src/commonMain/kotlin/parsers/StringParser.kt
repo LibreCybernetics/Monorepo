@@ -9,8 +9,8 @@ fun charPred(p: (Char) -> Boolean): StringParser<Char> = object : StringParser<C
 		if (input.isEmpty()) EndOfInputError(column, row)
 		else if (p(input.first())) {
 			val first = input.first()
-			val newColumn = if(first == '\n') Column(1u) else column
-			val newRow = if(first == '\n') Row(1u) else row + Row(1u)
+			val newColumn = if(first == '\n') Column(1u) else column + Column(1u)
+			val newRow = if(first == '\n') row + Row(1u) else row
 			ParserSuccess(input.first(), input.drop(1), newColumn, newRow)
 		}
 		else CondError(input.take(1), column, row)
