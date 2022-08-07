@@ -15,7 +15,21 @@ class IniTest {
 		val parsed = Ini.section.parse(text)
 		parsed as ParserSuccess
 		val output = parsed.output
-		assertEquals(output.name, listOf(NonEmptyString("section")))
-		assertEquals(output.values, mapOf(Pair(NonEmptyString("key"), "value")))
+		assertEquals(
+			Pair(Row(1u), Column(1u)),
+			output.position
+		)
+		assertEquals(
+			listOf(NonEmptyString("section")),
+			output.name
+		)
+		assertEquals(
+			mapOf(
+				Pair(
+					NonEmptyString("key"),
+					Pair(Pair(Row(2u), Column(1u)), "value")
+				)
+			), output.values
+		)
 	}
 }
