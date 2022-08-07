@@ -31,6 +31,11 @@ fun <Input, Output, Output1> GenericParser<Input, Output>.bind(
 	}
 }
 
+fun <Input> position(): GenericParser<Input, Pair<Row, Column>> = object : GenericParser<Input, Pair<Row, Column>> {
+	override fun parse(input: Input, column: Column, row: Row): ParserResult<Input, Pair<Row, Column>> =
+		ParserSuccess(Pair(row, column), input, column, row)
+}
+
 fun <Input, R> pass(r: R): GenericParser<Input, R> = object : GenericParser<Input, R> {
 	override fun parse(input: Input, column: Column, row: Row): ParserResult<Input, R> =
 		ParserSuccess(r, input, column, row)
