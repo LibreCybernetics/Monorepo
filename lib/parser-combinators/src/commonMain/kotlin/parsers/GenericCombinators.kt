@@ -1,13 +1,25 @@
 package parsers
 
+fun <Input, Output> GenericParser<Input, Output>.optional(): GenericParser<Input, Output?> {
+	val self = this
+
+	return object : GenericParser<Input, Output?> {
+		override fun parse(input: Input, column: Column, row: Row): ParserResult<Input, Output?> =
+			when(val r = self.parse(input, column, row)) {
+				is ParserSuccess -> r.map { it }
+				is ParserError -> r.map { null }
+			}
+	}
+}
+
 infix fun <Input, Output> GenericParser<Input, Output>.or(
 	other: GenericParser<Input, Output>
 ): GenericParser<Input, Output> {
 	val self = this
 
 	return object : GenericParser<Input, Output> {
-		override fun parse(input: Input, column: Column, row: Row): ParserResult<Input, Output> {
-			return when (val first = self.parse(input, column, row)) {
+		override fun parse(input: Input, column: Column, row: Row): ParserResult<Input, Output> =
+			when (val first = self.parse(input, column, row)) {
 				is ParserSuccess -> first
 				is ParserError -> when (val second = other.parse(input, column, row)) {
 					is ParserSuccess -> second
@@ -21,7 +33,6 @@ infix fun <Input, Output> GenericParser<Input, Output>.or(
 					}
 				}
 			}
-		}
 	}
 }
 
@@ -31,8 +42,8 @@ infix fun <Input, Output, Output1> GenericParser<Input, Output>.seq(
 	val self = this
 
 	return object : GenericParser<Input, Pair<Output, Output1>> {
-		override fun parse(input: Input, column: Column, row: Row): ParserResult<Input, Pair<Output, Output1>> {
-			return when (val first = self.parse(input, column, row)) {
+		override fun parse(input: Input, column: Column, row: Row): ParserResult<Input, Pair<Output, Output1>> =
+			when (val first = self.parse(input, column, row)) {
 				is ParserError -> first.map()
 				is ParserSuccess -> when (val second = other.parse(first.remaining, first.column, first.row)) {
 					is ParserError -> SeqError(second, column, row)
@@ -44,7 +55,6 @@ infix fun <Input, Output, Output1> GenericParser<Input, Output>.seq(
 					)
 				}
 			}
-		}
 	}
 }
 

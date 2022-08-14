@@ -60,3 +60,6 @@ val digit: StringParser<Char> =
 
 val letterOrDigit: StringParser<Char> =
 	charPred { it.isLetterOrDigit() }
+
+val lettersOrDigits: StringParser<NonEmptyString> =
+	letterOrDigit.rep(min = 1u).map { NonEmptyString(it.toCharArray().concatToString()) }

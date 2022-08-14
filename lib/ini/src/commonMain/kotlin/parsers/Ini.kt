@@ -6,28 +6,48 @@ data class Section(
 	val position: Pair<Row, Column>,
 	val name: List<NonEmptyString>,
 	val values: Map<NonEmptyString, Pair<Pair<Row, Column>, String>>
-	)
+)
 
 object Ini {
-	val sectionHeader: StringParser<Pair<Pair<Row, Column>, List<NonEmptyString>>> =
-		position<String>() seq (
-				charMatch('[') seqRight
-				letters.rep(min=1u) seqLeft
-				charMatch(']') seqLeft
-				newline)
+	val commentStart: StringParser<Char> =
+		charMatch(';')
 
-	val keyValue: StringParser<Pair<Pair<Row, Column>, Pair<NonEmptyString,String>>> =
-		position<String>() seq (
-				letters seqLeft charMatch('=') seq
+	val comment: StringParser<Pair<Pair<Row, Column>, String>> =
+		(position<String>() seq (commentStart seqRight
 				(negativeLookahead(newline) seqRight anyChar)
-					.rep().map { it.toCharArray().concatToString() }
+					.rep().map { it.toCharArray().concatToString() }))
+
+	val sectionHeader: StringParser<Pair<Pair<Row, Column>, List<NonEmptyString>>> =
+		(position<String>() seq (
+				charMatch('[') seqRight
+						lettersOrDigits.rep(min = 1u) seqLeft
+						charMatch(']') seqLeft
+						(space.rep() seq comment.optional()) seqLeft newline))
+
+	val keyValue: StringParser<Pair<Pair<Row, Column>, Pair<NonEmptyString, String>>> =
+		position<String>() seq (
+				(lettersOrDigits) seqLeft
+						(space.rep() seq charMatch('=') seq space.rep()) seq
+						(negativeLookahead(newline.or(commentStart)) seqRight anyChar)
+							.rep().map { it.toCharArray().concatToString() }
+						seqLeft comment.optional() seqLeft newline
 				)
 
 	val section: StringParser<Section> =
-		(sectionHeader seq keyValue.rep()).map { (header, keyValues) ->
-			Section(
-				header.first,
-				header.second,
-				keyValues.map{ Pair(it.second.first, Pair(it.first, it.second.second)) }.toMap())
-		}
+		(sectionHeader seq
+				((comment seqLeft newline).rep() seqRight keyValue).rep()
+				).map { (header, keyValues) ->
+				Section(
+					header.first,
+					header.second,
+					keyValues.map { Pair(it.second.first, Pair(it.first, it.second.second)) }.toMap()
+				)
+			}
+
+	val whole: StringParser<List<Section>> =
+		(
+				(comment seqLeft newline).unit().or(
+					(space.rep() seq newline).unit()
+				).rep() seqRight
+						section).rep()
 }
