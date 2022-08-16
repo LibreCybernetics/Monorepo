@@ -1,11 +1,11 @@
 package parsers
 
-import types.NonEmptyString
+import types.NotEmptyString
 
 data class Section(
 	val position: Pair<Row, Column>,
-	val name: List<NonEmptyString>,
-	val values: Map<NonEmptyString, Pair<Pair<Row, Column>, String>>
+	val name: List<NotEmptyString>,
+	val values: Map<NotEmptyString, Pair<Pair<Row, Column>, String>>
 )
 
 object Ini {
@@ -17,14 +17,14 @@ object Ini {
 				(negativeLookahead(newline) seqRight anyChar)
 					.rep().map { it.toCharArray().concatToString() }))
 
-	val sectionHeader: StringParser<Pair<Pair<Row, Column>, List<NonEmptyString>>> =
+	val sectionHeader: StringParser<Pair<Pair<Row, Column>, List<NotEmptyString>>> =
 		(position<String>() seq (
 				charMatch('[') seqRight
 						lettersOrDigits.rep(min = 1u) seqLeft
 						charMatch(']') seqLeft
 						(space.rep() seq comment.optional()) seqLeft newline))
 
-	val keyValue: StringParser<Pair<Pair<Row, Column>, Pair<NonEmptyString, String>>> =
+	val keyValue: StringParser<Pair<Pair<Row, Column>, Pair<NotEmptyString, String>>> =
 		position<String>() seq (
 				(lettersOrDigits) seqLeft
 						(space.rep() seq charMatch('=') seq space.rep()) seq

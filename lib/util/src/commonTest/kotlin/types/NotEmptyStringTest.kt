@@ -2,27 +2,27 @@ package types
 
 import kotlin.test.*
 
-class NonEmptyStringTest {
+class NotEmptyStringTest {
 	@Test
 	fun throwsErrors() {
 		assertFailsWith(IllegalArgumentException::class) {
-			NonEmptyString("")
+			NotEmptyString("")
 		}
 		assertFailsWith(IllegalArgumentException::class) {
-			NonEmptyString(" ")
+			NotEmptyString(" ")
 		}
 		assertFailsWith(IllegalArgumentException::class) {
-			NonEmptyString("\n")
+			NotEmptyString("\n")
 		}
 		assertFailsWith(IllegalArgumentException::class) {
-			NonEmptyString("\t")
+			NotEmptyString("\t")
 		}
 	}
 
 	@Test
 	fun acceptsString() {
 		fun check(s: String) {
-			assertEquals(s, NonEmptyString(s).value)
+			assertEquals(s, NotEmptyString(s).value)
 		}
 
 		check(0.toChar().toString())

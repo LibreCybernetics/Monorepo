@@ -1,13 +1,13 @@
 package parsers.common
 
 import parsers.*
-import types.NonEmptyString
+import types.NotEmptyString
 
 /**
  *
  * Related RFC: 1035
  */
-object DomainName : StringParser<List<NonEmptyString>> {
+object DomainName : StringParser<List<NotEmptyString>> {
 	val hyphen: StringParser<Char> =
 		charMatch('-')
 
@@ -19,17 +19,17 @@ object DomainName : StringParser<List<NonEmptyString>> {
 			.rep(max = 61u)
 			.map { it.toCharArray().concatToString() }
 
-	val label: StringParser<NonEmptyString> =
+	val label: StringParser<NotEmptyString> =
 		((letter seq letterDigitHyphenString)
 			.map { (l, ls) -> l + ls } seq letterOrDigit)
 			.map { (ls, l) -> ls + l }
-			.map { NonEmptyString(it) }
+			.map { NotEmptyString(it) }
 
-	val domainName: StringParser<List<NonEmptyString>> =
+	val domainName: StringParser<List<NotEmptyString>> =
 		(label seq
 				(charMatch('.') seqRight label).rep(max = 127u)
 				).map { (d, ds) -> listOf(d) + ds }
 
-	override fun parse(input: String, column: Column, row: Row): ParserResult<String, List<NonEmptyString>> =
+	override fun parse(input: String, column: Column, row: Row): ParserResult<String, List<NotEmptyString>> =
 		(domainName seqLeft end).parse(input, column, row)
 }

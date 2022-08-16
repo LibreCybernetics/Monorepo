@@ -2,7 +2,7 @@ package parsers
 
 import kotlin.test.*
 
-import types.NonEmptyString
+import types.NotEmptyString
 
 class IniTest {
 	@Test
@@ -20,13 +20,13 @@ class IniTest {
 			output.position
 		)
 		assertEquals(
-			listOf(NonEmptyString("section")),
+			listOf(NotEmptyString("section")),
 			output.name
 		)
 		assertEquals(
 			mapOf(
 				Pair(
-					NonEmptyString("key"),
+					NotEmptyString("key"),
 					Pair(Pair(Row(2u), Column(1u)), "value")
 				)
 			), output.values

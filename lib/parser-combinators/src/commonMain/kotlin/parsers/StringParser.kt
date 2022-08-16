@@ -1,6 +1,6 @@
 package parsers
 
-import types.NonEmptyString
+import types.NotEmptyString
 
 typealias StringParser<Output> = GenericParser<String, Output>
 
@@ -52,8 +52,8 @@ val newline: StringParser<Char> =
 val letter: StringParser<Char> =
 	charPred { it.isLetter() }
 
-val letters: StringParser<NonEmptyString> =
-	letter.rep(min = 1u).map { NonEmptyString(it.toCharArray().concatToString()) }
+val letters: StringParser<NotEmptyString> =
+	letter.rep(min = 1u).map { NotEmptyString(it.toCharArray().concatToString()) }
 
 val digit: StringParser<Char> =
 	charPred { it.isDigit() }
@@ -61,5 +61,5 @@ val digit: StringParser<Char> =
 val letterOrDigit: StringParser<Char> =
 	charPred { it.isLetterOrDigit() }
 
-val lettersOrDigits: StringParser<NonEmptyString> =
-	letterOrDigit.rep(min = 1u).map { NonEmptyString(it.toCharArray().concatToString()) }
+val lettersOrDigits: StringParser<NotEmptyString> =
+	letterOrDigit.rep(min = 1u).map { NotEmptyString(it.toCharArray().concatToString()) }
