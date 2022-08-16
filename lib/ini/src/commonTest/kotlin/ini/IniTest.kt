@@ -1,5 +1,7 @@
-package parsers
+package ini
 
+import parsers.*
+import ini.Ini
 import kotlin.test.*
 
 import types.NotEmptyString

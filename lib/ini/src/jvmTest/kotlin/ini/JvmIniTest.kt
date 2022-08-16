@@ -1,5 +1,7 @@
-package parsers
+package ini
 
+import parsers.*
+import ini.Ini
 import kotlin.test.*
 
 class JvmIniTest {
@@ -9,7 +11,7 @@ class JvmIniTest {
 	@Test
 	fun jvmTest() {
 		val normal = getTextResource("good/normal.ini")
-		val parsed = Ini.whole.parse(normal)
+		val parsed = Ini.parse(normal)
 		println(parsed)
 	}
 }

@@ -1,5 +1,6 @@
-package parsers
+package ini
 
+import parsers.*
 import types.NotEmptyString
 
 data class Section(
@@ -8,7 +9,7 @@ data class Section(
 	val values: Map<NotEmptyString, Pair<Pair<Row, Column>, String>>
 )
 
-object Ini {
+object Ini : StringParser<List<Section>> {
 	val commentStart: StringParser<Char> =
 		charMatch(';')
 
@@ -44,10 +45,10 @@ object Ini {
 				)
 			}
 
-	val whole: StringParser<List<Section>> =
+	override fun parse(input: String, column: Column, row: Row): ParserResult<String, List<Section>> =
 		(
 				(comment seqLeft newline).unit().or(
 					(space.rep() seq newline).unit()
 				).rep() seqRight
-						section).rep()
+						section).rep().parse(input, column, row)
 }
