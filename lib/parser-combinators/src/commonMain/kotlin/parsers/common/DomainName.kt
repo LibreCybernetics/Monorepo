@@ -1,6 +1,7 @@
 package parsers.common
 
 import parsers.*
+import parsers.string.*
 import types.NotEmptyString
 
 /**

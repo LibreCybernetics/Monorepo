@@ -1,5 +1,7 @@
 package parsers
 
+import parsers.string.StringParser
+
 interface GenericParser<Input, Output> {
 	fun parse(input: Input, column: Column = Column(1u), row: Row = Row(1u)): ParserResult<Input, Output>
 }

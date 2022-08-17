@@ -1,6 +1,7 @@
 package ini
 
 import parsers.*
+import parsers.string.*
 import types.NotEmptyString
 
 data class Section(

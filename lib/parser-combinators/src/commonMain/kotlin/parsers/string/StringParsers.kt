@@ -1,5 +1,6 @@
-package parsers
+package parsers.string
 
+import parsers.*
 import types.NotEmptyString
 
 typealias StringParser<Output> = GenericParser<String, Output>
@@ -32,13 +33,6 @@ fun <Output> StringParser<Output>.rep(
 	min: UInt? = null, max: UInt? = null
 ): GenericParser<String, List<Output>> =
 	this.rep(unit, min, max)
-
-fun stringMatch(expected: String): StringParser<String> = object : StringParser<String> {
-	override fun parse(input: String, column: Column, row: Row): ParserResult<String, String> =
-		if (input.startsWith(expected)) ParserSuccess(expected, input.drop(expected.length), TODO(), TODO())
-		else if (input.isEmpty()) EndOfInputError(TODO(), TODO())
-		else CondError(input.take(expected.length), TODO(), TODO())
-}
 
 fun takeWhile(p: (Char) -> Boolean): StringParser<String> =
 	charPred(p).rep().map { it.toCharArray().concatToString() }
