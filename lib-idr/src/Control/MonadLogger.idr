@@ -1,5 +1,8 @@
 module Control.MonadLogger
 
+import System.File.ReadWrite
+import System.File.Virtual
+
 data LogLevel
   = Trace
   | Debug
@@ -15,14 +18,18 @@ record NullLogger a where
   content : a
 
 Functor NullLogger where
-  map f a = MkNullLogger (f a.content)
+  map f = MkNullLogger . f . .content
 
 Applicative NullLogger where
-  pure a = MkNullLogger a
-  f <*> fa = MkNullLogger (f.content fa.content)
+  pure = MkNullLogger
+  (<*>) f = MkNullLogger . f.content . .content
 
 Monad NullLogger where
   fa >>= f = f fa.content
 
 MonadLogger NullLogger where
   log _ _ = MkNullLogger ()
+
+MonadLogger IO where
+  log l =
+    map (const ()) . fPutStrLn stderr
