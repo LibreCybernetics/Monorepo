@@ -21,8 +21,8 @@ data LogLevel
 public export
 Show LogLevel where
   show Trace = show $ colored White        "[TRACE]"
-  show Debug = show $ colored White        "[DEBUG]"
-  show Info  = show $ colored BrightWhite  "[INFO] "
+  show Debug = show $ colored BrightWhite  "[DEBUG]"
+  show Info  = show $ colored BrightBlue   "[INFO] "
   show Warn  = show $ colored BrightYellow "[WARN] "
   show Error = show $ colored BrightRed    "[ERROR]"
 
@@ -57,6 +57,7 @@ MonadLogger IO where
   log l =
     map (const ()) . fPutStrLn stdout . (show l ++ " " ++)
 
+public export
 testLog : IO ()
 testLog = do
   log Trace "Test"
