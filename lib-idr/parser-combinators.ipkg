@@ -1,5 +1,7 @@
 package parser-combinators
 
+depends = contrib
+
 sourcedir = "src"
 builddir = ".build"
 
