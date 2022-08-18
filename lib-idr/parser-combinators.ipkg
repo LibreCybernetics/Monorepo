@@ -1,0 +1,6 @@
+package parser-combinators
+
+sourcedir = "src"
+builddir = ".build"
+
+modules = Control.MonadLogger
