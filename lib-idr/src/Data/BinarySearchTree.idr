@@ -38,21 +38,21 @@ flatten (Branch lt r rt) = flatten lt ++ [r] ++ flatten rt
 
 public export
 getDegree : {degree: Nat} -> BinarySearchTree degree a minValue maxValue -> Nat
-getDegree t {degree} = degree
+getDegree _ = degree
 
 testGetDegree : getDegree (Branch Nil "Hello" Nil) = 1
 testGetDegree = Refl
 
 public export
 getMinValue : {minValue: Maybe a} -> BinarySearchTree degree a minValue maxValue -> Maybe a
-getMinValue t {minValue} = minValue
+getMinValue t = minValue
 
 testGetMinValue : getMinValue (Branch Nil "Hello" Nil) = Just "Hello"
 testGetMinValue = Refl
 
 public export
 getMaxValue : {maxValue: Maybe a} -> BinarySearchTree degree a minValue maxValue -> Maybe a
-getMaxValue t {maxValue} = maxValue
+getMaxValue t = maxValue
 
 testGetMaxValue : getMaxValue (Branch Nil "Hello" Nil) = Just "Hello"
 testGetMaxValue = Refl
