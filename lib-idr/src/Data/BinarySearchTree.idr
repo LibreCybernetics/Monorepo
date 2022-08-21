@@ -24,6 +24,15 @@ data BinarySearchTree
       -> BinarySearchTree (S (max ldeg rdeg)) a (lmin <|> Just Value) (rmax <|> Just Value)
 
 --
+-- Getters
+--
+
+public export
+flatten : BinarySearchTree degree a minValue maxValue -> List a
+flatten Nil = Nil
+flatten (Branch lt r rt) = flatten lt ++ [r] ++ flatten rt
+
+--
 -- Type Property Getters
 --
 
