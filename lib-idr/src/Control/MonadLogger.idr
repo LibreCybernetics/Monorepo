@@ -22,8 +22,8 @@ public export
 Show LogLevel where
   show Trace = show $ colored White        "[TRACE]"
   show Debug = show $ colored BrightWhite  "[DEBUG]"
-  show Info  = show $ colored BrightBlue   "[INFO] "
-  show Warn  = show $ colored BrightYellow "[WARN] "
+  show Info  = show $ colored BrightBlue   "[INFO ]"
+  show Warn  = show $ colored BrightYellow "[WARN ]"
   show Error = show $ colored BrightRed    "[ERROR]"
 
 public export
