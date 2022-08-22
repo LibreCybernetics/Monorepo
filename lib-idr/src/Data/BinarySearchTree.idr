@@ -75,9 +75,9 @@ insertNewDegree Nil _ = 1
 insertNewDegree (Branch lt r rt) v =
   -- TODO: Incorrect implementation
   case compare r v @{treeOrd} of
-    LT => S (max (getDegree lt) (getDegree rt))
+    LT => S (max (getDegree lt) (insertNewDegree rt v))
     EQ => S (max (getDegree lt) (getDegree rt))
-    GT => S (max (getDegree lt) (getDegree rt))
+    GT => S (max (insertNewDegree lt v) (getDegree rt))
 
 public export
 insertNewMin : (treeOrd : Ord a)
@@ -116,3 +116,12 @@ insert (Branch lt r rt) v =
     GT =>
       rewrite the (compare r v @{treeOrd} = EQ) $ believe_me () in
       ?hole3
+
+testInsert1 : insert Nil "Hello" = Branch Nil "Hello" Nil
+testInsert1 = Refl
+
+testInsert2 : insert (Branch Nil "Hello" Nil) "World" = Branch Nil "Hello" (Branch Nil "World" Nil)
+-- testInsert2 = Refl
+
+testInsert3 : insert (Branch Nil "Hello" Nil) "Ahoy" = Branch (Branch Nil "Ahoy" Nil) "Hello" Nil
+-- testInsert2 = Refl
