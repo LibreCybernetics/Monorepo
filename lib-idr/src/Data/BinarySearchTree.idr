@@ -36,6 +36,20 @@ data BinarySearchTree
 --
 
 public export
+size : BinarySearchTree degree a treeOrd minValue maxValue -> Nat
+size Nil = 0
+size (Branch lt r rt) = S $ size lt + size rt
+
+public export
+maybeGetElem : (treeOrd : Ord a) => BinarySearchTree degree a treeOrd minValue maxValue -> a -> Maybe a
+maybeGetElem Nil _ = Nothing
+maybeGetElem (Branch lt r rt) v =
+  case compare r v of
+    LT => maybeGetElem rt v
+    EQ => Just r
+    GT => maybeGetElem lt v
+
+public export
 flatten : BinarySearchTree degree a treeOrd minValue maxValue -> List a
 flatten Nil = Nil
 flatten (Branch lt r rt) = flatten lt ++ [r] ++ flatten rt
