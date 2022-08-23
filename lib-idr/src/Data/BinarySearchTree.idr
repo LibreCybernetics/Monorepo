@@ -1,5 +1,8 @@
 module Data.BinarySearchTree
 
+import Builtin
+import Prelude.EqOrd
+
 import Data.Maybe
 import Data.Nat
 
@@ -108,20 +111,33 @@ insert Nil v = Branch Nil v Nil
 insert (Branch lt r rt) v =
   case compare r v @{treeOrd} of
     LT =>
-      rewrite the (compare r v @{treeOrd} = EQ) $ believe_me () in
-      ?hole1
+      rewrite the (compare r v @{treeOrd} = LT) $ believe_me () in
+      rewrite the (min (fromMaybe r (getMinValue lt)) v = fromMaybe r (getMinValue lt)) $ believe_me () in
+      rewrite the (max (fromMaybe r (getMaxValue rt)) v = foldr max v (getMaxValue rt)) $ believe_me () in
+      Branch lt r (insert rt v) {valueLTrmin = believe_me ()} @{treeOrd}
     EQ =>
       rewrite the (compare r v @{treeOrd} = EQ) $ believe_me () in
-      ?hole2
+      rewrite the (min (fromMaybe r (getMinValue lt)) v = fromMaybe v (getMinValue lt)) $ believe_me () in
+      rewrite the (max (fromMaybe r (getMaxValue rt)) v = fromMaybe v (getMaxValue rt)) $ believe_me () in
+      Branch lt v rt {valueLTrmin = believe_me ()} {valueGTlmax = believe_me ()}
     GT =>
-      rewrite the (compare r v @{treeOrd} = EQ) $ believe_me () in
-      ?hole3
+      rewrite the (compare r v @{treeOrd} = GT) $ believe_me () in
+      rewrite the (max (fromMaybe r (getMaxValue rt)) v = fromMaybe r (getMaxValue rt)) $ believe_me () in
+      rewrite the (min (fromMaybe r (getMinValue lt)) v = foldr min v (getMinValue lt)) $ believe_me () in
+      Branch (insert lt v) r rt @{treeOrd} {valueGTlmax = believe_me ()}
 
 testInsert1 : insert Nil "Hello" = Branch Nil "Hello" Nil
 testInsert1 = Refl
 
-testInsert2 : insert (Branch Nil "Hello" Nil) "World" = Branch Nil "Hello" (Branch Nil "World" Nil)
--- testInsert2 = Refl
+--
+-- TODO: Investigate why REPL can reduce the following but the compiler can't
+--
 
-testInsert3 : insert (Branch Nil "Hello" Nil) "Ahoy" = Branch (Branch Nil "Ahoy" Nil) "Hello" Nil
--- testInsert2 = Refl
+testInsert2: insert (Branch Nil "Hello" Nil) "Hello" = Branch Nil "Hello" Nil
+testInsert2 = ?hole2
+
+testInsert3 : insert (Branch Nil "Hello" Nil) "World" = Branch Nil "Hello" (Branch Nil "World" Nil)
+testInsert3 = ?hole3
+
+testInsert4 : insert (Branch Nil "Hello" Nil) "Ahoy" = Branch (Branch Nil "Ahoy" Nil) "Hello" Nil
+testInsert4 = ?hole4
