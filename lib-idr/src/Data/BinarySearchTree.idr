@@ -80,6 +80,42 @@ testGetMaxValue : getMaxValue (Branch Nil "Hello" Nil) = Just "Hello"
 testGetMaxValue = Refl
 
 --
+-- Extra Type Properties
+--
+
+public export
+data HasElem : (BinarySearchTree degree a treeOrd minValue maxValue) -> a -> Type where
+  Here : (treeOrd : Ord a)
+       => (lt : BinarySearchTree degl a treeOrd lmin lmax)
+       -> (v : a)
+       -> (rt : BinarySearchTree degr a treeOrd rmin rmax)
+       -> {auto valueGTlmax : fromMaybe GT (map (compare v @{treeOrd}) (getMaxValue lt)) = GT}
+       -> {auto valueLTrmin : fromMaybe LT (map (compare v @{treeOrd}) (getMinValue rt)) = LT}
+       -> (Branch lt v rt) `HasElem` v
+  ThereLeft : (treeOrd : Ord a)
+       => (lt : BinarySearchTree degl a treeOrd lmin lmax)
+       -> (hasElem : lt `HasElem` v)
+       -> (r : a)
+       -> (rt : BinarySearchTree degr a treeOrd rmin rmax)
+       -> {auto valueGTlmax : fromMaybe GT (map (compare r @{treeOrd}) (getMaxValue lt)) = GT}
+       -> {auto valueLTrmin : fromMaybe LT (map (compare r @{treeOrd}) (getMinValue rt)) = LT}
+       -> (Branch lt r rt) `HasElem` v
+  ThereRight : (treeOrd : Ord a)
+       => (lt : BinarySearchTree degl a treeOrd lmin lmax)
+       -> (r : a)
+       -> (rt : BinarySearchTree degr a treeOrd rmin rmax)
+       -> (hasElem : rt `HasElem` v)
+       -> {auto valueGTlmax : fromMaybe GT (map (compare r @{treeOrd}) (getMaxValue lt)) = GT}
+       -> {auto valueLTrmin : fromMaybe LT (map (compare r @{treeOrd}) (getMinValue rt)) = LT}
+       -> (Branch lt r rt) `HasElem` v
+
+testHasElem1 : (Branch Nil "Hello" Nil) `HasElem` "Hello"
+testHasElem1 = Here Nil "Hello" Nil
+
+testHasElem2 : (Branch (Branch Nil "Hello" Nil) "World" Nil) `HasElem` "Hello"
+testHasElem2 = ThereLeft (Branch Nil "Hello" Nil) testHasElem1 "World" Nil
+
+--
 -- Elem Insertion
 --
 
