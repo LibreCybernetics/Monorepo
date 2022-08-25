@@ -51,3 +51,12 @@ getMaxValue _ = maxValue
 
 testGetMaxValue : getMaxValue (Branch Nil "Hello" Nil) = Just "Hello"
 testGetMaxValue = Refl
+
+--
+-- Simple Functions
+--
+
+public export
+size : BinarySearchTree degree a treeOrd minValue maxValue -> Nat
+size Nil = 0
+size (Branch lt r rt) = S $ size lt + size rt
