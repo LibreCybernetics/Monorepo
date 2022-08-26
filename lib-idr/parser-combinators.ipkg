@@ -7,5 +7,6 @@ builddir = ".build"
 
 modules
   = Control.Concurrency.SeqLock
+  , Control.Concurrency.STM
   , Control.MonadLogger
   , Data.BinarySearchTree
