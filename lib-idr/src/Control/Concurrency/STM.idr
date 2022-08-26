@@ -58,13 +58,25 @@ nubTVars : STM a -> List TVarTypeWrapper
 nubTVars = nub . (typeWrapTVar <$>) . operations
 
 attemptLock : HasIO io => STM a -> io ()
-attemptLock s = withMutex globalLock $ do
+attemptLock s = do
 	printLn "Nothing Yet"
 	let tvarsToLock = nubTVars s
-	tvarsLocked <- sequence $ map (\tvar => lock tvar.value.seqLock) tvarsToLock
+	tvarsLocked <- sequence $ (lock . .value.seqLock) <$> tvarsToLock
 	case all id tvarsLocked of
-		True => ?holeTrue
-		False => ?holeFalse
+		True => do
+			increased <- sequence $ (increaseVersion . .value.seqLock) <$> tvarsToLock
+			?hole
+		False => do
+			let tvarsToUnlock = filter snd $ zip tvarsToLock tvarsLocked
+			withMutex globalLock $ do
+				tvarsUnlocked <- sequence $ map (unlock . .value.seqLock . fst) tvarsToUnlock
+				lockedTVars  <- sequence $ (isLocked . .value.seqLock) <$> tvarsToLock
+				let tvarsToWatch = filter snd $ zip tvarsToLock lockedTVars
+				let conditionsToWatch = map (.value.condition . fst) tvarsToWatch
+				case conditionsToWatch of
+					[]      => pure ()
+					(c::cs) => conditionWaitTimeout (head conditionsToWatch {ok=believe_me ()}) globalLock 1000
+			attemptLock s
 
 public export
 commit : HasIO io => STM a -> io a
