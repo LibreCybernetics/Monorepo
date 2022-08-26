@@ -6,5 +6,6 @@ sourcedir = "src"
 builddir = ".build"
 
 modules
-  = Control.MonadLogger
+  = Control.Concurrency.SeqLock
+  , Control.MonadLogger
   , Data.BinarySearchTree
