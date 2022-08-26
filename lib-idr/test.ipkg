@@ -1,0 +1,9 @@
+package test-runner
+
+depends = contrib
+
+sourcedir = "src"
+builddir = ".build"
+
+executable = "test"
+main = Test.Main
