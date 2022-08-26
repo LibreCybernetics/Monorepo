@@ -6,56 +6,44 @@ import System.Concurrency
 
 import Control.Concurrency.Mutex
 import Control.Concurrency.SeqLock
+import Control.Concurrency.TVar
 
 ||| Only needed when locking/unlocking a collection of TVars
 globalLock : Mutex
 globalLock = unsafePerformIO makeMutex
 
-export
-record TVar a where
-	constructor MkTVar
-	seqLock : SeqLock
-	condition : Condition
-	content : (IORef a)
-
-export
-Eq (TVar a) where
-	x == y = x.seqLock == y.seqLock
-
 public export
-newTVar : HasIO io => a -> io (TVar a)
-newTVar initialValue = do
-	seqLock <- newSeqLock
-	condition <- makeCondition
-	ioRef <- newIORef initialValue
-	pure $ MkTVar seqLock condition ioRef
-
 record TVarTypeWrapper where
-  constructor MkTVarTypeWrapper
-  type  : Type
-  value : TVar type
+	constructor MkTVarTypeWrapper
+	type  : Type
+	value : TVar type
 
+export
 Eq TVarTypeWrapper where
-  x == y = (x.value.seqLock) == (y.value.seqLock)
+	x == y = (x.value.seqLock) == (y.value.seqLock)
 
 export
 data STMOperation : Type where
 	Get : (a : Type) -> TVar a -> Bits64 -> STMOperation
 	Update : (a : Type) -> TVar a -> Bits64 -> (f: a -> a) -> a -> STMOperation
 
-export
+public export
 record STM a where
   constructor MkSTM
-  b : Type
-  input : b
-  stack : Maybe (b -> STM a)
-  operation : STMOperation
+  -- To regenerate forwards
+  inputType : Type
+  input : inputType
+  op : Maybe (inputType -> STM a)
+  -- To move backwards
+  stack : Maybe (STM inputType)
+  -- Operations that haven't been commited but should affect TVars in the transaction
+  uncommitted : List STMOperation
   return : a
 
-operations : STM a -> List STMOperation
-operations s = s.operation :: case s.stack of
-	Nothing => []
-	Just rs => operations $ rs s.input
+public export
+stmBind : {i : Type} -> STM i -> (f : i -> STM o) -> STM o
+stmBind s f = let r := f (s.return) in
+  {inputType := i, input := s.return, op := Just f, stack := Just s} r
 
 get : {a : Type} -> TVar a -> STM a
 get tvar = unsafePerformIO $ do
@@ -63,7 +51,7 @@ get tvar = unsafePerformIO $ do
   case version `mod` 2 of
     0 => do
       value <- readIORef tvar.content
-      pure $ MkSTM Unit () Nothing (Get a tvar version) value
+      pure $ MkSTM Unit () Nothing Nothing [(Get a tvar version)] value
     -- Spin, only odd when being written into so wait
     _ => pure $ get tvar
 
@@ -73,7 +61,7 @@ typeWrapTVar op = case op of
 	(Update type tvar _ _ _) => MkTVarTypeWrapper type tvar
 
 nubTVars : STM a -> List TVarTypeWrapper
-nubTVars = nub . (typeWrapTVar <$>) . operations
+nubTVars = nub . (typeWrapTVar <$>) . .uncommitted
 
 attemptLock : HasIO io => STM a -> io ()
 attemptLock s = do
