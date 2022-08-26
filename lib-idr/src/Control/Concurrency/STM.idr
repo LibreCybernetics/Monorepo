@@ -2,6 +2,7 @@ module Control.Concurrency.STM
 
 import Data.IORef
 import Data.List
+import Data.Maybe
 import System.Concurrency
 
 import Control.Concurrency.Mutex
