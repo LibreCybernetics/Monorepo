@@ -7,12 +7,19 @@ data SeqLock : Type where [external]
 prim__makeSeqLock : PrimIO SeqLock
 
 export
-make : HasIO io => io SeqLock
-make = primIO prim__makeSeqLock
+newSeqLock : HasIO io => io SeqLock
+newSeqLock = primIO prim__makeSeqLock
 
 --
 -- Non-locking
 --
+
+%foreign "scheme:(lambda (x y) (or (and (eq? x y) 1) 0))"
+prim__eq : SeqLock -> SeqLock -> Int
+
+export
+Eq SeqLock where
+  x == y = intToBool $ prim__eq x y
 
 %foreign "scheme:blodwen-seqlock-locked?"
 prim__lockedSeqLock : SeqLock -> PrimIO Int
@@ -56,7 +63,7 @@ increaseVersion = primIO . prim__increaseSeqLock
 -- Doesn't check much since a SeqLock doesn't have many guards
 basicTest : IO ()
 basicTest = do
-  l <- make
+  l <- newSeqLock
   r <- lock l
   v <- getVersion l
   printLn $ "Got Lock: " ++ show r ++ "; version: " ++ show v
