@@ -66,16 +66,3 @@ insert (Branch lt r rt) v =
 
 testInsert1 : insert Nil "Hello" = Branch Nil "Hello" Nil
 testInsert1 = Refl
-
---
--- TODO: Investigate why REPL can reduce the following but the compiler can't
---
-
-testInsert2: insert (Branch Nil "Hello" Nil) "Hello" = Branch Nil "Hello" Nil
-testInsert2 = ?hole2
-
-testInsert3 : insert (Branch Nil "Hello" Nil) "World" = Branch Nil "Hello" (Branch Nil "World" Nil)
-testInsert3 = ?hole3
-
-testInsert4 : insert (Branch Nil "Hello" Nil) "Ahoy" = Branch (Branch Nil "Ahoy" Nil) "Hello" Nil
-testInsert4 = ?hole4

@@ -1,12 +1,9 @@
 module Data.BinarySearchTree
 
-import Builtin
-import Prelude.EqOrd
+import public Data.Maybe
 
-import Data.Maybe
-import Data.Nat
-
-import public Data.BinarySearchTree.Definition
-import public Data.BinarySearchTree.Insert
-import public Data.BinarySearchTree.ListInterop
-import public Data.BinarySearchTree.Search
+import public Data.BinarySearchTree.Definition  as Data.BinarySearchTree
+import public Data.BinarySearchTree.Eq          as Data.BinarySearchTree
+import public Data.BinarySearchTree.Insert      as Data.BinarySearchTree
+import public Data.BinarySearchTree.ListInterop as Data.BinarySearchTree
+import public Data.BinarySearchTree.Search      as Data.BinarySearchTree
