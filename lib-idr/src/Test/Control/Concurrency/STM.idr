@@ -18,27 +18,27 @@ flipFlag : Flag -> Flag
 flipFlag Red  = Blue
 flipFlag Blue = Red
 
-partial
 flagSwitcher : TVar (List Flag) -> Int -> IO ()
 flagSwitcher tvar n = do
 	_ <- commit $ get tvar `stmBind` \queue =>
 		let next = fromMaybe Blue $ head' queue in
-		update tvar ((flipFlag next) ::) `stmBind` (\(h::_) =>
-			pure ()
-		)
+		update tvar ((flipFlag next) ::) `stmBind` (\x => pure ())
 	if n > 0 then flagSwitcher tvar (n - 1) else pure ()
 
-partial
 test1 : IO Bool
 test1 = do
 	tvar <- newTVar (the (List Flag) [])
-	_ <- forkIO $ flagSwitcher tvar 1000
-	_ <- forkIO $ flagSwitcher tvar 1000
-	_ <- forkIO $ flagSwitcher tvar 1000
-	_ <- forkIO $ flagSwitcher tvar 1000
+	f1 <- forkIO $ flagSwitcher tvar 10
+	f2 <- forkIO $ flagSwitcher tvar 10
+	f3 <- forkIO $ flagSwitcher tvar 10
+	f4 <- forkIO $ flagSwitcher tvar 10
+	let r1 = await f1
+	let r2 = await f2
+	let r3 = await f3
+	let r4 = await f4
+	_ <- pure (r1, r2, r3, r4)
 	pure True
 
 export
-partial
 allTests : List (IO Bool)
 allTests = [test1]

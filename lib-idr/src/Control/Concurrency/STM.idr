@@ -99,12 +99,10 @@ acquireLocks s = do
 	tvarsLocked <- sequence $ (lock . .value.seqLock) <$> tvarsToLock
 	case all id tvarsLocked of
 		True => do
-			_ <- printLn "Got all locks"
 			let tvarsToIncrease = nubTVars . filter isUpdate $ pendingOperations
 			increased <- sequence $ (increaseVersion . .value.seqLock) <$> tvarsToIncrease
 			pure ()
 		False => do
-			_ <- printLn "Didn't get all locks"
 			let tvarsToUnlock = filter snd $ zip tvarsToLock tvarsLocked
 			withMutex globalLock $ do
 				tvarsUnlocked <- sequence $ map (unlock . .value.seqLock . fst) tvarsToUnlock
@@ -117,7 +115,7 @@ acquireLocks s = do
 					(c::cs) =>
 						-- NOTE: Timeout is in µs; on 1GHz processor a 1µs wait ~1,000 clock cycles
 						-- NOTE: Parameter hasn't been tweaked yet; could be sub-optimal
-						conditionWaitTimeout (head conditionsToWatch {ok=believe_me ()}) globalLock 1
+						conditionWaitTimeout c globalLock 1
 			acquireLocks s
 
 releaseLocks : HasIO io => STM io a -> io ()
@@ -147,12 +145,15 @@ doOperation : HasIO io => (o : STMOperation) -> io Bits64
 doOperation (Update a tvar version f) = fst <$> writeTVar tvar version f
 doOperation (Get a tvar _) = fst <$> readTVar tvar
 
+showOp : STMOperation -> String
+showOp (Update _ _ v _) = "Update v: " ++ show v
+showOp (Get _ _ v) = "Get v: " ++ show v
+
 public export
 commit : HasIO io => STM io a -> io a
 commit s = do
   _ <- acquireLocks s
-  _ <- printLn "Going to Commit!"
-  let pendingOperations = allUncommitted s
+  let pendingOperations = reverse $ allUncommitted s
   _ <- sequence_ (doOperation <$> pendingOperations)
   _ <- releaseLocks s
   pure $ s.return
