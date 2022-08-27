@@ -38,3 +38,22 @@ readTVar tvar = do
 				else readTVar tvar
 		-- Spin, only odd when being written into so wait
 		_ => readTVar tvar
+
+public export
+writeTVar : HasIO io => TVar a -> Bits64 -> (a -> a) -> io (Bits64, a)
+writeTVar tvar knownVersion f = do
+	_ <- printLn "Attempting to update a TVar"
+	True <- isLocked tvar.seqLock
+		| False => do
+			_ <- printLn "WrongPath1"
+			?wrongPath1
+	version <- getVersion tvar.seqLock
+	case (version - knownVersion) of
+		1 => do
+   			value <- readIORef tvar.content
+   			_ <- writeIORef tvar.content (f value)
+   			_ <- printLn $ "Updated a TRef! " ++ show knownVersion ++ "->" ++ show version
+   			pure (version, (f value))
+		_ => do
+			_ <- printLn "WrongPath2"
+			?wrongPath2

@@ -18,14 +18,27 @@ flipFlag : Flag -> Flag
 flipFlag Red  = Blue
 flipFlag Blue = Red
 
-flagSwitcher : HasIO io => TVar (List Flag) -> Nat -> io ()
-flagSwitcher tvar n = commit . the (STM io Unit) $ do
-  queue <- get tvar
-  let next = fromMaybe Blue $ head' queue
-  (h::_) <- update tvar ((flipFlag next) ::)
-  pure ()
+partial
+flagSwitcher : TVar (List Flag) -> Int -> IO ()
+flagSwitcher tvar n = do
+	_ <- commit $ get tvar `stmBind` \queue =>
+		let next = fromMaybe Blue $ head' queue in
+		update tvar ((flipFlag next) ::) `stmBind` (\(h::_) =>
+			pure ()
+		)
+	if n > 0 then flagSwitcher tvar (n - 1) else pure ()
 
-test1 : HasIO io => io ()
+partial
+test1 : IO Bool
 test1 = do
-  tvar <- newTVar $ the (List Flag) []
-  printLn "Success!"
+	tvar <- newTVar (the (List Flag) [])
+	_ <- forkIO $ flagSwitcher tvar 1000
+	_ <- forkIO $ flagSwitcher tvar 1000
+	_ <- forkIO $ flagSwitcher tvar 1000
+	_ <- forkIO $ flagSwitcher tvar 1000
+	pure True
+
+export
+partial
+allTests : List (IO Bool)
+allTests = [test1]

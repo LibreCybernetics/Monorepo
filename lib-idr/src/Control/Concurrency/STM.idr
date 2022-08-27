@@ -28,6 +28,10 @@ data STMOperation : Type where
 	Get : (a : Type) -> TVar a -> Bits64 -> STMOperation
 	Update : (a : Type) -> TVar a -> Bits64 -> (f: a -> a) -> STMOperation
 
+isUpdate : STMOperation -> Bool
+isUpdate (Update _ _ _ _) = True
+isUpdate _ = False
+
 public export
 record STM io a where
   constructor MkSTM
@@ -85,21 +89,26 @@ typeWrapTVar op = case op of
 allUncommitted : STM io a -> List STMOperation
 allUncommitted s = (maybe [] allUncommitted s.stack) ++ s.uncommitted
 
-nubTVars : STM io a -> List TVarTypeWrapper
-nubTVars = nub . (typeWrapTVar <$>) . allUncommitted
+nubTVars : List STMOperation -> List TVarTypeWrapper
+nubTVars = nub . (typeWrapTVar <$>)
 
-attemptLock : HasIO io => STM io a -> io ()
-attemptLock s = do
-	let tvarsToLock = nubTVars s
+acquireLocks : HasIO io => STM io a -> io ()
+acquireLocks s = do
+	let pendingOperations = allUncommitted s
+	let tvarsToLock = nubTVars pendingOperations
 	tvarsLocked <- sequence $ (lock . .value.seqLock) <$> tvarsToLock
 	case all id tvarsLocked of
 		True => do
-			increased <- sequence $ (increaseVersion . .value.seqLock) <$> tvarsToLock
-			?hole
+			_ <- printLn "Got all locks"
+			let tvarsToIncrease = nubTVars . filter isUpdate $ pendingOperations
+			increased <- sequence $ (increaseVersion . .value.seqLock) <$> tvarsToIncrease
+			pure ()
 		False => do
+			_ <- printLn "Didn't get all locks"
 			let tvarsToUnlock = filter snd $ zip tvarsToLock tvarsLocked
 			withMutex globalLock $ do
 				tvarsUnlocked <- sequence $ map (unlock . .value.seqLock . fst) tvarsToUnlock
+				tvarsUnlockedNotified <- sequence $ map (conditionSignal . .value.condition . fst) tvarsToUnlock
 				lockedTVars  <- sequence $ (isLocked . .value.seqLock) <$> tvarsToLock
 				let tvarsToWatch = filter snd $ zip tvarsToLock lockedTVars
 				let conditionsToWatch = map (.value.condition . fst) tvarsToWatch
@@ -109,9 +118,41 @@ attemptLock s = do
 						-- NOTE: Timeout is in µs; on 1GHz processor a 1µs wait ~1,000 clock cycles
 						-- NOTE: Parameter hasn't been tweaked yet; could be sub-optimal
 						conditionWaitTimeout (head conditionsToWatch {ok=believe_me ()}) globalLock 1
-			attemptLock s
+			acquireLocks s
+
+releaseLocks : HasIO io => STM io a -> io ()
+releaseLocks s = withMutex globalLock $ do
+	let completedOperations = allUncommitted s
+	let tvarsToIncrease = nubTVars . filter isUpdate $ completedOperations
+	increased <- sequence $ (increaseVersion . .value.seqLock) <$> tvarsToIncrease
+	let tvarsToUnlock = nubTVars completedOperations
+	tvarsUnlocked <- sequence $ (unlock . .value.seqLock) <$> tvarsToUnlock
+	tvarsUnlockedNotified <- sequence $ map (conditionSignal . .value.condition) tvarsToUnlock
+	pure ()
+
+withLocks : HasIO io => STM io a -> io a -> io a
+withLocks s io = do
+  _ <- acquireLocks s
+  r <- io
+  _ <- releaseLocks s
+  pure r
+
+public export
+operationType : STMOperation -> Type
+operationType (Update a _ _ _) = a
+operationType (Get a _ _) = a
+
+public export
+doOperation : HasIO io => (o : STMOperation) -> io Bits64
+doOperation (Update a tvar version f) = fst <$> writeTVar tvar version f
+doOperation (Get a tvar _) = fst <$> readTVar tvar
 
 public export
 commit : HasIO io => STM io a -> io a
-commit = do
-  ?something
+commit s = do
+  _ <- acquireLocks s
+  _ <- printLn "Going to Commit!"
+  let pendingOperations = allUncommitted s
+  _ <- sequence_ (doOperation <$> pendingOperations)
+  _ <- releaseLocks s
+  pure $ s.return
