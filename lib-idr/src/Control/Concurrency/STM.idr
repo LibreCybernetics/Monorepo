@@ -26,45 +26,57 @@ Eq TVarTypeWrapper where
 export
 data STMOperation : Type where
 	Get : (a : Type) -> TVar a -> Bits64 -> STMOperation
-	Update : (a : Type) -> TVar a -> Bits64 -> (f: a -> a) -> a -> STMOperation
+	Update : (a : Type) -> TVar a -> Bits64 -> (f: a -> a) -> STMOperation
 
 public export
-record STM a where
+record STM io a where
   constructor MkSTM
   -- To regenerate forwards
   inputType : Type
   input : inputType
-  op : Maybe (inputType -> STM a)
+  op : Maybe (inputType -> STM io a)
   -- To move backwards
-  stack : Maybe (STM inputType)
+  stack : Maybe (STM io inputType)
   -- Operations that haven't been commited but should affect TVars in the transaction
+  -- WARNING: You have to recurse the stack to get every operation
   uncommitted : List STMOperation
   return : a
 
 public export
-stmBind : {i : Type} -> STM i -> (f : i -> STM o) -> STM o
+stmBind : {i : Type} -> STM io i -> (f : i -> STM io o) -> STM io o
 stmBind s f = let r := f (s.return) in
   {inputType := i, input := s.return, op := Just f, stack := Just s} r
 
-get : {a : Type} -> TVar a -> STM a
+stmRetryLast : STM io a -> STM io a
+stmRetryLast s = fromMaybe s (($ s.input) <$> s.op)
+
+-- stmRetryAll : STM io a -> STM io a
+-- stmRetryAll s = (fromMaybe ?holeMaybe (stmRetryAll <$> s.stack)) `stmBind` stmRetryLast s
+
+public export
+get : {a : Type} -> HasIO io => TVar a -> STM io a
 get tvar = unsafePerformIO $ do
-  version <- getVersion tvar.seqLock
-  case version `mod` 2 of
-    0 => do
-      value <- readIORef tvar.content
-      pure $ MkSTM Unit () Nothing Nothing [(Get a tvar version)] value
-    -- Spin, only odd when being written into so wait
-    _ => pure $ get tvar
+	(version, value) <- readTVar tvar
+	pure $ MkSTM Unit () Nothing Nothing [(Get a tvar version)] value
+
+public export
+update : {a : Type} -> HasIO io => TVar a -> (a -> a) -> STM io a
+update tvar f = unsafePerformIO $ do
+	(version, value) <- readTVar tvar
+	pure $ MkSTM Unit () Nothing Nothing [(Update a tvar version f)] (f value)
 
 typeWrapTVar : STMOperation -> TVarTypeWrapper
 typeWrapTVar op = case op of
 	(Get    type tvar _)   => MkTVarTypeWrapper type tvar
-	(Update type tvar _ _ _) => MkTVarTypeWrapper type tvar
+	(Update type tvar _ _) => MkTVarTypeWrapper type tvar
 
-nubTVars : STM a -> List TVarTypeWrapper
-nubTVars = nub . (typeWrapTVar <$>) . .uncommitted
+allUncommitted : STM io a -> List STMOperation
+allUncommitted s = (maybe [] allUncommitted s.stack) ++ s.uncommitted
 
-attemptLock : HasIO io => STM a -> io ()
+nubTVars : STM io a -> List TVarTypeWrapper
+nubTVars = nub . (typeWrapTVar <$>) . allUncommitted
+
+attemptLock : HasIO io => STM io a -> io ()
 attemptLock s = do
 	let tvarsToLock = nubTVars s
 	tvarsLocked <- sequence $ (lock . .value.seqLock) <$> tvarsToLock
@@ -88,4 +100,4 @@ attemptLock s = do
 			attemptLock s
 
 public export
-commit : HasIO io => STM a -> io a
+commit : HasIO io => STM io a -> io a

@@ -28,5 +28,13 @@ public export
 readTVar : HasIO io => TVar a -> io (Bits64, a)
 readTVar tvar = do
 	version <- getVersion tvar.seqLock
-	value   <- readIORef  tvar.content
-	pure (version, value)
+	case version `mod` 2 of
+		0 => do
+			value <- readIORef tvar.content
+			versionCheck <- getVersion tvar.seqLock
+			-- Unsure about memory guarantees, ¿Is this enough?
+			if version == versionCheck
+				then pure $ (version, value)
+				else readTVar tvar
+		-- Spin, only odd when being written into so wait
+		_ => readTVar tvar
