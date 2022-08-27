@@ -43,9 +43,21 @@ record STM io a where
   return : a
 
 public export
+Functor (STM io) where
+  map f = { return $= f, op $= map (map f .) }
+
+public export
 stmBind : {i : Type} -> STM io i -> (f : i -> STM io o) -> STM io o
 stmBind s f = let r := f (s.return) in
   {inputType := i, input := s.return, op := Just f, stack := Just s} r
+
+public export
+stmApp : {a, b : Type} -> STM io (a -> b) -> STM io a -> STM io b
+stmApp sf sa = sf `stmBind` (\f => map f sa)
+
+public export
+pure : HasIO io => a -> STM io a
+pure v = MkSTM Unit () Nothing Nothing [] v
 
 stmRetryLast : STM io a -> STM io a
 stmRetryLast s = fromMaybe s (($ s.input) <$> s.op)
@@ -101,3 +113,5 @@ attemptLock s = do
 
 public export
 commit : HasIO io => STM io a -> io a
+commit = do
+  ?something
