@@ -4,6 +4,7 @@ import Data.IORef
 import Data.List
 import Data.Maybe
 import System.Concurrency
+import Debug.Trace
 
 import Control.Concurrency.Mutex
 import Control.Concurrency.SeqLock
@@ -28,6 +29,10 @@ data STMOperation : Type where
 	Get : (a : Type) -> TVar a -> Bits64 -> STMOperation
 	Update : (a : Type) -> TVar a -> Bits64 -> (f: a -> a) -> STMOperation
 
+Show STMOperation where
+	show (Update _ _ v _) = "Update v: " ++ show v
+	show (Get _ _ v) = "Get v: " ++ show v
+
 isUpdate : STMOperation -> Bool
 isUpdate (Update _ _ _ _) = True
 isUpdate _ = False
@@ -46,14 +51,18 @@ record STM io a where
   uncommitted : List STMOperation
   return : a
 
+allUncommitted : STM io a -> List STMOperation
+allUncommitted s = (maybe [] allUncommitted s.stack) ++ s.uncommitted
+
 public export
 Functor (STM io) where
   map f = { return $= f, op $= map (map f .) }
 
+||| Warning: Has a bug that drops operations
 public export
 stmBind : {i : Type} -> STM io i -> (f : i -> STM io o) -> STM io o
 stmBind s f = let r := f (s.return) in
-  {inputType := i, input := s.return, op := Just f, stack := Just s} r
+	{inputType := i, input := s.return, op := Just f, stack := Just s} r
 
 public export
 stmApp : {a, b : Type} -> STM io (a -> b) -> STM io a -> STM io b
@@ -86,9 +95,6 @@ typeWrapTVar op = case op of
 	(Get    type tvar _)   => MkTVarTypeWrapper type tvar
 	(Update type tvar _ _) => MkTVarTypeWrapper type tvar
 
-allUncommitted : STM io a -> List STMOperation
-allUncommitted s = (maybe [] allUncommitted s.stack) ++ s.uncommitted
-
 nubTVars : List STMOperation -> List TVarTypeWrapper
 nubTVars = nub . (typeWrapTVar <$>)
 
@@ -98,10 +104,7 @@ acquireLocks s = do
 	let tvarsToLock = nubTVars pendingOperations
 	tvarsLocked <- sequence $ (lock . .value.seqLock) <$> tvarsToLock
 	case all id tvarsLocked of
-		True => do
-			let tvarsToIncrease = nubTVars . filter isUpdate $ pendingOperations
-			increased <- sequence $ (increaseVersion . .value.seqLock) <$> tvarsToIncrease
-			pure ()
+		True => pure ()
 		False => do
 			let tvarsToUnlock = filter snd $ zip tvarsToLock tvarsLocked
 			withMutex globalLock $ do
@@ -121,8 +124,6 @@ acquireLocks s = do
 releaseLocks : HasIO io => STM io a -> io ()
 releaseLocks s = withMutex globalLock $ do
 	let completedOperations = allUncommitted s
-	let tvarsToIncrease = nubTVars . filter isUpdate $ completedOperations
-	increased <- sequence $ (increaseVersion . .value.seqLock) <$> tvarsToIncrease
 	let tvarsToUnlock = nubTVars completedOperations
 	tvarsUnlocked <- sequence $ (unlock . .value.seqLock) <$> tvarsToUnlock
 	tvarsUnlockedNotified <- sequence $ map (conditionSignal . .value.condition) tvarsToUnlock
@@ -135,25 +136,34 @@ withLocks s io = do
   _ <- releaseLocks s
   pure r
 
-public export
-operationType : STMOperation -> Type
-operationType (Update a _ _ _) = a
-operationType (Get a _ _) = a
-
-public export
 doOperation : HasIO io => (o : STMOperation) -> io Bits64
 doOperation (Update a tvar version f) = fst <$> writeTVar tvar version f
 doOperation (Get a tvar _) = fst <$> readTVar tvar
 
-showOp : STMOperation -> String
-showOp (Update _ _ v _) = "Update v: " ++ show v
-showOp (Get _ _ v) = "Get v: " ++ show v
+operationTVarVersion : HasIO io => STMOperation -> io Bits64
+operationTVarVersion (Update a tvar _ _) = getVersionTVar tvar
+operationTVarVersion (Get a tvar _) = getVersionTVar tvar
+
+
+-- validate : HasIO io -> STM io a -> io
+-- validate = do
+
+executeCommit : HasIO io => List STMOperation -> io ()
+executeCommit ops = do
+    _ <- printLn ops
+    let updateOps = filter isUpdate ops
+    let updateTVars = nubTVars updateOps
+    increased <- sequence $ (increaseVersion . .value.seqLock) <$> updateTVars
+    _ <- sequence_ (doOperation <$> updateOps)
+    increased <- sequence $ (increaseVersion . .value.seqLock) <$> updateTVars
+    pure ()
 
 public export
 commit : HasIO io => STM io a -> io a
-commit s = do
-  _ <- acquireLocks s
+commit s = withLocks s $ do
   let pendingOperations = reverse $ allUncommitted s
-  _ <- sequence_ (doOperation <$> pendingOperations)
-  _ <- releaseLocks s
-  pure $ s.return
+  currentVersions <- sequence (operationTVarVersion <$> pendingOperations)
+  _ <- printLn currentVersions
+  validated <- ?validationHole
+  _ <- executeCommit pendingOperations
+  pure s.return

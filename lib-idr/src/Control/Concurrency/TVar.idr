@@ -25,6 +25,10 @@ newTVar initialValue = do
 	pure $ MkTVar seqLock condition ioRef
 
 public export
+getVersionTVar : HasIO io => TVar a -> io Bits64
+getVersionTVar tvar = getVersion tvar.seqLock
+
+public export
 readTVar : HasIO io => TVar a -> io (Bits64, a)
 readTVar tvar = do
 	version <- getVersion tvar.seqLock
@@ -37,7 +41,9 @@ readTVar tvar = do
 				then pure $ (version, value)
 				else readTVar tvar
 		-- Spin, only odd when being written into so wait
-		_ => readTVar tvar
+		_ => do
+			_ <- printLn "Spinning"
+			readTVar tvar
 
 public export
 writeTVar : HasIO io => TVar a -> Bits64 -> (a -> a) -> io (Bits64, a)
