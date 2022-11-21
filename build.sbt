@@ -1,5 +1,7 @@
 ThisBuild / scalaVersion := "3.2.1"
 
+enablePlugins(ScalaNativePlugin)
+
 lazy val globalDependencies = Seq()
 
 lazy val network =

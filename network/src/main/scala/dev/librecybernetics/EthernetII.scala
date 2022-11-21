@@ -1,9 +1,15 @@
 package dev.librecybernetics
 
-case class EthernetII[Payload](
+object EthernetII {
+  trait Payload {
+    val etherType: EtherType
+    val payload: Array[Byte]
+  }
+}
+
+case class EthernetII[Payload <: EthernetII.Payload](
     destination: MACAddress,
     source: MACAddress,
-    ethertype: EtherType,
     payload: Payload,
     frameCheckSequence: Long
 )
