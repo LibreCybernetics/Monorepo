@@ -12,7 +12,11 @@ val sharedSettings = Seq(
 
 wartremoverErrors ++= Warts.unsafe
 
-lazy val globalDependencies = Seq()
+lazy val globalDependencies = Seq(
+  "org.scalatest" %% "scalatest" % "3.2.14" % Test,
+  "org.scalatest" %% "scalatest-wordspec" % "3.2.14" % Test,
+  "org.scalatestplus" %% "scalacheck-1-17" % "3.2.14.0" % Test
+)
 
 lazy val network =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
