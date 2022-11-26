@@ -8,8 +8,8 @@ object EthernetII {
 }
 
 case class EthernetII[Payload <: EthernetII.Payload](
-    destination: MACAddress,
-    source: MACAddress,
+    destination: EUI48,
+    source: EUI48,
     payload: Payload,
     frameCheckSequence: Long
 )

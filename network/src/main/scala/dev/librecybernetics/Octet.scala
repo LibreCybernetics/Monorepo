@@ -29,6 +29,8 @@ object Octet {
   }
 
   extension (o: Octet) {
+    def &(os: Octet): Octet = (o & os).toShort
+
     def toHexString: String =
       Seq(o / 16, o % 16).map(baseConversion) match {
         case Seq(a, b) => s"$a$b"
