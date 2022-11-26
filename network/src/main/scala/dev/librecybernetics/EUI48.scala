@@ -3,8 +3,6 @@ package dev.librecybernetics
 import scala.collection.immutable.ArraySeq
 import java.rmi.server.UnicastRemoteObject
 
-type MACAddress = EUI48
-
 object EUI48 {
   enum Administred:
     case LocallyAdministred
@@ -13,6 +11,8 @@ object EUI48 {
   enum Cast:
     case Unicast
     case Multicast
+
+  def apply(address: List[Octet]): EUI48 = EUI48(ArraySeq.from(address))
 }
 
 case class EUI48(
