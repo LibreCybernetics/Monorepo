@@ -1,4 +1,4 @@
-package dev.librecybernetics
+package dev.librecybernetics.network
 
 opaque type Octet = Short
 

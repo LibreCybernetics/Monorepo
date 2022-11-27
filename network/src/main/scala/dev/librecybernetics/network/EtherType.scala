@@ -1,4 +1,4 @@
-package dev.librecybernetics
+package dev.librecybernetics.network
 
 enum EtherType(val value: Int):
   case ARP extends EtherType(0x0806)

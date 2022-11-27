@@ -1,4 +1,4 @@
-package dev.librecybernetics
+package dev.librecybernetics.network
 
 import org.scalacheck.Gen
 import org.scalatest.matchers.should.Matchers.*

@@ -1,4 +1,4 @@
-package dev.librecybernetics
+package dev.librecybernetics.network
 
 import scala.collection.immutable.ArraySeq
 import java.rmi.server.UnicastRemoteObject

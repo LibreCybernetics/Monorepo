@@ -1,4 +1,4 @@
-package dev.librecybernetics
+package dev.librecybernetics.network
 
 object EthernetII {
   trait Payload {
