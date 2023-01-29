@@ -26,3 +26,12 @@ lazy val network =
       name := "network",
       libraryDependencies ++= globalDependencies
     )
+
+lazy val `social-ontology` =
+  crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .crossType(CrossType.Pure)
+    .settings(sharedSettings)
+    .settings(
+      name := "social-ontology",
+      libraryDependencies ++= globalDependencies
+    )
