@@ -18,6 +18,18 @@ lazy val globalDependencies = Seq(
   "org.scalatestplus" %% "scalacheck-1-17" % "3.2.15.0" % Test
 )
 
+lazy val zlib =
+  crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .crossType(CrossType.Pure)
+    .settings(sharedSettings)
+    .settings(
+      name := "git",
+      libraryDependencies ++= globalDependencies ++
+        Seq(
+          "org.scodec" %%% "scodec-core" % "2.2.1"
+        )
+    )
+
 lazy val network =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
