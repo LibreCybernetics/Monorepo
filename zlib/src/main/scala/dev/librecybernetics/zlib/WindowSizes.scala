@@ -13,8 +13,8 @@ extension (windowSize: WindowSize)
     case 16384 => 6
     case 32768 => 7
 
-extension (byte: Byte & (0 | 1 | 2 | 3 | 4 | 5 | 6 | 7))
-  def toWindowsSize: WindowSize = byte match
+extension (byte: Byte)
+  def toWindowSize: WindowSize = byte match
     case 0 => 256
     case 1 => 512
     case 2 => 1024
