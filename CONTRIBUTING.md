@@ -16,15 +16,7 @@ Choose a license for your contribution from the following list:
 
 # DCO 1.1
 
-Developer Certificate of Origin
-Version 1.1
-
-Copyright (C) 2004, 2006 The Linux Foundation and its contributors.
-
-Everyone is permitted to copy and distribute verbatim copies of this
-license document, but changing it is not allowed.
-
-
+```
 Developer's Certificate of Origin 1.1
 
 By making a contribution to this project, I certify that:
@@ -50,6 +42,10 @@ By making a contribution to this project, I certify that:
     personal information I submit with it, including my sign-off) is
     maintained indefinitely and may be redistributed consistent with
     this project or the open source license(s) involved.
+```
+
+From: https://developercertificate.org/ (Accessed: 2023-02-28)
+
 
 # Signoff Commits
 
