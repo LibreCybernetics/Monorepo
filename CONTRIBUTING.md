@@ -1,0 +1,66 @@
+Merge requests must include the following three elements
+
+1. A license from the Licenses list on this document
+2. A verbatim copy of DCO 1.1
+3. All commits must innclude a `--signoff` from the author of the merge request
+
+# Licenses
+
+Choose a license for your contribution from the following list:
+
+- BSD Zero Clause License (0BSD)
+- Creative Commons Zero / Public Domain (CC0)
+- DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE (WTFPL)
+- MIT No Attribution License (MIT-0)
+- Unlicense
+
+# DCO 1.1
+
+Developer Certificate of Origin
+Version 1.1
+
+Copyright (C) 2004, 2006 The Linux Foundation and its contributors.
+
+Everyone is permitted to copy and distribute verbatim copies of this
+license document, but changing it is not allowed.
+
+
+Developer's Certificate of Origin 1.1
+
+By making a contribution to this project, I certify that:
+
+(a) The contribution was created in whole or in part by me and I
+    have the right to submit it under the open source license
+    indicated in the file; or
+
+(b) The contribution is based upon previous work that, to the best
+    of my knowledge, is covered under an appropriate open source
+    license and I have the right under that license to submit that
+    work with modifications, whether created in whole or in part
+    by me, under the same open source license (unless I am
+    permitted to submit under a different license), as indicated
+    in the file; or
+
+(c) The contribution was provided directly to me by some other
+    person who certified (a), (b) or (c) and I have not modified
+    it.
+
+(d) I understand and agree that this project and the contribution
+    are public and that a record of the contribution (including all
+    personal information I submit with it, including my sign-off) is
+    maintained indefinitely and may be redistributed consistent with
+    this project or the open source license(s) involved.
+
+# Signoff Commits
+
+## New commits
+
+Example: `git commit --signoff -m [COMMIT MSG]`
+
+## Existing commits (amend)
+
+Example: `git commit --amend --signoff -C HEAD`
+
+## Several commits
+
+Example: `git rebase -i [base ref]`, amend
