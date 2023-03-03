@@ -1,11 +1,13 @@
 package dev.librecybernetics.network
 
-import scala.Function.const
-import scala.collection.immutable.ArraySeq
-
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+
+import scala.Function.const
+import scala.collection.immutable.ArraySeq
+
+import dev.librecybernetics.types.{UnsignedByte, toUnsignedByte}
 
 class EUI48Spec extends AnyWordSpec with ScalaCheckPropertyChecks {
   "EUI48" should {
@@ -16,13 +18,13 @@ class EUI48Spec extends AnyWordSpec with ScalaCheckPropertyChecks {
         an[IllegalArgumentException] should be thrownBy
           EUI48(
             ArraySeq.from(
-              Seq.fill[Short](5)(0x0).map(Octet(_))
+              Seq.fill[UnsignedByte](5)(0x0.toUnsignedByte).map(Octet(_))
             )
           )
         an[IllegalArgumentException] should be thrownBy
           EUI48(
             ArraySeq.from(
-              Seq.fill[Short](7)(0x0).map(Octet(_))
+              Seq.fill[UnsignedByte](7)(0x0.toUnsignedByte).map(Octet(_))
             )
           )
         an[IllegalArgumentException] should be thrownBy
@@ -30,13 +32,13 @@ class EUI48Spec extends AnyWordSpec with ScalaCheckPropertyChecks {
         an[IllegalArgumentException] should be thrownBy
           EUI64(
             ArraySeq.from(
-              Seq.fill[Short](7)(0x0).map(Octet(_))
+              Seq.fill[UnsignedByte](7)(0x0.toUnsignedByte).map(Octet(_))
             )
           )
         an[IllegalArgumentException] should be thrownBy
           EUI64(
             ArraySeq.from(
-              Seq.fill[Short](9)(0x0).map(Octet(_))
+              Seq.fill[UnsignedByte](9)(0x0.toUnsignedByte).map(Octet(_))
             )
           )
       }

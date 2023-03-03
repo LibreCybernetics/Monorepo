@@ -3,11 +3,14 @@
 val sharedSettings = Seq(
   scalaVersion := "3.2.2",
   scalacOptions ++= Seq(
-    "-deprecation",
     "-explain",
     "-explain-types",
+    // Extra Warnings
+    "-deprecation",
     "-feature",
     "-unchecked",
+    // Extra flags
+    "-Ykind-projector:underscores",
     "-Xfatal-warnings"
   )
 )
@@ -43,6 +46,7 @@ lazy val scalatestVersion = "3.2.15"
 lazy val network =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
+    .dependsOn(unsigned)
     .settings(sharedSettings)
     .settings(
       name := "network",

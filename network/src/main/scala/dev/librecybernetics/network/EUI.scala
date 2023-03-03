@@ -3,6 +3,8 @@ package dev.librecybernetics.network
 import scala.collection.immutable.ArraySeq
 import java.rmi.server.UnicastRemoteObject
 
+import dev.librecybernetics.types.toUnsignedByte
+
 object EUI {
   enum Administred:
     case LocallyAdministred
@@ -18,18 +20,18 @@ abstract class EUI {
   val addressLength: Int
   val organizationIdLength: Int
 
-  lazy val administredBit = address(0) & Octet(0x2)
+  lazy val administredBit = address(0) and Octet(0x2.toByte.toUnsignedByte)
   lazy val administred = () match {
-    case _ if administredBit == Octet(0x0) =>
+    case _ if administredBit == Octet(0x0.toByte.toUnsignedByte) =>
       EUI.Administred.UniversallyAdministred
-    case _ if administredBit == Octet(0x2) =>
+    case _ if administredBit == Octet(0x2.toByte.toUnsignedByte) =>
       EUI.Administred.LocallyAdministred
   }
 
-  lazy val castBit = address(0) & Octet(0x1)
+  lazy val castBit = address(0) and Octet(0x1.toByte.toUnsignedByte)
   lazy val cast = () match {
-    case _ if castBit == Octet(0x0) => EUI.Cast.Unicast
-    case _ if castBit == Octet(0x1) => EUI.Cast.Multicast
+    case _ if castBit == Octet(0x0.toByte.toUnsignedByte) => EUI.Cast.Unicast
+    case _ if castBit == Octet(0x1.toByte.toUnsignedByte) => EUI.Cast.Multicast
   }
 }
 

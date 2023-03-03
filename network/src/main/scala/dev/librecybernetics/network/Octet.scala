@@ -1,22 +1,16 @@
 package dev.librecybernetics.network
 
-opaque type Octet = Short
+import dev.librecybernetics.types.{& => unsignedByteAnd, *}
 
-// TODO: Change from Short(Signed 16-bit) to Byte(Signed 8-bit)
+opaque type Octet = UnsignedByte
+
 object Octet {
-  def apply(b: Short): Octet = {
-    require(b >= 0 && b < 256)
-    b
-  }
+  def apply(b: UnsignedByte): Octet = b
 
-  private def baseConversion(b: Int): Char = b match {
-    case _ if b < 10 => (b + 48).toChar
-    case _ if b < 16 => (b + 55).toChar
-  }
 
   private def baseConversion(c: Char): Int = c match {
-    case _ if c >= 48 && c < 59 => c.toShort - 48
-    case _ if c >= 65 && c < 71 => c.toShort - 55
+    case _ if c >= 48 && c < 59 => c.toByte - 48
+    case _ if c >= 65 && c < 71 => c.toByte - 55
   }
 
   def fromHexString(s: String): Octet = {
@@ -24,16 +18,23 @@ object Octet {
     require(s.forall(c => (c >= 48 && c < 59) || (c >= 65 && c < 71)))
 
     s.map(baseConversion) match {
-      case Seq(a, b) => (a * 16 + b).toShort
+      case Seq(a, b) => (a * 16 + b).toByte.toUnsignedByte
     }
   }
-
-  extension (o: Octet) {
-    def &(os: Octet): Octet = (o & os).toShort
-
-    def toHexString: String =
-      Seq(o / 16, o % 16).map(baseConversion) match {
-        case Seq(a, b) => s"$a$b"
-      }
-  }
 }
+
+extension (o: Octet)
+  private def baseConversion(b: Byte): Char = b match
+    case _ if b < 10 => (b + 48).toChar
+    case _ if b < 16 => (b + 55).toChar
+
+  // TODO: Dotty Bug? if changed to `inline def &`
+  def and(os: Octet): Octet = o unsignedByteAnd os
+
+  def toHexString: String =
+    Seq(
+      (o / 16.toByte.toUnsignedByte).toByte,
+      (o % 16.toByte.toUnsignedByte).toByte
+    ).map(baseConversion) match {
+      case Seq(a, b) => s"$a$b"
+    }
