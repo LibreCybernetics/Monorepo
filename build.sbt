@@ -20,6 +20,10 @@ lazy val globalDependencies = Seq(
   "org.scalatestplus" %% "scalacheck-1-17" % "3.2.15.0" % Test
 )
 
+lazy val catsVersion = "2.9.0"
+lazy val catsCore =
+  "org.typelevel" %% "cats-core" % catsVersion
+
 // Modules
 
 lazy val network =
@@ -46,7 +50,8 @@ lazy val unsigned =
     .settings(sharedSettings)
     .settings(
       name := "unsigned",
-      libraryDependencies ++= globalDependencies
+      libraryDependencies ++= globalDependencies :+
+        catsCore
     )
 
 lazy val zlib =
