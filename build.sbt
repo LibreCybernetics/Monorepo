@@ -14,17 +14,31 @@ val sharedSettings = Seq(
 
 wartremoverErrors ++= Warts.unsafe
 
-lazy val globalDependencies = Seq(
-  "org.scalatest" %% "scalatest" % "3.2.15" % Test,
-  "org.scalatest" %% "scalatest-wordspec" % "3.2.15" % Test,
-  "org.scalatestplus" %% "scalacheck-1-17" % "3.2.15.0" % Test
-)
+//==========//
+// Versions //
+//==========//
+
+// Typelevel Deps
 
 lazy val catsVersion = "2.9.0"
-lazy val catsCore =
-  "org.typelevel" %% "cats-core" % catsVersion
+lazy val scodecVersion = "2.2.1"
 
-// Modules
+// Other Deps
+
+lazy val scalatestVersion = "3.2.15"
+
+//=================//
+// Upstream issues //
+//=================//
+
+// Scoverage of JS/Native
+// - https://github.com/lampepfl/dotty/issues/15383
+// - https://github.com/lampepfl/dotty/issues/16124
+// ("org.scoverage" %%% "scalac-scoverage-runtime" % "2.0.8" % Test).cross(CrossVersion.for3Use2_13)
+
+//=========//
+// Modules //
+//=========//
 
 lazy val network =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
@@ -32,7 +46,11 @@ lazy val network =
     .settings(sharedSettings)
     .settings(
       name := "network",
-      libraryDependencies ++= globalDependencies
+      libraryDependencies ++= Seq(
+        "org.scalatest" %%% "scalatest" % scalatestVersion % Test,
+        "org.scalatest" %%% "scalatest-wordspec" % scalatestVersion % Test,
+        "org.scalatestplus" %%% "scalacheck-1-17" % s"$scalatestVersion.0" % Test,
+      ),
     )
 
 lazy val `social-ontology` =
@@ -41,7 +59,11 @@ lazy val `social-ontology` =
     .settings(sharedSettings)
     .settings(
       name := "social-ontology",
-      libraryDependencies ++= globalDependencies
+      libraryDependencies ++= Seq(
+        "org.scalatest" %%% "scalatest" % scalatestVersion % Test,
+        "org.scalatest" %%% "scalatest-wordspec" % scalatestVersion % Test,
+        "org.scalatestplus" %%% "scalacheck-1-17" % s"$scalatestVersion.0" % Test
+      )
     )
 
 lazy val unsigned =
@@ -50,8 +72,12 @@ lazy val unsigned =
     .settings(sharedSettings)
     .settings(
       name := "unsigned",
-      libraryDependencies ++= globalDependencies :+
-        catsCore
+      libraryDependencies ++= Seq(
+        "org.typelevel" %%% "cats-core" % catsVersion,
+        "org.scalatest" %%% "scalatest" % scalatestVersion % Test,
+        "org.scalatest" %%% "scalatest-wordspec" % scalatestVersion % Test,
+        "org.scalatestplus" %%% "scalacheck-1-17" % s"$scalatestVersion.0" % Test,
+      )
     )
 
 lazy val zlib =
@@ -60,8 +86,11 @@ lazy val zlib =
     .settings(sharedSettings)
     .settings(
       name := "git",
-      libraryDependencies ++= globalDependencies ++
+      libraryDependencies ++=
         Seq(
-          "org.scodec" %%% "scodec-core" % "2.2.1"
+          "org.scodec" %%% "scodec-core" % "2.2.1",
+          "org.scalatest" %%% "scalatest" % scalatestVersion % Test,
+          "org.scalatest" %%% "scalatest-wordspec" % scalatestVersion % Test,
+          "org.scalatestplus" %%% "scalacheck-1-17" % s"$scalatestVersion.0" % Test
         )
     )

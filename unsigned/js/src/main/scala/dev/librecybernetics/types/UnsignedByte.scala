@@ -15,7 +15,10 @@ given unsignedByteEq: Eq[UnsignedByte] with
 
 given unsignedByteShow: Show[UnsignedByte] with
   override def show(ub: UnsignedByte): String =
-    ub.toString
+    ub match {
+      case _ if (ub & 0x80) == 0 => ub.toString
+      case _ => ((ub & 0x7F.toByte) | 0x0080).toString
+    }
 
 extension (ub: UnsignedByte)
   def toByte: Byte = ub
