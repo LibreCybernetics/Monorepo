@@ -5,9 +5,6 @@ import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-// TODO: Create unsigned-scalacheck for this Gen
-val unsignedByteGen: Gen[UnsignedByte] = Gen.choose[Byte](-128.toByte, 127.toByte).map(_.toUnsignedByte)
-
 class UnsignedByteSpec extends AnyWordSpec with ScalaCheckPropertyChecks {
   "All UnsignedByte" when {
     "examples" should {
