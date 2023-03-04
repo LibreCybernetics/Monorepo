@@ -44,7 +44,13 @@ extension (ub: UnsignedByte)
   def toInt: Int = ub.toInt
   def toLong: Long = ub.toLong
 
+  inline def |(oub: UnsignedByte): UnsignedByte = (ub | oub).toUByte
   inline def &(oub: UnsignedByte): UnsignedByte = (ub & oub).toUByte
+  inline def ^(oub: UnsignedByte): UnsignedByte = (ub ^ oub).toUByte
+
+  inline def +(oub: UnsignedByte): UnsignedByte = (ub + oub).toUByte
+  inline def -(oub: UnsignedByte): UnsignedByte = (ub - oub).toUByte
+  inline def *(oub: UnsignedByte): UnsignedByte = (ub * oub).toUByte
   inline def /(oub: UnsignedByte): UnsignedByte = (ub / oub).toUByte
   inline def %(oub: UnsignedByte): UnsignedByte = (ub % oub).toUByte
 

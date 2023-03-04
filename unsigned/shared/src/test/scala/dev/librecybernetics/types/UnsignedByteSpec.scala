@@ -5,6 +5,9 @@ import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
+// TODO: Create unsigned-scalacheck for this Gen
+val unsignedByteGen: Gen[UnsignedByte] = Gen.choose[Byte](-128.toByte, 127.toByte).map(_.toUnsignedByte)
+
 class UnsignedByteSpec extends AnyWordSpec with ScalaCheckPropertyChecks {
   "All UnsignedByte" when {
     "examples" should {
@@ -50,6 +53,58 @@ class UnsignedByteSpec extends AnyWordSpec with ScalaCheckPropertyChecks {
           l
             .toUnsignedByte[Either[IllegalArgumentException, _]]
             .map { (ub: UnsignedByte) => ub.toLong } shouldBe Right(l)
+        }
+      }
+    }
+
+    "operations" when {
+      "|" in {
+        forAll(unsignedByteGen, unsignedByteGen) { (uba, ubb) =>
+          (uba | ubb).toByte shouldBe (uba.toShort | ubb.toShort).toByte
+        }
+      }
+
+      "&" in {
+        forAll(unsignedByteGen, unsignedByteGen) { (uba, ubb) =>
+          (uba & ubb).toByte shouldBe (uba.toShort & ubb.toShort).toByte
+        }
+      }
+
+      "^" in {
+        forAll(unsignedByteGen, unsignedByteGen) { (uba, ubb) =>
+          (uba ^ ubb).toByte shouldBe (uba.toShort ^ ubb.toShort).toByte
+        }
+      }
+
+      "+" in {
+        forAll(unsignedByteGen, unsignedByteGen) { (uba, ubb) =>
+          (uba + ubb).toByte shouldBe (uba.toShort + ubb.toShort).toByte
+        }
+      }
+
+      "-" in {
+        forAll(unsignedByteGen, unsignedByteGen) { (uba, ubb) =>
+          (uba - ubb).toByte shouldBe (uba.toShort - ubb.toShort).toByte
+        }
+      }
+
+      "*" in {
+        forAll(unsignedByteGen, unsignedByteGen) { (uba, ubb) =>
+          (uba * ubb).toByte shouldBe (uba.toShort * ubb.toShort).toByte
+        }
+      }
+
+      "/" in {
+        forAll(unsignedByteGen, unsignedByteGen) { (uba, ubb) =>
+          whenever(ubb.toByte != 0) {
+            (uba / ubb).toByte shouldBe (uba.toShort / ubb.toShort).toByte
+          }
+        }
+      }
+
+      "%" in {
+        forAll(unsignedByteGen, unsignedByteGen) { (uba, ubb) =>
+          (uba % ubb).toByte shouldBe (uba.toShort % ubb.toShort).toByte
         }
       }
     }

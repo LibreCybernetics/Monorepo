@@ -5,12 +5,11 @@ import cats.{Eq, MonadError, Show}
 
 opaque type UnsignedByte = Byte
 
-private def unsignedByte2Short(b: Byte): Short =
+private def unsignedByte2Short(b: UnsignedByte): Short =
   b match {
     case _ if (b & 0x80) == 0 => b
     case _ => ((b & 0x7F.toByte) | 0x0080).toShort
   }
-
 
 given unsignedByteEq: Eq[UnsignedByte] with
   override def eqv(x: UnsignedByte, y: UnsignedByte): Boolean =
@@ -49,7 +48,13 @@ extension (ub: UnsignedByte)
   def toInt: Int = unsignedByte2Short(ub).toInt
   def toLong: Long = unsignedByte2Short(ub).toLong
 
+  inline def |(oub: UnsignedByte): UnsignedByte = (ub | oub).toByte
   inline def &(oub: UnsignedByte): UnsignedByte = (ub & oub).toByte
+  inline def ^(oub: UnsignedByte): UnsignedByte = (ub ^ oub).toByte
+
+  inline def +(oub: UnsignedByte): UnsignedByte = (unsignedByte2Short(ub) + unsignedByte2Short(oub)).toByte
+  inline def -(oub: UnsignedByte): UnsignedByte = (unsignedByte2Short(ub) - unsignedByte2Short(oub)).toByte
+  inline def *(oub: UnsignedByte): UnsignedByte = (unsignedByte2Short(ub) * unsignedByte2Short(oub)).toByte
   inline def /(oub: UnsignedByte): UnsignedByte = (unsignedByte2Short(ub) / unsignedByte2Short(oub)).toByte
   inline def %(oub: UnsignedByte): UnsignedByte = (unsignedByte2Short(ub) % unsignedByte2Short(oub)).toByte
 
