@@ -17,6 +17,7 @@ class UnsignedByteSpec extends AnyWordSpec with ScalaCheckPropertyChecks {
         128.toByte.toUnsignedByte.show shouldBe "128"
         130.toByte.toUnsignedByte.show shouldBe "130"
         200.toByte.toUnsignedByte.show shouldBe "200"
+
         val r1 = 200.toShort.toUnsignedByte[Either[IllegalArgumentException, _]].toOption.get
         r1.show shouldBe "200"
         val r2 = 200.toInt.toUnsignedByte[Either[IllegalArgumentException, _]].toOption.get
@@ -26,12 +27,13 @@ class UnsignedByteSpec extends AnyWordSpec with ScalaCheckPropertyChecks {
       }
 
       "raise error when out of bounds" in {
+        val msg = "Given value 1000 doesn't satisfy 0 <= 1000 < 256"
         val ex1 = 1000.toShort.toUnsignedByte[Either[IllegalArgumentException, _]].left.toOption.get
-        ex1 should have message "Given value 1000 doesn't satisfy 0 <= 1000 < 256"
+        ex1 should have message msg
         val ex2 = 1000.toInt.toUnsignedByte[Either[IllegalArgumentException, _]].left.toOption.get
-        ex2 should have message "Given value 1000 doesn't satisfy 0 <= 1000 < 256"
+        ex2 should have message msg
         val ex3 = 1000.toLong.toUnsignedByte[Either[IllegalArgumentException, _]].left.toOption.get
-        ex3 should have message "Given value 1000 doesn't satisfy 0 <= 1000 < 256"
+        ex3 should have message msg
       }
     }
 
