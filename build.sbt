@@ -1,7 +1,12 @@
 // Globals
 
+lazy val Scala3Version = "3.2.2"
+
+ThisBuild / scalaVersion := Scala3Version
+ThisBuild / organization := "dev.librecybernetics"
+
 val sharedSettings = Seq(
-  scalaVersion := "3.2.2",
+  scalaVersion := Scala3Version,
   scalacOptions ++= Seq(
     "-explain",
     "-explain-types",
