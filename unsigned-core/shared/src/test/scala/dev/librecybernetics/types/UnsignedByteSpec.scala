@@ -5,6 +5,8 @@ import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
+import UnsignedByte.*
+
 class UnsignedByteSpec extends AnyWordSpec with ScalaCheckPropertyChecks {
   "All UnsignedByte" when {
     "examples" should {

@@ -4,9 +4,7 @@ import scala.collection.ArrayOps
 
 import org.scalacheck.Gen
 
-import dev.librecybernetics.types.{toUnsignedByte, UnsignedByte}
-
-val unsignedByteGen: Gen[UnsignedByte] = Gen.choose[Byte](-128.toByte, 127.toByte).map(_.toUnsignedByte)
+import dev.librecybernetics.types.unsignedByteGen
 
 val octetGen: Gen[Octet] = unsignedByteGen.map(Octet.apply)
 val eui48Gen: Gen[EUI48] = Gen.listOfN(6, octetGen).map(EUI48(_))

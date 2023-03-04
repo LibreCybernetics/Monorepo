@@ -2,6 +2,7 @@ package dev.librecybernetics.types
 
 import org.scalacheck.Gen
 
+import UnsignedByte.toUnsignedByte
 import UnsignedShort.toUnsignedShort
 
 val unsignedByteGen: Gen[UnsignedByte]   = Gen.choose[Byte](Byte.MinValue, Byte.MaxValue).map(_.toUnsignedByte)

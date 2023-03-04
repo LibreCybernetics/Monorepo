@@ -3,7 +3,7 @@ package dev.librecybernetics.network
 import scala.collection.immutable.ArraySeq
 import java.rmi.server.UnicastRemoteObject
 
-import dev.librecybernetics.types.toUnsignedByte
+import dev.librecybernetics.types.UnsignedByte.toUnsignedByte
 
 object EUI {
   enum Administred:

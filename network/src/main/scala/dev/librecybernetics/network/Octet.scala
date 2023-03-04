@@ -1,6 +1,7 @@
 package dev.librecybernetics.network
 
-import dev.librecybernetics.types.{& => unsignedByteAnd, *}
+import dev.librecybernetics.types.*
+import UnsignedByte.*
 
 opaque type Octet = UnsignedByte
 
@@ -29,7 +30,7 @@ extension (o: Octet)
     case _ if b < 16 => (b + 55).toChar
 
   // TODO: Dotty Bug? if changed to `inline def &`
-  def and(os: Octet): Octet = o unsignedByteAnd os
+  def and(os: Octet): Octet = o & os
 
   def toHexString: String =
     Seq(

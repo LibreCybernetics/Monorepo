@@ -47,7 +47,10 @@ lazy val scalatestVersion = "3.2.15"
 lazy val network =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
-    .dependsOn(`unsigned-core`)
+    .dependsOn(
+      `unsigned-core`,
+      `unsigned-scalacheck` % Test
+    )
     .settings(sharedSettings)
     .settings(
       name := "network",

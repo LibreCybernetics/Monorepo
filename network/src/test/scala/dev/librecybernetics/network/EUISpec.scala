@@ -7,7 +7,8 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import scala.Function.const
 import scala.collection.immutable.ArraySeq
 
-import dev.librecybernetics.types.{UnsignedByte, toUnsignedByte}
+import dev.librecybernetics.types.UnsignedByte
+import UnsignedByte.*
 
 class EUI48Spec extends AnyWordSpec with ScalaCheckPropertyChecks {
   "EUI48" should {

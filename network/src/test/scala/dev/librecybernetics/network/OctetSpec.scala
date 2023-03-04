@@ -5,7 +5,8 @@ import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-import dev.librecybernetics.types.toUnsignedByte
+import dev.librecybernetics.types.UnsignedByte.toUnsignedByte
+import dev.librecybernetics.types.unsignedByteGen
 
 class OctetSpec extends AnyWordSpec with ScalaCheckPropertyChecks {
   "All Octets" when {
