@@ -8,13 +8,13 @@ import cats.{Eq, MonadError, Show}
 opaque type UnsignedShort = UShort
 
 object UnsignedShort:
-  given unsignedByteEq: Eq[UnsignedShort] with
+  given unsignedShortEq: Eq[UnsignedShort] with
     override def eqv(x: UnsignedShort, y: UnsignedShort): Boolean =
       x == y
     override def neqv(x: UnsignedShort, y: UnsignedShort): Boolean =
       x != y
 
-  given unsignedByteShow: Show[UnsignedShort] with
+  given unsignedShortShow: Show[UnsignedShort] with
     override def show(us: UnsignedShort): String =
       us.toString()
 
@@ -50,4 +50,4 @@ object UnsignedShort:
     inline def /(ous: UnsignedShort): UnsignedShort = (us / ous).toUShort
     inline def %(ous: UnsignedShort): UnsignedShort = (us % ous).toUShort
 
-    def show: String = Show(using unsignedByteShow).show(us)
+    def show: String = Show(using unsignedShortShow).show(us)
