@@ -29,6 +29,7 @@ wartremoverErrors ++= Warts.unsafe
 // Typelevel Deps
 
 lazy val catsVersion       = "2.9.0"
+lazy val catsParseVersion  = "0.3.9"
 lazy val scalacheckVersion = "1.17.0"
 lazy val scodecVersion     = "2.2.1"
 
@@ -76,6 +77,18 @@ lazy val `social-ontology` =
         "org.scalatest" %%% "scalatest" % scalatestVersion % Test,
         "org.scalatest" %%% "scalatest-wordspec" % scalatestVersion % Test,
         "org.scalatestplus" %%% "scalacheck-1-17" % s"$scalatestVersion.0" % Test
+      )
+    )
+
+lazy val toml =
+  crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .crossType(CrossType.Full)
+    .in(file("lib/toml"))
+    .settings(sharedSettings)
+    .settings(
+      name := "toml",
+      libraryDependencies ++= Seq(
+        "org.typelevel" %%% "cats-parse" % catsParseVersion
       )
     )
 
