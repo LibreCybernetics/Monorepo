@@ -82,6 +82,7 @@ lazy val `social-ontology` =
 lazy val `unsigned-core` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Full)
+    .in(file("lib/unsigned/core"))
     .settings(sharedSettings)
     .settings(
       name := "unsigned-core",
@@ -96,6 +97,7 @@ lazy val `unsigned-core` =
 lazy val `unsigned-scalacheck` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
+    .in(file("lib/unsigned/scalacheck"))
     .dependsOn(`unsigned-core` % Compile)
     .settings(sharedSettings)
     .settings(
