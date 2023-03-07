@@ -82,7 +82,7 @@ lazy val `social-ontology` =
 
 lazy val toml =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
-    .crossType(CrossType.Full)
+    .crossType(CrossType.Pure)
     .in(file("lib/toml"))
     .settings(sharedSettings)
     .settings(
