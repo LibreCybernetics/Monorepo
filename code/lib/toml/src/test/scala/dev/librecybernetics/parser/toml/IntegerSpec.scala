@@ -36,5 +36,17 @@ class IntegerSpec extends AnyWordSpec {
         }
       }
     }
+
+    "Valid Octal Integer" should {
+      Map(
+        "0o01234567" -> 342391,
+        "0o755" -> 493
+      ) foreach { (s, i) =>
+        s in {
+          val Right("", r) = integer.parse(s): @unchecked
+          r.toLong shouldBe i
+        }
+      }
+    }
   }
 }

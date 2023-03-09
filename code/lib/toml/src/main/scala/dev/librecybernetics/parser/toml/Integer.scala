@@ -10,6 +10,16 @@ val plus: Parser[Sign.Plus.type]   = Parser.char('+').map(_ => Sign.Plus)
 val minus: Parser[Sign.Minus.type] = Parser.char('-').map(_ => Sign.Minus)
 val underscore: Parser[Unit]       = Parser.char('_')
 
+object Octal:
+  private val octalDigits: Set[Char] = ('0' to '7').toSet
+  private val octal: Parser[String]  = Parser.charsWhile(octalDigits contains)
+
+  val integer: Parser[BigInt] =
+    (minus.?.with1 ~ (Parser.string("0o") *> octal.repSep(underscore))).map {
+      case (Some(Sign.Minus), digits) => -BigInt(digits.toList.mkString(""), 8)
+      case (_, digits)                => BigInt(digits.toList.mkString(""), 8)
+    }
+
 object Decimal:
   private val digits: Parser[String] = Parser.charsWhile(_.isDigit)
 
@@ -23,13 +33,13 @@ object Hexadecimal:
   private val hexDigits: Set[Char] =
     (('0' to '9') ++ ('a' to 'f') ++ ('A' to 'F')).toSet
 
-  private val hex: Parser[String] = Parser.charsWhile(hexDigits contains _.toLower)
+  private val hex: Parser[String] = Parser.charsWhile(hexDigits contains)
 
   val integer: Parser[BigInt] =
     (minus.?.with1 ~ (Parser.string("0x") *> hex.repSep(underscore))).map {
-      case (Some(Sign.Minus), digits) => BigInt(digits.toList.mkString(""), 16)
+      case (Some(Sign.Minus), digits) => -BigInt(digits.toList.mkString(""), 16)
       case (_, digits)                => BigInt(digits.toList.mkString(""), 16)
     }
 
 val integer: Parser[BigInt] =
-  Hexadecimal.integer.backtrack | Decimal.integer.backtrack
+  Octal.integer.backtrack | Hexadecimal.integer.backtrack | Decimal.integer.backtrack
