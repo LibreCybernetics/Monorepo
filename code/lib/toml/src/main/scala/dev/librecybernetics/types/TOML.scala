@@ -4,4 +4,4 @@ enum TOML:
   case Comment(content: Predef.String)
   case String(content: Predef.String)
   case Integer(content: Int)
-  case Float(float: Float)
+  case Float(double: Double)
