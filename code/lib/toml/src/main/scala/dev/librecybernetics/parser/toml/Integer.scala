@@ -12,12 +12,14 @@ val minus: Parser[Sign.Minus.type] = Parser.char('-').map(_ => Sign.Minus)
 val underscore: Parser[Unit]       = Parser.char('_')
 
 private def toBigInt(radix: Int)(
-    s: Option[Sign],
-    nel: NonEmptyList[String]
+  s: Option[Sign],
+  nel: NonEmptyList[String]
 ): BigInt =
-  s
+  val transformSign: BigInt => BigInt = s
     .collect { case Sign.Minus => (bi: BigInt) => -bi }
-    .getOrElse(identity[BigInt])(BigInt(nel.toList.mkString(""), radix))
+    .getOrElse(identity[BigInt])
+
+  transformSign(BigInt(nel.toList.mkString(""), radix))
 
 object Octal:
   private val octalDigits: Set[Char] = ('0' to '7').toSet
