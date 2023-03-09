@@ -5,7 +5,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class IntegerSpec extends AnyWordSpec {
   "Integer" when {
-    "Valid integer" should {
+    "Valid Decimal Integer" should {
       (Map(
         "+99" -> 99,
         "42"  -> 42,
@@ -20,6 +20,19 @@ class IntegerSpec extends AnyWordSpec {
         s in {
           val Right("", r) = integer.parse(s): @unchecked
           r.toInt shouldBe i
+        }
+      }
+    }
+
+    "Valid Hexadecimal Integer" should {
+      Map(
+        "0xDEADBEEF"  -> 0xdeadbeefL,
+        "0xdeadbeef"  -> 0xdeadbeefL,
+        "0xdead_beef" -> 0xdead_beefL
+      ) foreach { (s, i) =>
+        s in {
+          val Right("", r) = integer.parse(s): @unchecked
+          r.toLong shouldBe i
         }
       }
     }
