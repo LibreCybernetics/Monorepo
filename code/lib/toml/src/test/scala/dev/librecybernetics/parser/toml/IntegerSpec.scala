@@ -18,7 +18,7 @@ class IntegerSpec extends AnyWordSpec {
         "1_2_3_4_5" -> 12345
       )) foreach { (s, i) =>
         s in {
-          val Right("", r) = integer.parse(s): @unchecked
+          val Right("", r) = Integer.integer.parse(s): @unchecked
           r.toInt shouldBe i
         }
       }
@@ -31,7 +31,7 @@ class IntegerSpec extends AnyWordSpec {
         "0xdead_beef" -> 0xdead_beefL
       ) foreach { (s, i) =>
         s in {
-          val Right("", r) = integer.parse(s): @unchecked
+          val Right("", r) = Integer.integer.parse(s): @unchecked
           r.toLong shouldBe i
         }
       }
@@ -43,7 +43,7 @@ class IntegerSpec extends AnyWordSpec {
         "0o755"      -> 493
       ) foreach { (s, i) =>
         s in {
-          val Right("", r) = integer.parse(s): @unchecked
+          val Right("", r) = Integer.integer.parse(s): @unchecked
           r.toLong shouldBe i
         }
       }

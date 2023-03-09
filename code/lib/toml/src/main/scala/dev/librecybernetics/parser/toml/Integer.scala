@@ -12,29 +12,35 @@ val minus: Parser[Sign.Minus.type] = Parser.char('-').map(_ => Sign.Minus)
 val underscore: Parser[Unit]       = Parser.char('_')
 
 private def toBigInt(radix: Int)(
-  s: Option[Sign],
-  nel: NonEmptyList[String]
+  sign: Option[Sign],
+  string: String
 ): BigInt =
-  val transformSign: BigInt => BigInt = s
+  val transformSign = sign
     .collect { case Sign.Minus => (bi: BigInt) => -bi }
     .getOrElse(identity[BigInt])
+  transformSign(BigInt(string, radix))
 
-  transformSign(BigInt(nel.toList.mkString(""), radix))
+extension (p: Parser[NonEmptyList[String]])
+  def underscoresRemoved: Parser[String] =
+    p.map(_.toList.mkString(""))
 
 object Octal:
   private val octalDigits: Set[Char] = ('0' to '7').toSet
   private val octal: Parser[String]  = Parser.charsWhile(octalDigits contains)
 
+  val integerSep: Parser[String] = octal.repSep(underscore).underscoresRemoved
+
   val integer: Parser[BigInt] =
-    (minus.?.with1 ~ (Parser.string("0o") *> octal.repSep(underscore)))
+    (minus.?.with1 ~ (Parser.string("0o") *> integerSep))
       .map(toBigInt(8))
 
 object Decimal:
   private val digits: Parser[String] = Parser.charsWhile(_.isDigit)
 
+  val integerSep: Parser[String] = digits.repSep(underscore).underscoresRemoved
+
   val integer: Parser[BigInt] =
-    ((plus | minus).?.with1 ~ digits.repSep(underscore))
-      .map(toBigInt(10))
+    ((plus | minus).?.with1 ~ integerSep).map(toBigInt(10))
 
 object Hexadecimal:
   private val hexDigits: Set[Char] =
@@ -42,9 +48,13 @@ object Hexadecimal:
 
   private val hex: Parser[String] = Parser.charsWhile(hexDigits contains)
 
+  val integerSep: Parser[String] = hex.repSep(underscore).underscoresRemoved
+
   val integer: Parser[BigInt] =
-    (minus.?.with1 ~ (Parser.string("0x") *> hex.repSep(underscore)))
+    (minus.?.with1 ~ (Parser.string("0x") *> integerSep))
       .map(toBigInt(16))
 
-val integer: Parser[BigInt] =
-  Octal.integer.backtrack | Hexadecimal.integer.backtrack | Decimal.integer.backtrack
+// There is a bug with TLDs /w object dependencies
+object Integer:
+  val integer: Parser[BigInt] =
+    Octal.integer.backtrack | Hexadecimal.integer.backtrack | Decimal.integer.backtrack
