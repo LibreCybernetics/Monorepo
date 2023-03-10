@@ -20,18 +20,18 @@ object Float:
     case (_, d) => d
   }
 
-  lazy val numericDouble: Parser0[Double] =
-    (sign.?,
-      Decimal.integerSep,
-      (Parser.char('.') *> Decimal.integerSep).?,
+  lazy val numericDouble: Parser[Double] =
+    (sign.?.with1 ~
+      Decimal.integerSep ~
+      (Parser.char('.') *> Decimal.integerSep).? ~
       (Parser.charIn(Set('e', 'E')) *> sign.string.? ~ Decimal.integerSep).map(
         (s, e) => "e" + s.fold("")(identity) + e
       ).?
-    ).mapN {
-      case (s, w, f, e) =>
+    ).map {
+      case (((s, w), f), e) =>
         val fs = f.fold("")("." + _)
         val es = e.fold("")(identity)
         toDouble(s, s"$w$fs$es")
     }.backtrack
 
-  val float: Parser0[Double] = numericDouble | specialDouble
+  val float: Parser[Double] = numericDouble | specialDouble
