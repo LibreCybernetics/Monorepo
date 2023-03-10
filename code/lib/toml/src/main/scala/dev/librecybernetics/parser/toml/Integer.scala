@@ -16,9 +16,36 @@ private def toBigInt(radix: Int)(
     .getOrElse(identity[BigInt])
   transformSign(BigInt(string, radix))
 
-// There is a bug with TLDs /w object dependencies
+val Binary = GenericInteger(
+  2,
+  Parser.string("0b"),
+  ('0' to '1').toSet
+)
+
+val Octal = GenericInteger(
+  8,
+  Parser.string("0o"),
+  ('0' to '7').toSet
+)
+
+val Decimal = GenericInteger(
+  10,
+  Parser.unit,
+  ('0' to '9').toSet
+)
+
+val Hexadecimal = GenericInteger(
+  16,
+  Parser.string("0x"),
+  (('0' to '9') ++ ('a' to 'f') ++ ('A' to 'F')).toSet
+)
+
+private val peek: Parser[Unit] =
+  (sign.?.with1 ~ Parser.char('0') ~ Parser.charIn(Set('b', 'o', 'x'))).void
+
 val integer: Parser[BigInt] =
-  Hexadecimal.integer.backtrack |
-    Binary.integer.backtrack |
-    Octal.integer.backtrack |
-    Decimal.integer.backtrack
+  (Parser.not(peek).with1 *> Decimal.integer).backtrack |
+    (Parser.peek(peek).with1 *>
+      Hexadecimal.integer.backtrack |
+      Octal.integer.backtrack |
+      Binary.integer.backtrack)

@@ -23,9 +23,9 @@ object Float:
 
   val numericDouble: Parser[Double] =
     (
-      sign.?.with1 ~ Decimal.integerSep ~
-        (Parser.char('.') *> Decimal.integerSep).? ~
-        (Parser.charIn(Set('e', 'E')) *> sign.string.? ~ Decimal.integerSep)
+      sign.?.with1 ~ Decimal.literal ~
+        (Parser.char('.') *> Decimal.literal).? ~
+        (Parser.charIn(Set('e', 'E')) *> sign.string.? ~ Decimal.literal)
           .map((s, e) => "e" + s.fold("")(identity) + e)
           .?
     ).map { case (((s, w), f), e) =>
