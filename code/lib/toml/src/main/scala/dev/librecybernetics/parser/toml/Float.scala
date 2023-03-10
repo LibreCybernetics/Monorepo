@@ -13,8 +13,16 @@ private def toDouble(
   transformSign(string.toDouble)
 
 object Float:
-  lazy val tomlFloat: Parser[Double] =
-    ((plus | minus).?.with1 ~ Decimal.integerSep ~ (Parser.char('.') *> Decimal.integerSep).?).map {
-      case ((s, w), Some(f)) => toDouble(s, s"$w.$f")
-      case ((s, w), None)    => toDouble(s, s"$w")
+  lazy val tomlFloat: Parser0[Double] =
+    (sign.?,
+      Decimal.integerSep,
+      (Parser.char('.') *> Decimal.integerSep).?,
+      (Parser.charIn(Set('e', 'E')) *> sign.string.? ~ Decimal.integerSep).map(
+        (s, e) => "e" + s.fold("")(identity) + e
+      ).?
+    ).mapN {
+      case (s, w, f, e) =>
+        val fs = f.fold("")("." + _)
+        val es = e.fold("")(identity)
+        toDouble(s, s"$w$fs$es")
     }

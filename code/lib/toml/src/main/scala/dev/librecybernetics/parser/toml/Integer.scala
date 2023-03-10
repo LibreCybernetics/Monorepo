@@ -9,6 +9,7 @@ private enum Sign:
 
 val plus: Parser[Sign.Plus.type]   = Parser.char('+').map(_ => Sign.Plus)
 val minus: Parser[Sign.Minus.type] = Parser.char('-').map(_ => Sign.Minus)
+val sign: Parser[Sign] = plus | minus
 val underscore: Parser[Unit]       = Parser.char('_')
 
 private def toBigInt(radix: Int)(
@@ -40,7 +41,7 @@ object Decimal:
   val integerSep: Parser[String] = digits.repSep(underscore).underscoresRemoved
 
   val integer: Parser[BigInt] =
-    ((plus | minus).?.with1 ~ integerSep).map(toBigInt(10))
+    (sign.?.with1 ~ integerSep).map(toBigInt(10))
 
 object Hexadecimal:
   private val hexDigits: Set[Char] =
