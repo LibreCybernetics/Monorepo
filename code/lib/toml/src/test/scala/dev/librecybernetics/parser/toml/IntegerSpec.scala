@@ -48,5 +48,16 @@ class IntegerSpec extends AnyWordSpec {
         }
       }
     }
+
+    "Valid Binary Integer" should {
+      Map(
+        "0b11010110" -> 0xD6
+      ) foreach { (s, b) =>
+        s in {
+          val Right(("", r)) = integer.parse(s): @unchecked
+          r.toInt shouldBe b
+        }
+      }
+    }
   }
 }

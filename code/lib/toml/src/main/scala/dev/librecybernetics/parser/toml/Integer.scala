@@ -19,5 +19,6 @@ private def toBigInt(radix: Int)(
 // There is a bug with TLDs /w object dependencies
 val integer: Parser[BigInt] =
   Hexadecimal.integer.backtrack |
+    Binary.integer.backtrack |
     Octal.integer.backtrack |
     Decimal.integer.backtrack
