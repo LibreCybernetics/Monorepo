@@ -5,10 +5,9 @@ import cats.parse.Parser
 import dev.librecybernetics.types.TOML
 
 
-object Values:
-  lazy val scalarValues: Parser[TOML] =
-    Integer.integer.map(TOML.Integer.apply).backtrack |
-      Float.float.map(TOML.Float.apply).backtrack |
-      Boolean.boolean.map(TOML.Boolean.apply).backtrack
+lazy val scalarValues: Parser[TOML] =
+  integer.map(TOML.Integer.apply).backtrack |
+    Float.float.map(TOML.Float.apply).backtrack |
+    Boolean.boolean.map(TOML.Boolean.apply).backtrack
 
-  lazy val allValues = scalarValues | Array.array
+lazy val allValues: Parser[TOML] = scalarValues | Array.array

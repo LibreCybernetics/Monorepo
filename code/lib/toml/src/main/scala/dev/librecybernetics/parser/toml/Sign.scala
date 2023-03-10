@@ -1,0 +1,11 @@
+package dev.librecybernetics.parser.toml
+
+import cats.parse.Parser
+
+private enum Sign:
+  case Plus, Minus
+
+val plus: Parser[Sign.Plus.type]   = Parser.char('+').map(_ => Sign.Plus)
+val minus: Parser[Sign.Minus.type] = Parser.char('-').map(_ => Sign.Minus)
+
+val sign: Parser[Sign] = plus | minus
