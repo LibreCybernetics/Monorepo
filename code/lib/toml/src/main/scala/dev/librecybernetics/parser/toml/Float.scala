@@ -13,7 +13,14 @@ private def toDouble(
   transformSign(string.toDouble)
 
 object Float:
-  lazy val tomlFloat: Parser0[Double] =
+  lazy val nan: Parser[Double] = Parser.string("nan").map(_ => Double.NaN)
+  lazy val inf: Parser[Double] = Parser.string("inf").map(_ => Double.PositiveInfinity)
+  lazy val specialDouble: Parser[Double] = (sign.?.with1 ~ (nan | inf)).map {
+    case (Some(Sign.Minus), d) => -d
+    case (_, d) => d
+  }
+
+  lazy val numericDouble: Parser0[Double] =
     (sign.?,
       Decimal.integerSep,
       (Parser.char('.') *> Decimal.integerSep).?,
@@ -25,4 +32,6 @@ object Float:
         val fs = f.fold("")("." + _)
         val es = e.fold("")(identity)
         toDouble(s, s"$w$fs$es")
-    }
+    }.backtrack
+
+  val float: Parser0[Double] = numericDouble | specialDouble
