@@ -8,8 +8,26 @@ import cats.parse.Accumulator0.charStringAccumulator0
 
 import dev.librecybernetics.parser.*
 
-private val quote       = Parser.char('"')
-private val tripleQuote = Parser.string("\"\"\"").withContext("tripleQuote")
+private val singleQuote = Parser.char('\'')
+private val doubleQuote = Parser.char('"')
+
+private val tripleSingleQuote = Parser.string("'''").withContext("tripleSingleQuote")
+private val tripleDoubleQuote = Parser.string("\"\"\"").withContext("tripleDoubleQuote")
+
+val simpleLiteral: Parser[String] =
+  Parser
+    .charsWhile(_ != '\'')
+    .surroundedBy(singleQuote)
+
+val multilineLiteral: Parser[String] =
+  (
+    newline.?.with1 *> (
+      (Parser.not(tripleSingleQuote).with1 *> Parser.anyChar).rep.string |
+        (Parser.char('\'').string <* Parser.peek(tripleSingleQuote)).backtrack // Note: this is from the spec, sorry :C
+    ).withContext("multilineLiteral.line")
+      .rep
+      .map(_.toList.mkString(""))
+  ).surroundedBy(tripleSingleQuote).withContext("multilineLiteral")
 
 private val escaped: Parser[Char] =
   Map(
@@ -49,17 +67,18 @@ val simpleString: Parser[String] =
       escaped.backtrack | escapedUnicode4.backtrack | escapedUnicode8.backtrack
   ).rep
     .map(_.toList.mkString(""))
-    .surroundedBy(quote)
+    .surroundedBy(doubleQuote)
 
 val multilineString: Parser[String] =
   (
     newline.?.with1 *> (
-      (Parser.not(tripleQuote | backslash).with1 *> Parser.anyChar).rep.string |
+      (Parser.not(tripleDoubleQuote | backslash).with1 *> Parser.anyChar).rep.string |
         escaped.backtrack | escapedUnicode4.backtrack | escapedUnicode8.backtrack | escapedNewline.backtrack |
-        (Parser.char('\"').string <* Parser.peek(tripleQuote)).backtrack // Note: this is from the spec, sorry :C
+        (Parser.char('\"').string <* Parser.peek(tripleDoubleQuote)).backtrack // Note: this is from the spec, sorry :C
     ).withContext("multilineString.line").rep.map(_.toList.mkString(""))
-  ).surroundedBy(tripleQuote).withContext("multilineString")
+  ).surroundedBy(tripleDoubleQuote).withContext("multilineString")
 
 val string: Parser[String] =
-   // Note: "" is a valid simple string, check triple quote first
-   multilineString.backtrack | simpleString.backtrack
+  // Note: "" is a valid simple string, check triple quote first
+  multilineLiteral.backtrack | simpleLiteral.backtrack |
+    multilineString.backtrack | simpleString.backtrack
