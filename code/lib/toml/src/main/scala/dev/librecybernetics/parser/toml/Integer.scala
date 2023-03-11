@@ -40,12 +40,13 @@ val Hexadecimal = GenericInteger(
   (('0' to '9') ++ ('a' to 'f') ++ ('A' to 'F')).toSet
 )
 
-private val peek: Parser[Unit] =
+private val nonDecimal: Parser[Unit] =
   (sign.?.with1 ~ Parser.char('0') ~ Parser.charIn(Set('b', 'o', 'x'))).void
 
 val integer: Parser[BigInt] =
-  (Parser.not(peek).with1 *> Decimal.integer).backtrack |
-    (Parser.peek(peek).with1 *>
+  (
+    Parser.peek(nonDecimal).with1 *>
       Hexadecimal.integer.backtrack |
       Octal.integer.backtrack |
-      Binary.integer.backtrack)
+      Binary.integer.backtrack
+  ).backtrack | Decimal.integer.backtrack
