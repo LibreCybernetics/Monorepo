@@ -12,4 +12,6 @@ val newlineOrEnd: Parser0[Unit] = newline | Parser.end
 
 val spaces: Parser0[Int] = space.rep0.map(_.length)
 
+val hexDigit = (('0' to '9') ++ ('a' to 'f') ++ ('A' to 'F')).toSet
+
 val anyUntilNewline: Parser[String] = Parser.charsWhile(_ != '\n')

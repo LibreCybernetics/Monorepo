@@ -37,7 +37,7 @@ val Decimal = GenericInteger(
 val Hexadecimal = GenericInteger(
   16,
   Parser.string("0x"),
-  (('0' to '9') ++ ('a' to 'f') ++ ('A' to 'F')).toSet
+  hexDigit
 )
 
 private val nonDecimal: Parser[Unit] =
