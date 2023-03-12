@@ -16,7 +16,7 @@ given Conversion[(String, String), TOML.KeyValue] with
 class KeyValueSpec extends AnyWordSpec {
   "Bay Key" when {
     "Valid Input" should {
-      Map[String, TOML.KeyValue](
+      (Map[String, TOML.KeyValue](
         "key = \"value\""                    -> ("key", "value"),
         "bare_key = \"value\""               -> ("bare_key", "value"),
         "bare-key = \"value\""               -> ("bare-key", "value"),
@@ -26,9 +26,34 @@ class KeyValueSpec extends AnyWordSpec {
         "\"ʎǝʞ\" = \"value\""                -> ("ʎǝʞ", "value"),
         "'key2' = \"value\""                 -> ("key2", "value"),
         "'quoted \"value\"' = \"value\""     -> ("quoted \"value\"", "value")
-      ) foreach { (s, k) =>
+      ) ++ Map[String, TOML.Map](
+        "fruit.name = \"banana\"" ->
+          TOML.Map(
+            Map[String, TOML.Map](
+              "fruit" -> TOML.Map(
+                Map("name" -> TOML.String("banana"))
+              )
+            )
+          ),
+        "fruit. color = \"yellow\"" ->
+          TOML.Map(
+            Map[String, TOML.Map](
+              "fruit" -> TOML.Map(
+                Map("color" -> TOML.String("yellow"))
+              )
+            )
+          ),
+        "fruit . flavor = \"banana\"" ->
+          TOML.Map(
+            Map[String, TOML.Map](
+              "fruit" -> TOML.Map(
+                Map("flavor" -> TOML.String("banana"))
+              )
+            )
+          ),
+      )) foreach { (s, k) =>
         s in {
-          val r = keyValue.parse(s): @unchecked
+          val r = keyValueOrMap.parse(s): @unchecked
           r match
             case Left(err)    => println(show"$err"); assert(false)
             case Right("", r) => r shouldBe k

@@ -10,3 +10,4 @@ enum TOML:
   // Recursive
   case Array(arrays: Seq[TOML])
   case KeyValue(name: Predef.String, content: TOML)
+  case Map(map: Predef.Map[Predef.String, TOML])
