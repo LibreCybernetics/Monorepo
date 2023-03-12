@@ -5,9 +5,11 @@ import cats.parse.{Parser, Parser0}
 // Char
 
 val backslash: Parser[Unit]  = Parser.char('\\')
+val bracketOpen              = Parser.char('[')
+val bracketClose             = Parser.char(']')
 val comma: Parser[Unit]      = Parser.char(',')
 val dot: Parser[Unit]        = Parser.char('.')
-val equal: Parser[Unit]     = Parser.char('=')
+val equal: Parser[Unit]      = Parser.char('=')
 val hash: Parser[Unit]       = Parser.char('#')
 val newline: Parser[Unit]    = Parser.char('\n')
 val space: Parser[Unit]      = Parser.char(' ')
