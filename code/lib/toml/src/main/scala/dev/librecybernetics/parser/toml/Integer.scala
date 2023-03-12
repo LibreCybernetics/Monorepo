@@ -31,7 +31,7 @@ val Octal = GenericInteger(
 val Decimal = GenericInteger(
   10,
   Parser.unit,
-  ('0' to '9').toSet
+  latinDecimalDigits
 )
 
 val Hexadecimal = GenericInteger(

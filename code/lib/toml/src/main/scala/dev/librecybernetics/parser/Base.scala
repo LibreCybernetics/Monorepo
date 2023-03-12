@@ -2,14 +2,6 @@ package dev.librecybernetics.parser
 
 import cats.parse.{Parser, Parser0}
 
-// Data
-
-val hexDigit: Set[Char] = (('0' to '9') ++ ('a' to 'f') ++ ('A' to 'F')).toSet
-
-//
-// Parsers
-//
-
 // Char
 
 val backslash: Parser[Unit]  = Parser.char('\\')
