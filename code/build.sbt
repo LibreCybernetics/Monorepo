@@ -80,13 +80,26 @@ lazy val `social-ontology` =
       )
     )
 
-lazy val toml =
+lazy val toml = crossProject(JVMPlatform, NativePlatform, JSPlatform)
+  .aggregate(`toml-core`, `toml-parse`)
+
+lazy val `toml-core` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
-    .in(file("lib/toml"))
+    .in(file("lib/toml/core"))
     .settings(sharedSettings)
     .settings(
-      name := "toml",
+      name := "toml-core",
+    )
+
+lazy val `toml-parse` =
+  crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("lib/toml/parse"))
+    .dependsOn(`toml-core`)
+    .settings(sharedSettings)
+    .settings(
+      name := "toml-parse",
       libraryDependencies ++= Seq(
         "org.typelevel" %%% "cats-parse"         % catsParseVersion,
         "org.scalatest" %%% "scalatest"          % scalatestVersion % Test,
