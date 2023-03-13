@@ -4,6 +4,8 @@ import cats.implicits.*
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
+import dev.librecybernetics.parser.genericTest
+
 class StringSpec extends AnyWordSpec {
   "String" when {
     "Valid Simple" should {
@@ -41,12 +43,7 @@ class StringSpec extends AnyWordSpec {
           "'That,' she said, 'is still pointless.'"
 
       ) foreach { (si, sr) =>
-        si in {
-          val r = string.parse(si): @unchecked
-          r match
-            case Left(err)   => println(show"$err"); assert(false)
-            case Right(_, r) => r shouldBe sr
-        }
+        si in genericTest(string)(si, sr)
       }
     }
   }

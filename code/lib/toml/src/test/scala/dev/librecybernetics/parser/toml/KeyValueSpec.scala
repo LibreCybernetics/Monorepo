@@ -6,6 +6,7 @@ import cats.implicits.*
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
+import dev.librecybernetics.parser.genericTest
 import dev.librecybernetics.types.TOML
 
 given Conversion[(String, String), TOML.KeyValue] with
@@ -27,7 +28,7 @@ class KeyValueSpec extends AnyWordSpec {
         "'key2' = \"value\""                 -> ("key2", "value"),
         "'quoted \"value\"' = \"value\""     -> ("quoted \"value\"", "value")
       ) ++ Map[String, TOML.Map](
-        "fruit.name = \"banana\"" ->
+        "fruit.name = \"banana\""     ->
           TOML.Map(
             Map[String, TOML.Map](
               "fruit" -> TOML.Map(
@@ -35,7 +36,7 @@ class KeyValueSpec extends AnyWordSpec {
               )
             )
           ),
-        "fruit. color = \"yellow\"" ->
+        "fruit. color = \"yellow\""   ->
           TOML.Map(
             Map[String, TOML.Map](
               "fruit" -> TOML.Map(
@@ -50,15 +51,9 @@ class KeyValueSpec extends AnyWordSpec {
                 Map("flavor" -> TOML.String("banana"))
               )
             )
-          ),
+          )
       )) foreach { (s, k) =>
-        s in {
-          val r = keyValueOrMap.parse(s): @unchecked
-          r match
-            case Left(err)    => println(show"$err"); assert(false)
-            case Right("", r) => r shouldBe k
-            case Right(r, _)  => println(r); assert(false)
-        }
+        s in genericTest(keyValueOrMap)(s, k)
       }
     }
   }

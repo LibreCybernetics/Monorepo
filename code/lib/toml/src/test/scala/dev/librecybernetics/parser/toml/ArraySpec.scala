@@ -1,12 +1,14 @@
 package dev.librecybernetics.parser.toml
 
-import dev.librecybernetics.types.TOML
+import scala.language.implicitConversions
 
 import cats.parse.Parser
 import cats.implicits.*
-import scala.language.implicitConversions
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
+
+import dev.librecybernetics.parser.genericTest
+import dev.librecybernetics.types.TOML
 
 given Conversion[Int, TOML] with
   def apply(n: Int): TOML = TOML.Integer(BigInt(n))
@@ -24,16 +26,20 @@ class ArraySpec extends AnyWordSpec {
   "Array" when {
     "Valid" should {
       Map(
-        "[ [ 1, 2 ], [3, 4, 5] ]" ->
-          TOML.Array(Seq(
-            TOML.Array(Seq(1, 2)),
-            TOML.Array(Seq(3, 4, 5))
-          )),
+        "[ [ 1, 2 ], [3, 4, 5] ]"               ->
+          TOML.Array(
+            Seq(
+              TOML.Array(Seq(1, 2)),
+              TOML.Array(Seq(3, 4, 5))
+            )
+          ),
         "[ [ 1, 2 ], [true,   false, true  ] ]" ->
-          TOML.Array(Seq(
-            TOML.Array(Seq(1, 2)),
-            TOML.Array(Seq(true, false, true))
-          )),
+          TOML.Array(
+            Seq(
+              TOML.Array(Seq(1, 2)),
+              TOML.Array(Seq(true, false, true))
+            )
+          )
 //        "[ 0.1, 0.2, 0.5, 1, 2, 5 ]" ->
 //          TOML.Array(Seq(
 //            0.1d,
@@ -44,15 +50,7 @@ class ArraySpec extends AnyWordSpec {
 //            5
 //          ))
       ) foreach { (s, a) =>
-        s in {
-          val r = Array.array.parse(s): @unchecked
-          r match
-            case Right("", r) => r shouldBe a
-            case Right(_, _) => assert(false)
-            case Left(err) =>
-              println(show"$err")
-              assert(false)
-        }
+        s in genericTest(Array.array)(s, a)
       }
     }
   }

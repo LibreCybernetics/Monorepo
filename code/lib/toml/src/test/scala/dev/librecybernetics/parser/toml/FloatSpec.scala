@@ -3,6 +3,8 @@ package dev.librecybernetics.parser.toml
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
+import dev.librecybernetics.parser.genericTest
+
 class FloatSpec extends AnyWordSpec {
   "Float" when {
     "Valid Simple Float" should {
@@ -34,10 +36,7 @@ class FloatSpec extends AnyWordSpec {
         "+inf"                 -> Double.PositiveInfinity,
         "-inf"                 -> Double.NegativeInfinity
       )) foreach { (s, d) =>
-        s in {
-          val Right("", r) = Float.float.parse(s): @unchecked
-          r shouldBe d
-        }
+        s in genericTest(Float.float)(s, d)
       }
     }
 
