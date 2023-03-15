@@ -30,6 +30,7 @@ wartremoverErrors ++= Warts.unsafe
 
 lazy val catsVersion       = "2.9.0"
 lazy val catsParseVersion  = "0.3.9"
+lazy val fabricVersion     = "1.10.3"
 lazy val scalacheckVersion = "1.17.0"
 lazy val scodecVersion     = "2.2.1"
 
@@ -81,7 +82,7 @@ lazy val `social-ontology` =
     )
 
 lazy val toml = crossProject(JVMPlatform, NativePlatform, JSPlatform)
-  .aggregate(`toml-core`, `toml-parse`)
+  .aggregate(`toml-core`, `toml-parse`, `toml-fabric`)
 
 lazy val `toml-core` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
@@ -89,7 +90,7 @@ lazy val `toml-core` =
     .in(file("lib/toml/core"))
     .settings(sharedSettings)
     .settings(
-      name := "toml-core",
+      name := "toml-core"
     )
 
 lazy val `toml-parse` =
@@ -102,6 +103,21 @@ lazy val `toml-parse` =
       name := "toml-parse",
       libraryDependencies ++= Seq(
         "org.typelevel" %%% "cats-parse"         % catsParseVersion,
+        "org.scalatest" %%% "scalatest"          % scalatestVersion % Test,
+        "org.scalatest" %%% "scalatest-wordspec" % scalatestVersion % Test
+      )
+    )
+
+lazy val `toml-fabric` =
+  crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("lib/toml/fabric"))
+    .dependsOn(`toml-core`)
+    .settings(sharedSettings)
+    .settings(
+      name := "toml-fabric",
+      libraryDependencies ++= Seq(
+        "org.typelevel" %%% "fabric-core"        % fabricVersion,
         "org.scalatest" %%% "scalatest"          % scalatestVersion % Test,
         "org.scalatest" %%% "scalatest-wordspec" % scalatestVersion % Test
       )
