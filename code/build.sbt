@@ -84,9 +84,6 @@ lazy val `social-ontology` =
       )
     )
 
-lazy val toml = crossProject(JVMPlatform, NativePlatform, JSPlatform)
-  .aggregate(`toml-core`, `toml-parse`, `toml-fabric`)
-
 lazy val `toml-core` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
