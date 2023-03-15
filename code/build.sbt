@@ -29,8 +29,11 @@ wartremoverErrors ++= Warts.unsafe
 // Typelevel Deps
 
 lazy val catsVersion       = "2.9.0"
+lazy val catsEffectVersion = "3.4.8"
 lazy val catsParseVersion  = "0.3.9"
+lazy val fs2Version        = "3.6.1"
 lazy val fabricVersion     = "1.10.3"
+lazy val mouseVersion      = "1.2.1"
 lazy val scalacheckVersion = "1.17.0"
 lazy val scodecVersion     = "2.2.1"
 
@@ -121,6 +124,24 @@ lazy val `toml-fabric` =
         "org.scalatest" %%% "scalatest"          % scalatestVersion % Test,
         "org.scalatest" %%% "scalatest-wordspec" % scalatestVersion % Test
       )
+    )
+
+lazy val `toml-tomltest` =
+  crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("lib/toml/tomltest"))
+    .dependsOn(`toml-fabric`, `toml-parse`)
+    .settings(sharedSettings)
+    .settings(
+      name := "toml-tomltest",
+      libraryDependencies ++= Seq(
+        "org.typelevel" %%% "cats-effect" % catsEffectVersion,
+        "org.typelevel" %%% "mouse"       % mouseVersion,
+        "co.fs2"        %%% "fs2-io"      % fs2Version
+      )
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val `unsigned-core` =
