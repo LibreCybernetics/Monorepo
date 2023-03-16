@@ -26,24 +26,36 @@ class ArrayOfTablesSpec extends AnyWordSpec {
           Map(
             "products" -> TOML.Array(
               Seq(
-                TOML.Map(Map("name" -> TOML.String("Hammer"))),
-                TOML.Map(Map("sku" -> TOML.Integer(BigInt(738594937))))
+                TOML.Map(
+                  Map(
+                    "name" -> TOML.String("Hammer"),
+                    "sku"  -> TOML.Integer(BigInt(738594937))
+                  )
+                )
               )
             )
           )
         ),
         input2 -> TOML.Map(
           Map(
-            "products" -> TOML.Array(Nil)
+            "products" -> TOML.Array(
+              Seq(
+                TOML.Map(Map.empty)
+              )
+            )
           )
         ),
         input3 -> TOML.Map(
           Map(
             "products" -> TOML.Array(
               Seq(
-                TOML.Map(Map("name" -> TOML.String("Nail"))),
-                TOML.Map(Map("sku" -> TOML.Integer(BigInt(284758393)))),
-                TOML.Map(Map("color" -> TOML.String("gray")))
+                TOML.Map(
+                  Map(
+                    "name"  -> TOML.String("Nail"),
+                    "sku"   -> TOML.Integer(BigInt(284758393)),
+                    "color" -> TOML.String("gray")
+                  )
+                )
               )
             )
           )
