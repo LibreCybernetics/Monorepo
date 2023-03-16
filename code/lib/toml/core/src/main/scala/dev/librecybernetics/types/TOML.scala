@@ -1,5 +1,8 @@
 package dev.librecybernetics.types
 
+import cats.Semigroup
+import cats.implicits.*
+
 enum TOML:
   // Simple
   case Boolean(boolean: scala.Boolean)

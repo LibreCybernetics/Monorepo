@@ -90,7 +90,10 @@ lazy val `toml-core` =
     .in(file("lib/toml/core"))
     .settings(sharedSettings)
     .settings(
-      name := "toml-core"
+      name := "toml-core",
+      libraryDependencies ++= Seq(
+        "org.typelevel" %%% "cats-core" % catsVersion
+      )
     )
 
 lazy val `toml-parse` =
@@ -139,6 +142,11 @@ lazy val `toml-tomltest` =
     )
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
+    )
+    .nativeSettings(
+      nativeMode := "release-fast",
+      nativeGC   := "commix",
+      nativeLTO  := "thin"
     )
 
 lazy val `unsigned-core` =
