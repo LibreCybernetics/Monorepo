@@ -1,9 +1,8 @@
-package dev.librecybernetics.parser.toml
-
-import org.scalatest.matchers.should.Matchers.*
-import org.scalatest.wordspec.AnyWordSpec
+package dev.librecybernetics.parser.toml.base
 
 import dev.librecybernetics.parser.genericTest
+import org.scalatest.matchers.should.Matchers.*
+import org.scalatest.wordspec.AnyWordSpec
 
 class IntegerSpec extends AnyWordSpec {
   "Integer" when {

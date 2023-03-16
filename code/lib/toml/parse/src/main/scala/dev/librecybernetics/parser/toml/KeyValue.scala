@@ -5,6 +5,7 @@ import cats.implicits.*
 import cats.parse.Parser
 
 import dev.librecybernetics.parser.*
+import dev.librecybernetics.parser.toml.base.*
 import dev.librecybernetics.types.TOML
 
 private val assignment: Parser[Unit] =

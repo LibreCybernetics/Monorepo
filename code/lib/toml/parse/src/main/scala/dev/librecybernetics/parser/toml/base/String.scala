@@ -1,4 +1,4 @@
-package dev.librecybernetics.parser.toml
+package dev.librecybernetics.parser.toml.base
 
 import java.lang.Integer
 import scala.language.postfixOps

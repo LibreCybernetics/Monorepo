@@ -1,10 +1,9 @@
-package dev.librecybernetics.parser.toml
+package dev.librecybernetics.parser.toml.base
 
 import cats.implicits.*
+import dev.librecybernetics.parser.genericTest
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
-
-import dev.librecybernetics.parser.genericTest
 
 class StringSpec extends AnyWordSpec {
   "String" when {

@@ -1,4 +1,4 @@
-package dev.librecybernetics.parser.toml
+package dev.librecybernetics.parser.toml.base
 
 import cats.data.NonEmptyList
 
@@ -14,9 +14,9 @@ private val bareKey: Parser[String] =
 
   Parser.charsWhile(setOfChars contains)
 
-private val simpleKey: Parser[String] =
+val simpleKey: Parser[String] =
   bareKey.backtrack | simpleLiteral.backtrack | simpleString.backtrack
 
-private val dottedkey: Parser[NonEmptyList[String]] =
+val dottedkey: Parser[NonEmptyList[String]] =
   simpleKey
     .repSep(2, dot.surroundedBy(spaces).backtrack)
