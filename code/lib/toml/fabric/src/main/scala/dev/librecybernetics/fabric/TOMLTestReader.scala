@@ -19,7 +19,6 @@ given testReader: Reader[TOML] = Reader[TOML](
       Obj("type" -> "float", "value" -> Str(double.toString))
 
     case TOML.Array(arr)     => Arr(arr.map(_.json).toVector)
-    case TOML.KeyValue(k, v) => Obj(k -> v.json)
     case TOML.Map(map)       => Obj(map.view.mapValues(_.json).toMap)
   }
 )

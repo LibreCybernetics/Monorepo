@@ -8,7 +8,7 @@ import dev.librecybernetics.parser.*
 class ArrayOfTablesSpec extends AnyWordSpec {
   "ArrayOfTables" when {
     "Valid Input" should {
-      val input1 =
+      val input1         =
         """[[products]]
           |name = "Hammer"
           |sku = 738594937""".stripMargin
@@ -22,22 +22,32 @@ class ArrayOfTablesSpec extends AnyWordSpec {
           |color = "gray"""".stripMargin
 
       Map(
-        input1 -> TOML.Map(Map(
-          "products" -> TOML.Array(Seq(
-            TOML.KeyValue("name", TOML.String("Hammer")),
-            TOML.KeyValue("sku", TOML.Integer(BigInt(738594937)))
-          ))
-        )),
-        input2 -> TOML.Map(Map(
-          "products" -> TOML.Array(Nil)
-        )),
-        input3 -> TOML.Map(Map(
-          "products" -> TOML.Array(Seq(
-            TOML.KeyValue("name", TOML.String("Nail")),
-            TOML.KeyValue("sku", TOML.Integer(BigInt(284758393))),
-            TOML.KeyValue("color", TOML.String("gray"))
-          ))
-        ))
+        input1 -> TOML.Map(
+          Map(
+            "products" -> TOML.Array(
+              Seq(
+                TOML.Map(Map("name" -> TOML.String("Hammer"))),
+                TOML.Map(Map("sku" -> TOML.Integer(BigInt(738594937))))
+              )
+            )
+          )
+        ),
+        input2 -> TOML.Map(
+          Map(
+            "products" -> TOML.Array(Nil)
+          )
+        ),
+        input3 -> TOML.Map(
+          Map(
+            "products" -> TOML.Array(
+              Seq(
+                TOML.Map(Map("name" -> TOML.String("Nail"))),
+                TOML.Map(Map("sku" -> TOML.Integer(BigInt(284758393)))),
+                TOML.Map(Map("color" -> TOML.String("gray")))
+              )
+            )
+          )
+        )
       ) foreach { (s, aot) =>
         s in genericTest(ArrayOfTables.arrayOfTables)(s, aot)
       }

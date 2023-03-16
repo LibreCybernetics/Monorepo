@@ -9,15 +9,15 @@ import org.scalatest.wordspec.AnyWordSpec
 import dev.librecybernetics.parser.genericTest
 import dev.librecybernetics.types.TOML
 
-given Conversion[(String, String), TOML.KeyValue] with
-  override def apply(t: (String, String)): TOML.KeyValue =
+given Conversion[(String, String), TOML.Map] with
+  override def apply(t: (String, String)): TOML.Map =
     val (k, v) = t
-    TOML.KeyValue(k, TOML.String(v))
+    TOML.Map(Map(k -> TOML.String(v)))
 
 class KeyValueSpec extends AnyWordSpec {
   "Bay Key" when {
     "Valid Input" should {
-      (Map[String, TOML.KeyValue](
+      (Map[String, TOML.Map](
         "key = \"value\""                    -> ("key", "value"),
         "bare_key = \"value\""               -> ("bare_key", "value"),
         "bare-key = \"value\""               -> ("bare-key", "value"),

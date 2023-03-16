@@ -10,11 +10,11 @@ import dev.librecybernetics.types.TOML
 private val assignment: Parser[Unit] =
   equal.surroundedBy(spaces)
 
-val keyValue: Parser[TOML.KeyValue] =
+val keyValue: Parser[TOML.Map] =
   (
     simpleKey,
     assignment *> allValues
-  ).mapN(TOML.KeyValue.apply)
+  ).mapN((k, v) => TOML.Map(Map(k -> v)))
 
 val keyValueOrMap: Parser[TOML] =
   keyValue.backtrack | keyMap
