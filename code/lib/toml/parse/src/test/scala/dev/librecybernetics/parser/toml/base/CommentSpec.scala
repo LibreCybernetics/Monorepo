@@ -1,10 +1,9 @@
-package dev.librecybernetics.parser.toml
+package dev.librecybernetics.parser.toml.base
 
 import cats.parse.Parser
+import dev.librecybernetics.types.TOML
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
-
-import dev.librecybernetics.types.TOML
 
 class CommentSpec extends AnyWordSpec {
   "Comment" when {

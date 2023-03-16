@@ -2,8 +2,8 @@ package dev.librecybernetics.parser.toml
 
 import cats.parse.Parser
 
+import dev.librecybernetics.parser.toml.base.*
 import dev.librecybernetics.types.TOML
-
 
 lazy val scalarValues: Parser[TOML] =
   string.map(TOML.String.apply).backtrack |
