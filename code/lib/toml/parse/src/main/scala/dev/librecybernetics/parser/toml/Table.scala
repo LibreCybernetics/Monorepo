@@ -12,7 +12,9 @@ val header: Parser[NonEmptyList[String]] =
     .between(bracketOpen ~ spaces, spaces.with1 ~ bracketClose)
 
 val table: Parser[TOML.Map] =
-  ((header <* newlineOrEnd) ~ keyValue.repSep0(newline))
-    .map { (key, keyValues) =>
-      transformDottedToNestedMap(key, TOML.Array(keyValues))
-    }
+  (
+    (header <* spaces <* comment.? <* newlineOrEnd) ~
+      keyValue.repSep0(newline ~ (emptyLine | (comment ~ newline)).rep0)
+  ).map { (key, keyValues) =>
+    transformDottedToNestedMap(key, TOML.Array(keyValues))
+  }

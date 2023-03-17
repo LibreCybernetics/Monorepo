@@ -14,8 +14,8 @@ private val assignment: Parser[Unit] =
 val keyValue: Parser[TOML.Map] =
   (
     simpleKey,
-    assignment *> allValues
+    assignment *> allValues <* spaces <* comment.?
   ).mapN((k, v) => TOML.Map(Map(k -> v)))
 
-val keyValueOrMap: Parser[TOML] =
+val keyValueOrMap: Parser[TOML.Map] =
   keyValue.backtrack | keyMap

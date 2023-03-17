@@ -39,7 +39,7 @@ class ArraySpec extends AnyWordSpec {
               TOML.Array(Seq(1, 2)),
               TOML.Array(Seq(true, false, true))
             )
-          )
+          ),
 //        "[ 0.1, 0.2, 0.5, 1, 2, 5 ]" ->
 //          TOML.Array(Seq(
 //            0.1d,
@@ -48,7 +48,15 @@ class ArraySpec extends AnyWordSpec {
 //            1,
 //            2,
 //            5
-//          ))
+//          )),
+        "[1,2,3,]"                              ->
+          TOML.Array(
+            Seq(
+              TOML.Integer(1),
+              TOML.Integer(2),
+              TOML.Integer(3)
+            )
+          )
       ) foreach { (s, a) =>
         s in genericTest(Array.array)(s, a)
       }

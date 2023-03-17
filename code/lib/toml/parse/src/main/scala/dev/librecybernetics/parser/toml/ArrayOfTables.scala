@@ -22,13 +22,17 @@ object ArrayOfTables:
       bracketEnd
 
   val arrayOfTables: Parser[TOML.Map] =
-    ((header.withContext("arrayOfTable.header") <* newlineOrEnd) ~
-      keyValue.repSep0((newline ~ emptyLine.rep0).void | Parser.end)).map { (key, values) =>
+    (
+      (header.withContext("arrayOfTable.header") <* spaces <* comment.? <* newlineOrEnd) ~
+        keyValue.repSep0(newline ~ (emptyLine | (comment ~ newline)).rep0)
+    ).map { (key, values) =>
       // TODO: Validate not reusing keys
       transformDottedToNestedMap(
         key,
-        TOML.Array(Seq(
-          values.reduceOption(_ combine _).getOrElse(TOML.Map(Map.empty))
-        ))
+        TOML.Array(
+          Seq(
+            values.reduceOption(_ combine _).getOrElse(TOML.Map(Map.empty))
+          )
+        )
       )
     }

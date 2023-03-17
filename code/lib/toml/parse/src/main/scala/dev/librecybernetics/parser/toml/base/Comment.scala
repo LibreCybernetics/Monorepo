@@ -18,7 +18,7 @@ private val commentContent: Parser[String] =
   anyUntilNewline filter (c => !(c exists (disallowedChars contains)))
 
 private val singleComment: Parser[String] =
-  (commentStart *> commentContent <* newlineOrEnd).backtrack
+  (commentStart *> commentContent <* Parser.peek(newlineOrEnd)).backtrack
 
 /** Comment Parser Spec: https://toml.io/en/v1.0.0#comment
   *
@@ -26,4 +26,7 @@ private val singleComment: Parser[String] =
   * tab (U+0000 to U+0008, U+000A to U+001F, U+007F) are not permitted in comments.
   */
 val comment: Parser[TOML.Comment] =
-  singleComment.rep.map(_.toList.mkString("\n")).map(TOML.Comment.apply)
+  singleComment
+    .repSep(newline)
+    .map(_.toList.mkString("\n"))
+    .map(TOML.Comment.apply)
