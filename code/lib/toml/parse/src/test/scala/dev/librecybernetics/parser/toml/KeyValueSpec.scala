@@ -8,11 +8,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 import dev.librecybernetics.parser.genericTest
 import dev.librecybernetics.types.TOML
-
-given Conversion[(String, String), TOML.Map] with
-  override def apply(t: (String, String)): TOML.Map =
-    val (k, v) = t
-    TOML.Map(Map(k -> TOML.String(v)))
+import dev.librecybernetics.types.toml.given
 
 class KeyValueSpec extends AnyWordSpec {
   "Bay Key" when {
