@@ -24,7 +24,7 @@ object ArrayOfTables:
   val arrayOfTables: Parser[TOML.Map] =
     (
       (header.withContext("arrayOfTable.header") <* spaces <* comment.? <* newlineOrEnd) ~
-        keyValue.repSep0(newline ~ (emptyLine | (comment ~ newline)).rep0)
+        keyValue.repSep0(newline ~ emptyOrComment.rep0)
     ).map { (key, values) =>
       // TODO: Validate not reusing keys
       transformDottedToNestedMap(
