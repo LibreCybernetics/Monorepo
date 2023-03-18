@@ -7,6 +7,7 @@ import dev.librecybernetics.types.TOML
 
 given testReader: Reader[TOML] = Reader[TOML](
   {
+    // Simple
     case TOML.Boolean(boolean) =>
       Obj("type" -> "bool", "value" -> Str(boolean.toString))
     case TOML.Comment(comment) =>
@@ -18,7 +19,18 @@ given testReader: Reader[TOML] = Reader[TOML](
     case TOML.Float(double)    =>
       Obj("type" -> "float", "value" -> Str(double.toString))
 
-    case TOML.Array(arr)     => Arr(arr.map(_.json).toVector)
-    case TOML.Map(map)       => Obj(map.view.mapValues(_.json).toMap)
+    // Temporal
+    case TOML.LocalTime(localTime)         =>
+      Obj("type" -> "time-local", "value" -> Str(localTime.toString))
+    case TOML.LocalDate(localDate)         =>
+      Obj("type" -> "time-date", "value" -> Str(localDate.toString))
+    case TOML.LocalDateTime(localDateTime) =>
+      Obj("type" -> "datetime-local", "value" -> Str(localDateTime.toString))
+    case TOML.ZonedDateTime(zonedDateTime) =>
+      Obj("type" -> "datetime", "value" -> Str(zonedDateTime.toString))
+
+    // Recursive
+    case TOML.Array(arr) => Arr(arr.map(_.json).toVector)
+    case TOML.Map(map)   => Obj(map.view.mapValues(_.json).toMap)
   }
 )

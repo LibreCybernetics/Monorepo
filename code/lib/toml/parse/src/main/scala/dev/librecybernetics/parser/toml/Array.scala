@@ -10,7 +10,7 @@ import dev.librecybernetics.types.TOML
 object Array:
   val bracketStart: Parser[Unit]  = bracketOpen.surroundedBy(spaces)
   val bracketEnd: Parser[Unit]    = bracketClose.surroundedBy(spaces)
-  val trailingComma: Parser[Unit] = (emptyLine.rep0.with1 *> comma <* emptyLine.rep0).backtrack
+  val trailingComma: Parser[Unit] = (emptyLine.rep0.with1 *> comma <* spaces <* emptyLine.rep0).backtrack
 
   lazy val scalarArray: Parser[TOML] =
     scalarValues

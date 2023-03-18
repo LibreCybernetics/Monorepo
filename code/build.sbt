@@ -28,14 +28,15 @@ wartremoverErrors ++= Warts.unsafe
 
 // Typelevel Deps
 
-lazy val catsVersion       = "2.9.0"
-lazy val catsEffectVersion = "3.4.8"
-lazy val catsParseVersion  = "0.3.9"
-lazy val fs2Version        = "3.6.1"
-lazy val fabricVersion     = "1.10.3"
-lazy val mouseVersion      = "1.2.1"
-lazy val scalacheckVersion = "1.17.0"
-lazy val scodecVersion     = "2.2.1"
+lazy val catsVersion          = "2.9.0"
+lazy val catsEffectVersion    = "3.4.8"
+lazy val catsParseVersion     = "0.3.9"
+lazy val fs2Version           = "3.6.1"
+lazy val fabricVersion        = "1.10.3"
+lazy val mouseVersion         = "1.2.1"
+lazy val scalacheckVersion    = "1.17.0"
+lazy val scalaJavaTimeVersion = "2.5.0"
+lazy val scodecVersion        = "2.2.1"
 
 // Other Deps
 
@@ -92,7 +93,8 @@ lazy val `toml-core` =
     .settings(
       name := "toml-core",
       libraryDependencies ++= Seq(
-        "org.typelevel" %%% "cats-core" % catsVersion
+        "org.typelevel"     %%% "cats-core"       % catsVersion,
+        "io.github.cquiroz" %%% "scala-java-time" % scalaJavaTimeVersion
       )
     )
 

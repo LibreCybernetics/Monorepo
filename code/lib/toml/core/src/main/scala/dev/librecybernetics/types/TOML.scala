@@ -1,5 +1,12 @@
 package dev.librecybernetics.types
 
+import java.time.{
+  LocalTime as JLocalTime,
+  LocalDate as JLocalDate,
+  LocalDateTime as JLocalDateTime,
+  ZonedDateTime as JZonedDateTime
+}
+
 import cats.Semigroup
 import cats.implicits.*
 
@@ -10,6 +17,11 @@ enum TOML:
   case String(content: Predef.String)
   case Integer(content: BigInt)
   case Float(double: Double)
+  // Temporal
+  case LocalTime(localTime: JLocalTime)
+  case LocalDate(localDate: JLocalDate)
+  case LocalDateTime(localDateTime: JLocalDateTime)
+  case ZonedDateTime(zonedDateTime: JZonedDateTime)
   // Recursive
   case Array(arrays: Seq[TOML])
   case Map(map: Predef.Map[Predef.String, TOML])
