@@ -1,5 +1,7 @@
 package dev.librecybernetics.types.toml
 
+import java.time.{LocalTime, LocalDate, LocalDateTime, ZonedDateTime}
+
 import dev.librecybernetics.types.TOML
 
 given Conversion[Boolean, TOML.Boolean] with
@@ -31,6 +33,20 @@ given Conversion[BigDecimal, TOML.Float] with
 
 given Conversion[String, TOML.String] with
   override def apply(x: String): TOML.String = TOML.String(x)
+
+given Conversion[LocalTime, TOML.LocalTime] with
+  override def apply(x: LocalTime): TOML.LocalTime = TOML.LocalTime(x)
+
+given Conversion[LocalDate, TOML.LocalDate] with
+  override def apply(x: LocalDate): TOML.LocalDate = TOML.LocalDate(x)
+
+given Conversion[LocalDateTime, TOML.LocalDateTime] with
+
+  override def apply(x: LocalDateTime): TOML.LocalDateTime = TOML.LocalDateTime(x)
+
+given Conversion[ZonedDateTime, TOML.ZonedDateTime] with
+
+  override def apply(x: ZonedDateTime): TOML.ZonedDateTime = TOML.ZonedDateTime(x)
 
 given Conversion[Seq[TOML], TOML.Array] with
   override def apply(x: Seq[TOML]): TOML.Array = TOML.Array(x)
