@@ -2,7 +2,7 @@ package dev.librecybernetics.parser.toml.base
 
 import cats.parse.Parser
 
-private enum Sign:
+enum Sign:
   case Plus, Minus
 
 val plus: Parser[Sign.Plus.type]   = Parser.char('+').map(_ => Sign.Plus)

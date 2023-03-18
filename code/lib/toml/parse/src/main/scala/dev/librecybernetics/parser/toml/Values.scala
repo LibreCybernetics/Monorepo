@@ -4,6 +4,7 @@ import cats.parse.Parser
 
 import dev.librecybernetics.parser.toml.base.*
 import dev.librecybernetics.types.TOML
+import dev.librecybernetics.parser.rfc3339.*
 
 lazy val scalarValues: Parser[TOML] =
   Boolean.boolean.map(TOML.Boolean.apply).backtrack |

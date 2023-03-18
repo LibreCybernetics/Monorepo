@@ -1,4 +1,4 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser.rfc3339
 
 import scala.language.postfixOps
 import java.time.LocalDate
