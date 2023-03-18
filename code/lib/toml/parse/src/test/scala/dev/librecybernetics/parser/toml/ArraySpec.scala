@@ -15,6 +15,12 @@ class ArraySpec extends AnyWordSpec {
   "Array" when {
     "Valid" should {
       Map(
+        "[]"                                    ->
+          TOML.Array(Nil),
+        "[[]]"                                  ->
+          TOML.Array(Seq(TOML.Array(Nil))),
+        "[1]"                                   ->
+          TOML.Array(Seq(1)),
         "[ [ 1, 2 ], [3, 4, 5] ]"               ->
           TOML.Array(
             Seq(
@@ -35,7 +41,7 @@ class ArraySpec extends AnyWordSpec {
               0.1d, 0.2d, 0.5d, 1, 2, 5
             )
           ),
-        "[1, 2, 3, ]"                              ->
+        "[1, 2, 3, ]"                           ->
           TOML.Array(
             Seq(
               TOML.Integer(1),

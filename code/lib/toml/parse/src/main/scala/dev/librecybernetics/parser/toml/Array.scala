@@ -1,29 +1,34 @@
 package dev.librecybernetics.parser.toml
 
 import cats.data.NonEmptyList
-import cats.parse.Parser
+import cats.parse.{Parser, Parser0}
 
 import dev.librecybernetics.parser.*
 import dev.librecybernetics.parser.toml.base.*
 import dev.librecybernetics.types.TOML
 
 object Array:
-  val bracketStart: Parser[Unit]  = bracketOpen.surroundedBy(spaces)
-  val bracketEnd: Parser[Unit]    = bracketClose.surroundedBy(spaces)
+  val bracketStart: Parser[Unit]  = bracketOpen.surroundedBy(spaces).withContext("bracket-start")
+  val bracketEnd: Parser[Unit]    = bracketClose.surroundedBy(spaces).withContext("bracket-end")
   val trailingComma: Parser[Unit] =
-    ((emptyOrComment.rep0 ~ spaces).with1 ~ comma ~ emptyOrComment.rep0).backtrack.void
+    ((emptyOrComment.rep0 ~ spaces).with1 ~ comma ~ emptyOrComment.rep0)
+      .withContext("trailing-comma")
+      .backtrack
+      .void
 
   lazy val scalarArray: Parser[TOML] =
-    scalarValues
-      .repSep(comma.surroundedBy(emptyOrComment.rep0 ~ spaces).backtrack)
-      .between(bracketStart, trailingComma.? ~ bracketEnd)
-      .map(arr => TOML.Array(arr.toList))
+    (bracketStart *> scalarValues
+      .repSep0(comma.surroundedBy(emptyOrComment.rep0 ~ spaces).backtrack) <* trailingComma.? <* bracketEnd)
+      // TODO: Upstream a between1(Parser[Unit], Parser[Unit]): Parser[A] combinator
+      // .between(bracketStart, trailingComma.? ~ bracketEnd)
+      .map(TOML.Array(_))
       .withContext("scalarArray")
 
   lazy val array: Parser[TOML] = Parser.recursive[TOML] { p =>
-    scalarArray.backtrack | p
-      .repSep(comma.surroundedBy(spaces).backtrack)
-      .between(bracketStart, trailingComma.? ~ bracketEnd)
-      .map { (arr: NonEmptyList[TOML]) => TOML.Array(arr.toList) }
-      .withContext("recursiveArray")
+    scalarArray.backtrack |
+      (bracketStart *> p.repSep0(comma.surroundedBy(spaces).backtrack) <* trailingComma.? <* bracketEnd)
+        // TODO: Upstream a between1(Parser[Unit], Parser[Unit]): Parser[A] combinator
+        // .between(bracketStart, trailingComma.? ~ bracketEnd)
+        .map(TOML.Array(_))
+        .withContext("recursiveArray")
   }
