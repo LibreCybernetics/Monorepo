@@ -18,4 +18,4 @@ val keyValue: Parser[TOML.Map] =
   ).mapN((k, v) => TOML.Map(Map(k -> v)))
 
 val keyValueOrMap: Parser[TOML.Map] =
-  keyValue.backtrack | keyMap
+  (keyValue.backtrack | keyMap.backtrack).withContext("key-value-or-map")

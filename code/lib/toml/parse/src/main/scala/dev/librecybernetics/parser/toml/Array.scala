@@ -8,8 +8,8 @@ import dev.librecybernetics.parser.toml.base.*
 import dev.librecybernetics.types.TOML
 
 object Array:
-  val bracketStart: Parser[Unit]  = bracketOpen.surroundedBy(spaces).withContext("bracket-start")
-  val bracketEnd: Parser[Unit]    = bracketClose.surroundedBy(spaces).withContext("bracket-end")
+  val bracketStart: Parser[Unit]  = bracketOpen.surroundedBy(emptyOrComment.rep0 ~ spaces).withContext("bracket-start")
+  val bracketEnd: Parser[Unit]    = bracketClose.surroundedBy(emptyOrComment.rep0 ~ spaces).withContext("bracket-end")
   val trailingComma: Parser[Unit] =
     ((emptyOrComment.rep0 ~ spaces).with1 ~ comma ~ emptyOrComment.rep0)
       .withContext("trailing-comma")
