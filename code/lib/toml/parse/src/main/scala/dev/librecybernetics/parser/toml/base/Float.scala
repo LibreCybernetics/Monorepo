@@ -28,7 +28,10 @@ object Float:
         (Parser.charIn(Set('e', 'E')) *> sign.string.? ~ Decimal.literal)
           .map((s, e) => "e" + s.fold("")(identity) + e)
           .?
-    ).map { case (((s, w), f), e) =>
+    ).collect {
+      case d@(((_, _), Some(_)), _) => d
+      case e@(((_, _), _), Some(_)) => e
+    }.map { case (((s, w), f), e) =>
       val fs = f.fold("")("." + _)
       val es = e.fold("")(identity)
       toDouble(s, s"$w$fs$es")

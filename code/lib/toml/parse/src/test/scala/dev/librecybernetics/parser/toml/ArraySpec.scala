@@ -29,16 +29,13 @@ class ArraySpec extends AnyWordSpec {
               TOML.Array(Seq(true, false, true))
             )
           ),
-//        "[ 0.1, 0.2, 0.5, 1, 2, 5 ]" ->
-//          TOML.Array(Seq(
-//            0.1d,
-//            0.2d,
-//            0.5d,
-//            1,
-//            2,
-//            5
-//          )),
-        "[1,2,3,]"                              ->
+        "[ 0.1, 0.2, 0.5, 1, 2, 5 ]"            ->
+          TOML.Array(
+            Seq(
+              0.1d, 0.2d, 0.5d, 1, 2, 5
+            )
+          ),
+        "[1, 2, 3, ]"                              ->
           TOML.Array(
             Seq(
               TOML.Integer(1),
