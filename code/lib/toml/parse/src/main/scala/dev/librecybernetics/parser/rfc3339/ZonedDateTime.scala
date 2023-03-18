@@ -1,6 +1,6 @@
 package dev.librecybernetics.parser.rfc3339
 
-import java.time.{ZoneOffset, ZonedDateTime}
+import java.time.{ZoneOffset, OffsetDateTime}
 
 import cats.implicits.*
 import cats.parse.Parser
@@ -30,13 +30,13 @@ def transformSign(s: Sign, b: Byte): Int =
     case Sign.Minus => -b
     case Sign.Plus  => b
 
-val zonedDateTime: Parser[ZonedDateTime] =
+val zonedDateTime: Parser[OffsetDateTime] =
   (dateTime ~ (Parser.char('Z').map(Left(_)).backtrack | timeOffset.map(Right(_))))
     .map {
       case (dateTime, Left(()))                   =>
-        ZonedDateTime.of(dateTime, ZoneOffset.UTC)
+        OffsetDateTime.of(dateTime, ZoneOffset.UTC)
       case (dateTime, Right((s, hours, minutes))) =>
-        ZonedDateTime.of(
+        OffsetDateTime.of(
           dateTime,
           ZoneOffset.ofHoursMinutes(
             transformSign(s, hours),

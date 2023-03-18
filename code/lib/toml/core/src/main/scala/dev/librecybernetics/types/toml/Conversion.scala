@@ -1,6 +1,6 @@
 package dev.librecybernetics.types.toml
 
-import java.time.{LocalTime, LocalDate, LocalDateTime, ZonedDateTime}
+import java.time.{LocalTime, LocalDate, LocalDateTime, OffsetDateTime}
 
 import dev.librecybernetics.types.TOML
 
@@ -44,9 +44,9 @@ given Conversion[LocalDateTime, TOML.LocalDateTime] with
 
   override def apply(x: LocalDateTime): TOML.LocalDateTime = TOML.LocalDateTime(x)
 
-given Conversion[ZonedDateTime, TOML.ZonedDateTime] with
+given Conversion[OffsetDateTime, TOML.OffsetDateTime] with
 
-  override def apply(x: ZonedDateTime): TOML.ZonedDateTime = TOML.ZonedDateTime(x)
+  override def apply(x: OffsetDateTime): TOML.OffsetDateTime = TOML.OffsetDateTime(x)
 
 given Conversion[Seq[TOML], TOML.Array] with
   override def apply(x: Seq[TOML]): TOML.Array = TOML.Array(x)

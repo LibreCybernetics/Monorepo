@@ -1,5 +1,5 @@
 package dev.librecybernetics.parser.rfc3339
 
-class ZonedDateTimeSpec {
+class OffsetDateTimeSpec {
 
 }

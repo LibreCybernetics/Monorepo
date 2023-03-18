@@ -1,6 +1,6 @@
 package dev.librecybernetics.parser.toml
 
-import java.time.{ZoneOffset, ZonedDateTime}
+import java.time.{ZoneOffset, OffsetDateTime}
 import scala.language.implicitConversions
 
 import org.scalatest.wordspec.AnyWordSpec
@@ -24,9 +24,9 @@ class IntegrationSpec extends AnyWordSpec {
             Map(
               "dates" -> TOML.Array(
                 Seq(
-                  ZonedDateTime.of(1987, 7, 5, 17, 45, 0, 0, ZoneOffset.UTC),
-                  ZonedDateTime.of(1979, 5, 27, 7, 32, 0, 0, ZoneOffset.UTC),
-                  ZonedDateTime.of(2006, 6, 1, 11, 0, 0, 0, ZoneOffset.UTC)
+                  OffsetDateTime.of(1987, 7, 5, 17, 45, 0, 0, ZoneOffset.UTC),
+                  OffsetDateTime.of(1979, 5, 27, 7, 32, 0, 0, ZoneOffset.UTC),
+                  OffsetDateTime.of(2006, 6, 1, 11, 0, 0, 0, ZoneOffset.UTC)
                 )
               )
             )
