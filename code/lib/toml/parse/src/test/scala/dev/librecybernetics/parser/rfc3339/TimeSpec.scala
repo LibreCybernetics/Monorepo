@@ -20,7 +20,7 @@ class TimeSpec extends AnyWordSpec {
         "12:34:56.789"    -> LocalTime.of(12, 34, 56, 789_000_000),
         "12:34:56.000123" -> LocalTime.of(12, 34, 56, 123_000)
       ) foreach { (s, lt) =>
-        s in genericTest(time)(s, lt)
+        s in genericSuccess(time)(s, lt)
       }
     }
 
@@ -30,13 +30,7 @@ class TimeSpec extends AnyWordSpec {
         "12:60:34" -> "context: partial-time, must fail: 60 out of range(Range 0 to 59) for time-minute",
         "12:34:60" -> "must fail: Leap seconds are only allowed as 23:59:60 but got 12:34:60"
       ) foreach { (s, message) =>
-        s in {
-          val Left(err) = time.parse(s): @unchecked
-
-          val NonEmptyList(expectation, Nil) = err.expected: @unchecked
-
-          expectation.show shouldBe message
-        }
+        s in genericFailure(time)(s, message)
       }
     }
   }

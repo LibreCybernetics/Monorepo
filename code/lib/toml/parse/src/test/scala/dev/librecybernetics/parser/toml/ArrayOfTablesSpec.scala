@@ -61,7 +61,7 @@ class ArrayOfTablesSpec extends AnyWordSpec {
           )
         )
       ) foreach { (s, aot) =>
-        s in genericTest(ArrayOfTables.arrayOfTables)(s, aot)
+        s in genericSuccess(ArrayOfTables.arrayOfTables)(s, aot)
       }
     }
   }

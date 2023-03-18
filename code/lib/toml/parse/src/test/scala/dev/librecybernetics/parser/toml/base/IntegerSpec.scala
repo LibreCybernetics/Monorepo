@@ -1,6 +1,6 @@
 package dev.librecybernetics.parser.toml.base
 
-import dev.librecybernetics.parser.genericTest
+import dev.librecybernetics.parser.genericSuccess
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -18,7 +18,7 @@ class IntegerSpec extends AnyWordSpec {
         "53_49_221" -> 5349221,
         "1_2_3_4_5" -> 12345
       )) foreach { (s, i) =>
-        s in genericTest(integer)(s, i)
+        s in genericSuccess(integer)(s, i)
       }
     }
 
@@ -28,7 +28,7 @@ class IntegerSpec extends AnyWordSpec {
         "0xdeadbeef"  -> 0xdeadbeefL,
         "0xdead_beef" -> 0xdead_beefL
       ) foreach { (s, i) =>
-        s in genericTest(integer)(s, i)
+        s in genericSuccess(integer)(s, i)
       }
     }
 
@@ -37,7 +37,7 @@ class IntegerSpec extends AnyWordSpec {
         "0o01234567" -> 342391,
         "0o755"      -> 493
       ) foreach { (s, i) =>
-        s in genericTest(integer)(s, i)
+        s in genericSuccess(integer)(s, i)
       }
     }
 
@@ -45,7 +45,7 @@ class IntegerSpec extends AnyWordSpec {
       Map(
         "0b11010110" -> 0xd6
       ) foreach { (s, b) =>
-        s in genericTest(integer)(s, b)
+        s in genericSuccess(integer)(s, b)
       }
     }
   }
