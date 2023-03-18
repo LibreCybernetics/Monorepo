@@ -37,18 +37,15 @@ class ArraySpec extends AnyWordSpec {
           ),
         "[ 0.1, 0.2, 0.5, 1, 2, 5 ]"            ->
           TOML.Array(
-            Seq(
-              0.1d, 0.2d, 0.5d, 1, 2, 5
-            )
+            Seq(0.1d, 0.2d, 0.5d, 1, 2, 5)
           ),
         "[1, 2, 3, ]"                           ->
-          TOML.Array(
-            Seq(
-              TOML.Integer(1),
-              TOML.Integer(2),
-              TOML.Integer(3)
-            )
-          )
+          TOML.Array(Seq(1, 2, 3)),
+        // Test case from toml-test: https://github.com/BurntSushi/toml-test
+        "[1, [\"Arrays are not integers.\"]]" ->
+          TOML.Array(Seq(
+            1, TOML.Array(Seq("Arrays are not integers."))
+          ))
       ) foreach { (s, a) =>
         s in genericSuccess(Array.array)(s, a)
       }
