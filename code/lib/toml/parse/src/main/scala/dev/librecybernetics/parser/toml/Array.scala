@@ -26,7 +26,7 @@ object Array:
 
   lazy val array: Parser[TOML] = Parser.recursive[TOML] { p =>
     scalarArray.backtrack |
-      (bracketStart *> p.repSep0(comma.surroundedBy(spaces).backtrack) <* trailingComma.? <* bracketEnd)
+      (bracketStart *> (scalarValues | p).repSep0(comma.surroundedBy(spaces).backtrack) <* trailingComma.? <* bracketEnd)
         // TODO: Upstream a between1(Parser[Unit], Parser[Unit]): Parser[A] combinator
         // .between(bracketStart, trailingComma.? ~ bracketEnd)
         .map(TOML.Array(_))

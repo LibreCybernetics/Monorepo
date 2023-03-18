@@ -36,7 +36,20 @@ class IntegrationSpec extends AnyWordSpec {
           |                2, #this is ok
           |       ]
         """.stripMargin ->
-          TOML.Map(Map("comments" -> TOML.Array(Seq(1, 2))))
+          TOML.Map(Map("comments" -> TOML.Array(Seq(1, 2)))),
+        """nest = [
+          |        [
+          |                ["a"],
+          |                [1, 2, [3]]
+          |        ]
+          |       ]
+        """.stripMargin ->
+          TOML.Map(Map(
+            "nest" -> TOML.Array(Seq(TOML.Array(Seq(
+              TOML.Array(Seq("a")),
+              TOML.Array(Seq(1, 2, TOML.Array(Seq(3)))),
+            ))
+          ))))
       ) foreach { (s, t) =>
         s in genericSuccess(Toml.toml)(s, t)
       }
