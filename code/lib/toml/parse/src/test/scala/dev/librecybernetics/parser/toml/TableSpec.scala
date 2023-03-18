@@ -4,7 +4,7 @@ import cats.implicits.*
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
-import dev.librecybernetics.parser.genericTest
+import dev.librecybernetics.parser.genericSuccess
 import dev.librecybernetics.types.TOML
 
 class TableSpec extends AnyWordSpec {
@@ -15,7 +15,7 @@ class TableSpec extends AnyWordSpec {
           Map("table" -> TOML.Array(Nil))
         )
       ) foreach { (s, t) =>
-        s in genericTest(table)(s, t)
+        s in genericSuccess(table)(s, t)
       }
     }
   }

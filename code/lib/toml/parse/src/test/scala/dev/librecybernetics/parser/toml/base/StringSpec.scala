@@ -1,7 +1,7 @@
 package dev.librecybernetics.parser.toml.base
 
 import cats.implicits.*
-import dev.librecybernetics.parser.genericTest
+import dev.librecybernetics.parser.genericSuccess
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -40,9 +40,8 @@ class StringSpec extends AnyWordSpec {
           "Here are fifteen apostrophes: '''''''''''''''",
         "''''That,' she said, 'is still pointless.''''" ->
           "'That,' she said, 'is still pointless.'"
-
       ) foreach { (si, sr) =>
-        si in genericTest(string)(si, sr)
+        si in genericSuccess(string)(si, sr)
       }
     }
   }

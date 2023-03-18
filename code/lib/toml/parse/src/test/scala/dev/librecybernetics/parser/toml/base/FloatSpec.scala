@@ -1,6 +1,6 @@
 package dev.librecybernetics.parser.toml.base
 
-import dev.librecybernetics.parser.genericTest
+import dev.librecybernetics.parser.*
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -35,7 +35,7 @@ class FloatSpec extends AnyWordSpec {
         "+inf"                 -> Double.PositiveInfinity,
         "-inf"                 -> Double.NegativeInfinity
       )) foreach { (s, d) =>
-        s in genericTest(Float.float)(s, d)
+        s in genericSuccess(Float.float)(s, d)
       }
     }
 
@@ -53,17 +53,20 @@ class FloatSpec extends AnyWordSpec {
     }
 
     "Invalid Simple Float" should {
-      Set(
-        ".7",
-        "7.",
-        "7e",
-        "7.e",
-        "3.e+20"
-      ) foreach { s =>
-        s in {
-          val Left(err) = Float.float.parse(s): @unchecked
-          err.input foreach (_ shouldBe s)
-        }
+      val error: Seq[String] = Seq(
+        "must match one of the strings: {\"inf\", \"nan\"}",
+        "must be char: '+'",
+        "must be char: '-'",
+        "must be a char within the range of: ['0', '9']"
+      )
+      Map(
+        ".7" -> error,
+        "7." -> error,
+        "7e" -> (error.dropRight(1) ++ error.drop(1)),
+        "7.e" -> error,
+        "3.e+20" -> error
+      ) foreach { (s, message) =>
+        s in genericFailure(Float.float)(s, message*)
       }
     }
   }

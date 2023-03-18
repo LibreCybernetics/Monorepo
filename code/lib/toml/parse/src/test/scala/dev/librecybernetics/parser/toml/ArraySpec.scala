@@ -7,7 +7,7 @@ import cats.parse.Parser
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
-import dev.librecybernetics.parser.genericTest
+import dev.librecybernetics.parser.genericSuccess
 import dev.librecybernetics.types.TOML
 import dev.librecybernetics.types.toml.given
 
@@ -44,7 +44,7 @@ class ArraySpec extends AnyWordSpec {
             )
           )
       ) foreach { (s, a) =>
-        s in genericTest(Array.array)(s, a)
+        s in genericSuccess(Array.array)(s, a)
       }
     }
   }

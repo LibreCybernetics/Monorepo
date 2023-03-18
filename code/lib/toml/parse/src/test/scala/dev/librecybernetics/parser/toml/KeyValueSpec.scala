@@ -6,7 +6,7 @@ import cats.implicits.*
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
-import dev.librecybernetics.parser.genericTest
+import dev.librecybernetics.parser.genericSuccess
 import dev.librecybernetics.types.TOML
 import dev.librecybernetics.types.toml.given
 
@@ -49,7 +49,7 @@ class KeyValueSpec extends AnyWordSpec {
             )
           )
       )) foreach { (s, k) =>
-        s in genericTest(keyValueOrMap)(s, k)
+        s in genericSuccess(keyValueOrMap)(s, k)
       }
     }
   }
