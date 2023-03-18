@@ -5,17 +5,26 @@ import cats.Semigroup
 
 import dev.librecybernetics.types.TOML
 
-def canCombine(x: TOML, y: TOML): Boolean =
+private def canCombine(x: TOML, y: TOML): Boolean =
   (x, y) match
-    case (x @ TOML.Array(_), y @ TOML.Array(_)) => true
-    case (x @ TOML.Map(_), y @ TOML.Map(_))     => true
-    case _                                      => false
+    case (TOML.Array(_), TOML.Array(_))   => true
+    case (TOML.Map(mapX), TOML.Map(mapY)) =>
+      (mapX.keySet intersect mapY.keySet).forall { commonKey =>
+        canCombine(mapX(commonKey), mapY(commonKey))
+      }
+    case _                                => false
 
-def combineNested(x: TOML, y: TOML): TOML =
+private def combineNested(x: TOML, y: TOML): TOML =
   (x, y) match
-    case (x @ TOML.Array(_), y @ TOML.Array(_)) => x combine y
-    case (x @ TOML.Map(_), y @ TOML.Map(_))     => x combine y
-    case (_, _)                                 => throw new IllegalArgumentException("cant combine unu")
+    case (x @ TOML.Array(_), y @ TOML.Array(_)) =>
+      x combine y
+
+    case (x @ TOML.Map(_), y @ TOML.Map(_)) if canCombine(x, y) =>
+      x combine y
+
+    case (_, _) =>
+      throw new IllegalArgumentException("cant combine unu")
+  end match
 
 given semigroupTOMLArray: Semigroup[TOML.Array] with
   override def combine(x: TOML.Array, y: TOML.Array): TOML.Array =
@@ -26,16 +35,12 @@ given semigroupTOMLMap: Semigroup[TOML.Map] with
   override def combine(x: TOML.Map, y: TOML.Map): TOML.Map =
     (x, y) match
       case (TOML.Map(mapX), TOML.Map(mapY)) =>
-        // TODO: Better understand and detect merging restrictions
-        val mapXNonMapKeys = mapX.filterNot(_._2.isInstanceOf[TOML.Map]).keys.toSet
-        val mapYNonMapKeys = mapY.filterNot(_._2.isInstanceOf[TOML.Map]).keys.toSet
+        val commonKeys = mapX.keySet intersect mapY.keySet
 
-        val commonNonMapKeys = mapXNonMapKeys intersect mapYNonMapKeys
-
-        require(commonNonMapKeys forall { key => canCombine(mapX(key), mapY(key)) })
+        require(commonKeys forall { key => canCombine(mapX(key), mapY(key)) })
 
         TOML.Map(
-          (mapX ++ mapY) ++ (commonNonMapKeys.collect { key =>
+          (mapX ++ mapY) ++ (commonKeys.collect { key =>
             key -> combineNested(mapX(key), mapY(key))
           })
         )
