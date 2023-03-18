@@ -1,6 +1,5 @@
 package dev.librecybernetics.parser.rfc3339
 
-import scala.language.postfixOps
 import java.time.LocalTime
 
 import cats.implicits.*
@@ -8,14 +7,6 @@ import cats.parse.Parser
 
 import dev.librecybernetics.parser.*
 import dev.librecybernetics.types.TOML
-
-def intIn(range: Range, context: String): Parser[Int] =
-  digit.rep(2).string.map(_.toInt).flatMap {
-    case i if range contains i =>
-      Parser.pure(i)
-    case i                     =>
-      Parser.failWith(show"$i out of range(${range.toString}) for $context")
-  }
 
 /** time-hour ":" time-minute ":" time-second
   */
