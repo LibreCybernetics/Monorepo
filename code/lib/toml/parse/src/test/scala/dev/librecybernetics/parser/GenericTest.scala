@@ -1,5 +1,7 @@
 package dev.librecybernetics.parser
 
+import scala.language.postfixOps
+
 import cats.data.NonEmptyList
 import cats.implicits.*
 import cats.parse.Parser
@@ -17,7 +19,10 @@ def genericFailure[A](p: Parser[A])(input: String, messages: String*): Assertion
   val result = p.parse(input)
   result match
     case Left(error) =>
-      error.expected.toList.map(_.show) shouldBe messages
+      val errorMessages = error.expected.toList.map(_.show)
+      println(show"Unexpected error messages returned: ${errorMessages.filterNot(messages contains)}")
+      println(show"Missing expected error messages: ${messages.filterNot(errorMessages contains)}")
+      errorMessages shouldBe messages
 
     case Right(_, result) =>
       println(show"Expected failure but succeeded: ${result.toString()}")

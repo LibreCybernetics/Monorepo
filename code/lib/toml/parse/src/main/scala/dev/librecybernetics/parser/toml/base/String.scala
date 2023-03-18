@@ -3,6 +3,7 @@ package dev.librecybernetics.parser.toml.base
 import java.lang.Integer
 import scala.language.postfixOps
 
+import cats.implicits.*
 import cats.parse.Parser
 import cats.parse.Accumulator0.charStringAccumulator0
 
@@ -46,20 +47,6 @@ private val escaped: Parser[Char] =
 private val escapedNewline: Parser[String] =
   (Parser.string("\\\n").map(_ => "") <* emptyLine.backtrack.rep0 <* spaces)
     .withContext("escapedNewline")
-
-private val escapedUnicode4: Parser[Char] =
-  Parser.string("\\u") *>
-    Parser
-      .charIn(hexDigit)
-      .repExactlyAs(4)(using charStringAccumulator0)
-      .map(Integer.parseInt(_, 16).toChar)
-
-private val escapedUnicode8: Parser[Char] =
-  Parser.string("\\U") *>
-    Parser
-      .charIn(hexDigit)
-      .repExactlyAs(8)(using charStringAccumulator0)
-      .map(Integer.parseInt(_, 16).toChar)
 
 val simpleString: Parser[String] =
   (

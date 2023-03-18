@@ -1,17 +1,18 @@
 package dev.librecybernetics.parser.toml.base
 
 import cats.implicits.*
-import dev.librecybernetics.parser.genericSuccess
+import dev.librecybernetics.parser.*
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
 class StringSpec extends AnyWordSpec {
   "String" when {
-    "Valid Simple" should {
+    "Valid" should {
       Map(
         "\"I'm a string. \\\"You can quote me\\\". Name\\tJos\\u00E9\\nLocation\\tSF.\""                       ->
           "I'm a string. \"You can quote me\". Name\tJos\u00E9\nLocation\tSF.",
-        "\"\"\"\nRoses are red\nViolets are blue\"\"\""                                                        -> "Roses are red\nViolets are blue",
+        "\"\"\"\nRoses are red\nViolets are blue\"\"\""                                                        ->
+          "Roses are red\nViolets are blue",
         "\"\"\"\nThe quick brown \\\n\n\n  fox jumps over \\\n    the lazy dog.\"\"\""                         ->
           "The quick brown fox jumps over the lazy dog.",
         "\"\"\"\\\n       The quick brown \\\n       fox jumps over \\\n       the lazy dog.\\\n       \"\"\"" ->
@@ -32,16 +33,34 @@ class StringSpec extends AnyWordSpec {
           "<\\i\\c*\\s*>",
         "'''I [dw]on't need \\d{2} apples'''"                                                                  ->
           "I [dw]on't need \\d{2} apples",
-        "'''\nThe first newline is\ntrimmed in raw strings.\n   All other whitespace\n   is preserved.\n'''" ->
+        "'''\nThe first newline is\ntrimmed in raw strings.\n   All other whitespace\n   is preserved.\n'''"   ->
           "The first newline is\ntrimmed in raw strings.\n   All other whitespace\n   is preserved.\n",
-        "'''Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"'''" ->
+        "'''Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"'''"                               ->
           "Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
-        "\"Here are fifteen apostrophes: '''''''''''''''\"" ->
+        "\"Here are fifteen apostrophes: '''''''''''''''\""                                                    ->
           "Here are fifteen apostrophes: '''''''''''''''",
-        "''''That,' she said, 'is still pointless.''''" ->
+        "''''That,' she said, 'is still pointless.''''"                                                        ->
           "'That,' she said, 'is still pointless.'"
       ) foreach { (si, sr) =>
         si in genericSuccess(string)(si, sr)
+      }
+    }
+
+    "Invalid" should {
+      Map(
+        "\"\\U00D80000\"" ->
+          Seq(
+            "must be char: '''",
+            "context: multilineString, context: tripleDoubleQuote, must match string: \"\"\"\"\"",
+            "context: multilineLiteral, context: tripleSingleQuote, must match string: \"'''\"",
+            "must match one of the strings: {\"\\\"\", \"\\\\\", \"\\b\", \"\\f\", \"\\n\", \"\\r\", \"\\t\", \"\\u\"}",
+            "must be a char within the range of: ['\u0000', '!']",
+            "must be a char within the range of: ['#', '[']",
+            "must be a char within the range of: [']', '￿']",
+            "must fail: Invalid unicode codepoint: \\U00D80000"
+          )
+      ) foreach { (s, m) =>
+        s in genericFailure(string)(s, m*)
       }
     }
   }
