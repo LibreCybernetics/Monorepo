@@ -4,7 +4,7 @@ import java.time.{
   LocalTime as JLocalTime,
   LocalDate as JLocalDate,
   LocalDateTime as JLocalDateTime,
-  ZonedDateTime as JZonedDateTime
+  OffsetDateTime as JOffsetDateTime
 }
 
 import cats.Semigroup
@@ -21,7 +21,7 @@ enum TOML:
   case LocalTime(localTime: JLocalTime)
   case LocalDate(localDate: JLocalDate)
   case LocalDateTime(localDateTime: JLocalDateTime)
-  case ZonedDateTime(zonedDateTime: JZonedDateTime)
+  case OffsetDateTime(zonedDateTime: JOffsetDateTime)
   // Recursive
   case Array(arrays: Seq[TOML])
   case Map(map: Predef.Map[Predef.String, TOML])

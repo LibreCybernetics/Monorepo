@@ -18,7 +18,7 @@ given reader: Reader[TOML] = Reader[TOML](
     case TOML.LocalTime(localTime)         => Str(localTime.toString)
     case TOML.LocalDate(localDate)         => Str(localDate.toString)
     case TOML.LocalDateTime(localDateTime) => Str(localDateTime.toString)
-    case TOML.ZonedDateTime(zonedDateTime) => Str(zonedDateTime.toString)
+    case TOML.OffsetDateTime(zonedDateTime) => Str(zonedDateTime.toString)
 
     // Recursive
     case TOML.Array(arr) => Arr(arr.map(_.json).toVector)

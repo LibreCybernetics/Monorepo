@@ -10,7 +10,7 @@ lazy val scalarValues: Parser[TOML] =
   (
     Boolean.boolean.map(TOML.Boolean.apply).backtrack |
       string.map(TOML.String.apply).backtrack |
-      zonedDateTime.map(TOML.ZonedDateTime.apply).backtrack |
+      zonedDateTime.map(TOML.OffsetDateTime.apply).backtrack |
       dateTime.map(TOML.LocalDateTime.apply).backtrack |
       date.map(TOML.LocalDate.apply).backtrack |
       time.map(TOML.LocalTime.apply).backtrack |

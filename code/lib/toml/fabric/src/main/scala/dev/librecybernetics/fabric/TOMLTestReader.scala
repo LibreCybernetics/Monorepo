@@ -26,7 +26,7 @@ given testReader: Reader[TOML] = Reader[TOML](
       Obj("type" -> "time-date", "value" -> Str(localDate.toString))
     case TOML.LocalDateTime(localDateTime) =>
       Obj("type" -> "datetime-local", "value" -> Str(localDateTime.toString))
-    case TOML.ZonedDateTime(zonedDateTime) =>
+    case TOML.OffsetDateTime(zonedDateTime) =>
       Obj("type" -> "datetime", "value" -> Str(zonedDateTime.toString))
 
     // Recursive
