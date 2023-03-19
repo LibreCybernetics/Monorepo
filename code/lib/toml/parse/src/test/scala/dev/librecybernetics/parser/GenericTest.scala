@@ -9,7 +9,7 @@ import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.Assertion
 
 def genericSuccess[A](p: Parser[A])(input: String, expected: A): Assertion =
-  val result = p.parse(input): @unchecked
+  val result = p.parse(input)
   result match
     case Left(error)        => println(show"$error"); assert(false)
     case Right("", success) => success shouldBe expected
@@ -20,10 +20,14 @@ def genericFailure[A](p: Parser[A])(input: String, messages: String*): Assertion
   result match
     case Left(error) =>
       val errorMessages = error.expected.toList.map(_.show)
-      println(show"Unexpected error messages returned: ${errorMessages.filterNot(messages contains)}")
-      println(show"Missing expected error messages: ${messages.filterNot(errorMessages contains)}")
+      if (
+        ((errorMessages.toSet diff messages.toSet) != Set.empty) || ((messages.toSet diff errorMessages.toSet) != Set.empty)
+      )
+        println(show"Unexpected error messages returned: ${errorMessages.filterNot(messages contains)}")
+        println(show"Missing expected error messages: ${messages.filterNot(errorMessages contains)}")
       errorMessages shouldBe messages
 
     case Right(_, result) =>
       println(show"Expected failure but succeeded: ${result.toString()}")
       assert(false)
+  end match

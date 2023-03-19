@@ -48,16 +48,31 @@ class StringSpec extends AnyWordSpec {
 
     "Invalid" should {
       Map(
-        "\"\\U00D80000\"" ->
+        "\"\\U00D80000\""   ->
           Seq(
             "must be char: '''",
             "context: multilineString, context: tripleDoubleQuote, must match string: \"\"\"\"\"",
             "context: multilineLiteral, context: tripleSingleQuote, must match string: \"'''\"",
             "must match one of the strings: {\"\\\"\", \"\\\\\", \"\\b\", \"\\f\", \"\\n\", \"\\r\", \"\\t\", \"\\u\"}",
-            "must be a char within the range of: ['\u0000', '!']",
+            "must be a char within the range of: ['\u0000', '\t']",
+            "must be a char within the range of: ['\u000b', '!']",
             "must be a char within the range of: ['#', '[']",
             "must be a char within the range of: [']', '￿']",
             "must fail: Invalid unicode codepoint: \\U00D80000"
+          ),
+        "'hello\nworld!'"   ->
+          Seq(
+            "must be char: '\"'",
+            "context: multilineString, context: tripleDoubleQuote, must match string: \"\"\"\"\"",
+            "context: multilineLiteral, context: tripleSingleQuote, must match string: \"'''\"",
+            "must be char: '''"
+          ),
+        "\"hello\nworld!\"" ->
+          Seq(
+            "must be char: '''",
+            "context: multilineString, context: tripleDoubleQuote, must match string: \"\"\"\"\"",
+            "context: multilineLiteral, context: tripleSingleQuote, must match string: \"'''\"",
+            "must be char: '\"'"
           )
       ) foreach { (s, m) =>
         s in genericFailure(string)(s, m*)
