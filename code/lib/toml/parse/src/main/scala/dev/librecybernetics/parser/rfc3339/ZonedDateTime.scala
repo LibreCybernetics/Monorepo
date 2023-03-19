@@ -30,7 +30,7 @@ def transformSign(s: Sign, b: Byte): Int =
     case Sign.Minus => -b
     case Sign.Plus  => b
 
-val zonedDateTime: Parser[OffsetDateTime] =
+val offsetDateTime: Parser[OffsetDateTime] =
   (dateTime ~ (Parser.char('Z').map(Left(_)).backtrack | timeOffset.map(Right(_))))
     .map {
       case (dateTime, Left(()))                   =>

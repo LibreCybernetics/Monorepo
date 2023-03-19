@@ -6,8 +6,8 @@ import cats.parse.Parser
 
 import dev.librecybernetics.parser.*
 
-/** date-time = full-date "T" full-time
+/** date-time = full-date ("T" | " ") full-time
   */
 val dateTime: Parser[LocalDateTime] =
-  ((date <* Parser.char('T')) ~ time)
+  ((date <* Parser.charIn('T', ' ')) ~ time)
     .map((date, time) => LocalDateTime.of(date, time))
