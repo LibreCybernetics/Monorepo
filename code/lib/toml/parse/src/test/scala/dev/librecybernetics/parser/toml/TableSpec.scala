@@ -12,7 +12,7 @@ class TableSpec extends AnyWordSpec {
     "Valid Cases" should {
       Map(
         "[table]" -> TOML.Map(
-          Map("table" -> TOML.Array(Nil))
+          Map("table" -> TOML.Map(Map.empty))
         )
       ) foreach { (s, t) =>
         s in genericSuccess(table)(s, t)
