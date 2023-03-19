@@ -17,7 +17,7 @@ private val tripleDoubleQuote = Parser.string("\"\"\"").withContext("tripleDoubl
 
 val simpleLiteral: Parser[String] =
   Parser
-    .charsWhile(_ != '\'')
+    .charsWhile(c => !(Set('\'', '\n') contains c))
     .surroundedBy(singleQuote)
 
 val multilineLiteral: Parser[String] =
@@ -50,7 +50,7 @@ private val escapedNewline: Parser[String] =
 
 val simpleString: Parser[String] =
   (
-    Parser.charsWhile(c => !(Set('"', '\\') contains c)).backtrack |
+    Parser.charsWhile(c => !(Set('"', '\\', '\n') contains c)).backtrack |
       escaped.backtrack | escapedUnicode4.backtrack | escapedUnicode8.backtrack
   ).rep
     .map(_.toList.mkString(""))
