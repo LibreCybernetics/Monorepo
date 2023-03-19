@@ -17,13 +17,13 @@ object ArrayOfTables:
     (spaces.with1 ~ bracketClose.rep(2, 2)).void
 
   val header: Parser[NonEmptyList[String]] =
-    bracketStart *>
-      key.withContext("arrayOfTable.header.key") <*
-      bracketEnd
+    key
+      .between(bracketStart, bracketEnd)
+      .withContext("arrayOfTable.header")
 
   val arrayOfTables: Parser[TOML.Map] =
     (
-      (header.withContext("arrayOfTable.header") <* spaces <* comment.? <* newlineOrEnd) ~
+      (header <* spaces <* comment.? <* newlineOrEnd) ~
         keyValue.repSep0(newline ~ emptyOrComment.rep0)
     ).map { (key, values) =>
       // TODO: Validate not reusing keys
