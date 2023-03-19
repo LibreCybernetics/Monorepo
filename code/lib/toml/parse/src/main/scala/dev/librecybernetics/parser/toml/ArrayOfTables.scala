@@ -18,7 +18,7 @@ object ArrayOfTables:
 
   val header: Parser[NonEmptyList[String]] =
     bracketStart *>
-      (dottedkey.backtrack | simpleKey.map(NonEmptyList.one)).withContext("arrayOfTable.header.key") <*
+      key.withContext("arrayOfTable.header.key") <*
       bracketEnd
 
   val arrayOfTables: Parser[TOML.Map] =
@@ -27,7 +27,7 @@ object ArrayOfTables:
         keyValue.repSep0(newline ~ emptyOrComment.rep0)
     ).map { (key, values) =>
       // TODO: Validate not reusing keys
-      transformDottedToNestedMap(
+      transformDottedKey(
         key,
         TOML.Array(
           Seq(
