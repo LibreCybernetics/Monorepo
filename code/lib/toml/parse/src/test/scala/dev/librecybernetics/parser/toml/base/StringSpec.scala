@@ -1,9 +1,12 @@
 package dev.librecybernetics.parser.toml.base
 
 import cats.implicits.*
-import dev.librecybernetics.parser.*
+import cats.parse.Parser
+
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
+
+import dev.librecybernetics.parser.*
 
 class StringSpec extends AnyWordSpec {
   "String" when {
@@ -40,7 +43,9 @@ class StringSpec extends AnyWordSpec {
         "\"Here are fifteen apostrophes: '''''''''''''''\""                                                    ->
           "Here are fifteen apostrophes: '''''''''''''''",
         "''''That,' she said, 'is still pointless.''''"                                                        ->
-          "'That,' she said, 'is still pointless.'"
+          "'That,' she said, 'is still pointless.'",
+        "\"\"\"\"This,\" she said, \"is just a pointless statement.\"\"\"\"" ->
+          "\"This,\" she said, \"is just a pointless statement.\""
       ) foreach { (si, sr) =>
         si in genericSuccess(string)(si, sr)
       }
@@ -73,9 +78,13 @@ class StringSpec extends AnyWordSpec {
             "context: multilineString, context: tripleDoubleQuote, must match string: \"\"\"\"\"",
             "context: multilineLiteral, context: tripleSingleQuote, must match string: \"'''\"",
             "must be char: '\"'"
-          )
+          ),
+        "\"\"\"6 quotes: \"\"\"\"\"\"" ->
+          Seq("must end the string"),
+        "'''15 apostrophes: ''''''''''''''''''" ->
+          Seq("must end the string")
       ) foreach { (s, m) =>
-        s in genericFailure(string)(s, m*)
+        s in genericFailure(string <* Parser.end)(s, m*)
       }
     }
   }

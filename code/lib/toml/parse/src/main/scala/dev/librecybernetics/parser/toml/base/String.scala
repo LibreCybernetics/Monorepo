@@ -24,7 +24,7 @@ val multilineLiteral: Parser[String] =
   (
     newline.?.with1 *> (
       (Parser.not(tripleSingleQuote).with1 *> Parser.anyChar).rep.string |
-        (Parser.char('\'').string <* Parser.peek(tripleSingleQuote)).backtrack // Note: this is from the spec, sorry :C
+        (Parser.char('\'').string <* Parser.peek(tripleSingleQuote <* Parser.not(singleQuote))).backtrack
     ).withContext("multilineLiteral.line")
       .rep
       .map(_.toList.mkString(""))
@@ -61,7 +61,7 @@ val multilineString: Parser[String] =
     newline.?.with1 *> (
       (Parser.not(tripleDoubleQuote | backslash).with1 *> Parser.anyChar).rep.string |
         escaped.backtrack | escapedUnicode4.backtrack | escapedUnicode8.backtrack | escapedNewline.backtrack |
-        (Parser.char('\"').string <* Parser.peek(tripleDoubleQuote)).backtrack // Note: this is from the spec, sorry :C
+        (Parser.char('\"').string <* Parser.peek(tripleDoubleQuote <* Parser.not(doubleQuote))).backtrack
     ).withContext("multilineString.line").rep.map(_.toList.mkString(""))
   ).surroundedBy(tripleDoubleQuote).withContext("multilineString")
 
