@@ -49,7 +49,7 @@ class KeyValueSpec extends AnyWordSpec {
             )
           )
       )) foreach { (s, k) =>
-        s in genericSuccess(keyValueOrMap)(s, k)
+        s in genericSuccess(keyValue)(s, k)
       }
     }
   }

@@ -13,9 +13,6 @@ private val assignment: Parser[Unit] =
 
 val keyValue: Parser[TOML.Map] =
   (
-    simpleKey,
+    key,
     assignment *> allValues <* spaces <* comment.?
-  ).mapN((k, v) => TOML.Map(Map(k -> v)))
-
-val keyValueOrMap: Parser[TOML.Map] =
-  (keyValue.backtrack | keyMap.backtrack).withContext("key-value-or-map")
+  ).mapN { transformDottedKey }.withContext("key-value")

@@ -8,13 +8,14 @@ import dev.librecybernetics.parser.toml.base.*
 import dev.librecybernetics.types.TOML
 
 val header: Parser[NonEmptyList[String]] =
-  (dottedkey.backtrack | simpleKey.map(NonEmptyList(_, Nil)))
+  key
     .between(bracketOpen ~ spaces, spaces.with1 ~ bracketClose)
+    .backtrack
 
 val table: Parser[TOML.Map] =
   (
     (header <* spaces <* comment.? <* newlineOrEnd) ~
       keyValue.repSep0(newline ~ emptyOrComment.rep0)
   ).map { (key, keyValues) =>
-    transformDottedToNestedMap(key, TOML.Array(keyValues))
+    transformDottedKey(key, TOML.Array(keyValues))
   }
