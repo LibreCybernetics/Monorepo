@@ -7,15 +7,12 @@ import cats.parse.{Parser, Parser0}
 import dev.librecybernetics.parser.*
 import dev.librecybernetics.types.TOML
 
-// Note: u000A Line Feed (LF) is \n as such it isn't included
-private val disallowedChars: Set[Char] =
-  ('\u0000' to '\u0008').toSet ++ ('\u000B' to '\u001F').toSet + '\u007F'
-
 private val commentStart: Parser[Unit] =
   (hash ~ space.?).void
 
 private val commentContent: Parser[String] =
-  anyUntilNewline filter (c => !(c exists (disallowedChars contains)))
+  anyUntilNewline
+    .checkDisallowedChars
 
 private val singleComment: Parser[String] =
   (commentStart *> commentContent <* Parser.peek(newlineOrEnd)).backtrack
