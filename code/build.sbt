@@ -113,6 +113,14 @@ lazy val `toml-parse` =
       )
     )
 
+lazy val `toml-parse-bench` =
+  crossProject(JVMPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("lib/toml/parse/bench"))
+    .dependsOn(`toml-parse`)
+    .settings(sharedSettings)
+    .enablePlugins(JmhPlugin)
+
 lazy val `toml-fabric` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
