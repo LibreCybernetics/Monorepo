@@ -10,7 +10,7 @@ import dev.librecybernetics.types.TOML
 val header: Parser[NonEmptyList[String]] =
   key
     .between(bracketOpen ~ spaces, spaces.with1 ~ bracketClose)
-    .backtrack
+    .withContext("table.header")
 
 val table: Parser[TOML.Map] =
   (

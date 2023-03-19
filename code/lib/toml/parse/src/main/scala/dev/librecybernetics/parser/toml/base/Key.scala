@@ -36,8 +36,11 @@ private val bareKey: Parser[String] =
 
 // Non-dot separated keys
 private val simpleKey: Parser[String] =
-  bareKey.backtrack | simpleLiteral.backtrack | simpleString.backtrack
+  (bareKey.backtrack | simpleLiteral.backtrack | simpleString.backtrack)
+    .withContext("simple-key")
 
 // Simple or Dot separated keys
 val key: Parser[NonEmptyList[String]] =
-  simpleKey.repSep(dot.surroundedBy(spaces).backtrack)
+  simpleKey
+    .repSep(dot.surroundedBy(spaces).backtrack)
+    .withContext("key")

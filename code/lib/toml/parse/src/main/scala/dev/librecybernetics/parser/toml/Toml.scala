@@ -10,7 +10,7 @@ import dev.librecybernetics.types.toml.semigroupTOMLMap
 object Toml:
   val toml: Parser[TOML] =
     emptyOrComment.rep0.with1 *>
-      (ArrayOfTables.arrayOfTables | table | keyValue)
+      (ArrayOfTables.arrayOfTables.backtrack | table.backtrack | keyValue)
         .repSep(newline ~ emptyOrComment.rep0)
         .map(nel => nel.reduce(using semigroupTOMLMap)) <*
-      emptyOrComment.rep0 <* Parser.end
+      emptyOrComment.rep0 <* ((space | newline).rep0 ~ Parser.end)
