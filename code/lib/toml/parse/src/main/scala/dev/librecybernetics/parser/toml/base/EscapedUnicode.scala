@@ -14,7 +14,7 @@ private val escapedUnicode4: Parser[Char] =
       .map(Integer.parseInt(_, 16))
       .withString
       .flatMap {
-        case (i, _) if i.isValidChar =>
+        case (i, _) if i.isValidChar && !i.toChar.isSurrogate =>
           Parser.pure(i.toChar)
         case (_, s)                  =>
           Parser.failWith(show"Invalid unicode codepoint: \\u$s")
@@ -28,7 +28,7 @@ private val escapedUnicode8: Parser[Char] =
       .map(Integer.parseInt(_, 16))
       .withString
       .flatMap {
-        case (i, _) if i.isValidChar =>
+        case (i, _) if i.isValidChar && !i.toChar.isSurrogate  =>
           Parser.pure(i.toChar)
         case (_, s)                  =>
           Parser.failWith(show"Invalid unicode codepoint: \\U$s")
