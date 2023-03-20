@@ -1,15 +1,16 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser.toml
 
-import cats.data.NonEmptyList
 import scala.language.postfixOps
 
+import cats.data.NonEmptyList
 import cats.parse.Parser
 
 import dev.librecybernetics.parser.*
+import dev.librecybernetics.parser.toml.scalar.*
 import dev.librecybernetics.types.TOML
 
 // TODO: tailrec
-def transformDottedKey(
+private def transformDottedKey(
     key: NonEmptyList[String],
     value: TOML
 ): TOML.Map =
@@ -40,7 +41,7 @@ private val simpleKey: Parser[String] =
     .withContext("simple-key")
 
 // Simple or Dot separated keys
-val key: Parser[NonEmptyList[String]] =
+private[toml] val key: Parser[NonEmptyList[String]] =
   simpleKey
     .repSep(dot.surroundedBy(spaces).backtrack)
     .withContext("key")

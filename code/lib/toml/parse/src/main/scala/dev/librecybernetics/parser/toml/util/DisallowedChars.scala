@@ -1,4 +1,4 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser.toml.util
 
 import cats.parse.Parser
 
@@ -7,7 +7,7 @@ private val disallowedChars: Set[Char] =
   ('\u0000' to '\u0008').toSet ++ ('\u000B' to '\u001F').toSet + '\u007F'
 
 extension (p: Parser[String])
-  def checkDisallowedChars: Parser[String] =
+  private[toml] def checkDisallowedChars: Parser[String] =
     p.flatMap { s =>
       s find disallowedChars.contains match
         case Some(disallowed) =>

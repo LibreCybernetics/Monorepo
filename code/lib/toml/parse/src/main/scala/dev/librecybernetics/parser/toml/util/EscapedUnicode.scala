@@ -1,4 +1,4 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser.toml.util
 
 import cats.implicits.*
 import cats.parse.Accumulator0.charStringAccumulator0
@@ -6,7 +6,7 @@ import cats.parse.Parser
 
 import dev.librecybernetics.parser.*
 
-private val escapedUnicode4: Parser[Char] =
+private[toml] val escapedUnicode4: Parser[Char] =
   Parser.string("\\u") *>
     Parser
       .charIn(hexDigit)
@@ -20,7 +20,7 @@ private val escapedUnicode4: Parser[Char] =
           Parser.failWith(show"Invalid unicode codepoint: \\u$s")
       }
 
-private val escapedUnicode8: Parser[Char] =
+private[toml] val escapedUnicode8: Parser[Char] =
   Parser.string("\\U") *>
     Parser
       .charIn(hexDigit)

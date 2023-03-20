@@ -1,10 +1,10 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser.toml.util
 
 import cats.parse.Parser
 
 import dev.librecybernetics.parser.*
 
-private val escaped: Parser[Char] =
+private[toml] val escaped: Parser[Char] =
   Map(
     "\\b"  -> '\b',
     "\\t"  -> '\t',
@@ -18,6 +18,6 @@ private val escaped: Parser[Char] =
   }.reduceOption(_.backtrack | _.backtrack)
     .getOrElse(Parser.fail)
 
-private val escapedNewline: Parser[String] =
+private[toml] val escapedNewline: Parser[String] =
   (Parser.string("\\\n").map(_ => "") <* emptyLine.backtrack.rep0 <* spaces)
     .withContext("escapedNewline")

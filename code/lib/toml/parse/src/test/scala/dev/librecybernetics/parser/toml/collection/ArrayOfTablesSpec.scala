@@ -1,9 +1,10 @@
-package dev.librecybernetics.parser.toml
+package dev.librecybernetics.parser.toml.collection
 
 import org.scalatest.wordspec.AnyWordSpec
 
-import dev.librecybernetics.types.TOML
 import dev.librecybernetics.parser.*
+import dev.librecybernetics.parser.toml.collection.ArrayOfTables
+import dev.librecybernetics.types.TOML
 
 class ArrayOfTablesSpec extends AnyWordSpec {
   "ArrayOfTables" when {

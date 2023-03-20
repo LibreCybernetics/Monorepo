@@ -1,4 +1,4 @@
-package dev.librecybernetics.parser.toml
+package dev.librecybernetics.parser.toml.collection
 
 import scala.language.implicitConversions
 
@@ -8,6 +8,7 @@ import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
 import dev.librecybernetics.parser.genericSuccess
+import dev.librecybernetics.parser.toml.collection
 import dev.librecybernetics.types.TOML
 import dev.librecybernetics.types.toml.given
 
@@ -47,7 +48,7 @@ class ArraySpec extends AnyWordSpec {
             1, TOML.Array(Seq("Arrays are not integers."))
           ))
       ) foreach { (s, a) =>
-        s in genericSuccess(Array.array)(s, a)
+        s in genericSuccess(collection.Array.array)(s, a)
       }
     }
   }

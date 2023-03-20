@@ -1,16 +1,16 @@
-package dev.librecybernetics.parser.toml
+package dev.librecybernetics.parser.toml.collection
 
 import cats.Reducible
-import cats.implicits.*
 import cats.data.NonEmptyList
+import cats.implicits.*
 import cats.parse.Parser
 
 import dev.librecybernetics.parser.*
-import dev.librecybernetics.parser.toml.base.*
+import dev.librecybernetics.parser.toml.*
 import dev.librecybernetics.types.TOML
 import dev.librecybernetics.types.toml.semigroupTOMLMap
 
-object ArrayOfTables:
+private[toml] object ArrayOfTables:
   val bracketStart: Parser[Unit] =
     (bracketOpen.rep(2, 2) ~ spaces).void
   val bracketEnd: Parser[Unit]   =
