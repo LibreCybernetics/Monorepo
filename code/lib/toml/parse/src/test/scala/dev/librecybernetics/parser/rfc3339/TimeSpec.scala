@@ -28,7 +28,7 @@ class TimeSpec extends AnyWordSpec {
       Map(
         "25:12:34" -> "context: partial-time, must fail: 25 out of range(Range 0 to 23) for time-hour",
         "12:60:34" -> "context: partial-time, must fail: 60 out of range(Range 0 to 59) for time-minute",
-        "12:34:60" -> "must fail: Leap seconds are only allowed as 23:59:60 but got 12:34:60"
+        "12:34:60" -> "context: partial-time, must fail: Leap seconds are only allowed as 23:59:60 but got 12:34:60"
       ) foreach { (s, message) =>
         s in genericFailure(time)(s, message)
       }

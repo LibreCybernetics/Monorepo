@@ -8,6 +8,6 @@ import dev.librecybernetics.parser.*
 
 /** date-time = full-date ("T" | " ") full-time
   */
-val dateTime: Parser[LocalDateTime] =
+private[parser] val dateTime: Parser[LocalDateTime] =
   ((date <* Parser.charIn('T', ' ')) ~ time)
     .map((date, time) => LocalDateTime.of(date, time))

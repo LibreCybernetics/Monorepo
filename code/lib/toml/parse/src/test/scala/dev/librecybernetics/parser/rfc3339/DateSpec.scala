@@ -21,12 +21,12 @@ class DateSpec extends AnyWordSpec {
 
     "Invalid" should {
       Map(
-      "2023-03-32" -> "must fail: 32 out of range(Range 1 to 31) for date-mday",
-      "2023-00-18" -> "must fail: 0 out of range(Range 1 to 12) for date-month",
-      "2023-13-18" -> "must fail: 13 out of range(Range 1 to 12) for date-month",
-      "2023-02-30" -> "must fail: 2023-2-30 is not a valid gregorian calendar date",
-      "2023-2-18" -> "must be a char within the range of: ['0', '9']",
-      "2023-03-8" -> "must be a char within the range of: ['0', '9']"
+      "2023-03-32" -> "context: full-date, must fail: 32 out of range(Range 1 to 31) for date-mday",
+      "2023-00-18" -> "context: full-date, must fail: 0 out of range(Range 1 to 12) for date-month",
+      "2023-13-18" -> "context: full-date, must fail: 13 out of range(Range 1 to 12) for date-month",
+      "2023-02-30" -> "context: full-date, must fail: 2023-2-30 is not a valid gregorian calendar date",
+      "2023-2-18" -> "context: full-date, must be a char within the range of: ['0', '9']",
+      "2023-03-8" -> "context: full-date, must be a char within the range of: ['0', '9']"
       ) foreach { (s, m) =>
         s in genericFailure(date)(s, m)
       }

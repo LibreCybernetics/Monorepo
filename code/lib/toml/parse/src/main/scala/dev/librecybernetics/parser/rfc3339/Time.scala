@@ -29,14 +29,12 @@ private val fracTime: Parser[Int] =
     .map(_.toInt)
     .withContext("time-secfrac")
 
-val time: Parser[LocalTime] =
-  (wholeTime ~ fracTime.backtrack.?)
-    .withContext("partial-time")
-    .flatMap {
-      // TODO: Better leap second handling
-      case ((23, 59, 60), _)              =>
-        Parser.pure(LocalTime.MAX)
-      case ((hour, minute, 60), nano)     =>
+extension (p: Parser[((Int, Int, Int), Option[Int])])
+  private def validateTime: Parser[((Int, Int, Int), Option[Int])] =
+    p.flatMap {
+      // TODO: Better leap second handling; currently smearing
+      case ((23, 59, 60), n)          => Parser.pure(((23, 59, 59), Some(999_999_999)))
+      case ((hour, minute, 60), nano) =>
         val nanoFolded = nano
           .map(_.toString)
           .map(s => ":" + "0".repeat(9 - s.length) + s)
@@ -44,6 +42,17 @@ val time: Parser[LocalTime] =
         Parser.failWith(
           show"Leap seconds are only allowed as 23:59:60 but got $hour:$minute:60$nanoFolded"
         )
-      case ((hour, minute, second), nano) =>
-        Parser.pure(LocalTime.of(hour, minute, second, nano.getOrElse(0)))
+
+      case t => Parser.pure(t)
     }
+
+/** time-whole = time-hour ":" time-minute ":" time-second (* non-spec)
+  *
+  * partial-time = time-whole [time-secfrac]
+  */
+private[parser] val time: Parser[LocalTime] =
+  (wholeTime ~ fracTime.backtrack.?).validateTime
+    .map { case ((hour, minute, second), nano) =>
+      LocalTime.of(hour, minute, second, nano.getOrElse(0))
+    }
+    .withContext("partial-time")
