@@ -1,4 +1,4 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser.toml.scalar
 
 import scala.language.postfixOps
 
@@ -6,7 +6,7 @@ import cats.parse.{Parser, Parser0}
 
 import dev.librecybernetics.parser.*
 
-case class GenericInteger(radix: Int, start: Parser0[Unit], digits: Set[Char]) {
+private case class GenericInteger(radix: Int, start: Parser0[Unit], digits: Set[Char]) {
   private val digitsParser: Parser[String] =
     Parser.charsWhile(digits contains)
 

@@ -1,8 +1,7 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser.toml.scalar
 
 import cats.implicits.*
 import cats.parse.Parser
-
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 

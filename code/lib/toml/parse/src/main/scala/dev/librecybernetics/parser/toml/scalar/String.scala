@@ -1,14 +1,15 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser.toml.scalar
 
 import cats.implicits.*
 import cats.parse.Parser
 
 import dev.librecybernetics.parser.*
+import dev.librecybernetics.parser.toml.util.*
 
 private val doubleQuote = Parser.char('"')
 private val tripleDoubleQuote = Parser.string("\"\"\"").withContext("tripleDoubleQuote")
 
-val simpleString: Parser[String] =
+private[toml] val simpleString: Parser[String] =
   (
     Parser.charsWhile(c => !(Set('"', '\\', '\n') contains c)).backtrack |
       escaped.backtrack | escapedUnicode4.backtrack | escapedUnicode8.backtrack
@@ -16,7 +17,7 @@ val simpleString: Parser[String] =
     .map(_.toList.mkString(""))
     .surroundedBy(doubleQuote)
 
-val multilineString: Parser[String] =
+private[toml] val multilineString: Parser[String] =
   (
     newline.?.with1 *> (
       (Parser.not(tripleDoubleQuote | backslash).with1 *> Parser.anyChar).rep.string |
@@ -30,7 +31,7 @@ val multilineString: Parser[String] =
     .surroundedBy(tripleDoubleQuote)
     .withContext("multilineString")
 
-val string: Parser[String] =
+private[toml] val string: Parser[String] =
   // Note: "" is a valid simple string, check triple quote first
   (
     multilineLiteral.backtrack | simpleLiteral.backtrack |

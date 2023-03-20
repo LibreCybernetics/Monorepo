@@ -1,8 +1,10 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser.toml.scalar
 
-import dev.librecybernetics.parser.*
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
+
+import dev.librecybernetics.parser.*
+import dev.librecybernetics.parser.toml.scalar
 
 class BooleanSpec extends AnyWordSpec {
   "Boolean" when {
@@ -11,14 +13,14 @@ class BooleanSpec extends AnyWordSpec {
         "true"  -> true,
         "false" -> false
       ) foreach { (s, b) =>
-        s in genericSuccess(Boolean.boolean)(s, b)
+        s in genericSuccess(scalar.boolean)(s, b)
       }
 
       Map(
-        "True" -> "must match one of the strings: {\"false\", \"true\"}",
+        "True"  -> "must match one of the strings: {\"false\", \"true\"}",
         "False" -> "must match one of the strings: {\"false\", \"true\"}"
       ) foreach { (s, message) =>
-        s in genericFailure(Boolean.boolean)(s, message)
+        s in genericFailure(scalar.boolean)(s, message)
       }
     }
   }

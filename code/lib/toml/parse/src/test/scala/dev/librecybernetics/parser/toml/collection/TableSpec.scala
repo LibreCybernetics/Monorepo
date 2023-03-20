@@ -1,4 +1,4 @@
-package dev.librecybernetics.parser.toml
+package dev.librecybernetics.parser.toml.collection
 
 import cats.implicits.*
 import org.scalatest.matchers.should.Matchers.*

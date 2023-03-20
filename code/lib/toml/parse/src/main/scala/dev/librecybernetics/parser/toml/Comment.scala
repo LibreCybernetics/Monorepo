@@ -1,10 +1,11 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser.toml
 
 import scala.language.postfixOps
 
 import cats.parse.{Parser, Parser0}
 
 import dev.librecybernetics.parser.*
+import dev.librecybernetics.parser.toml.util.*
 import dev.librecybernetics.types.TOML
 
 private val commentStart: Parser[Unit] =

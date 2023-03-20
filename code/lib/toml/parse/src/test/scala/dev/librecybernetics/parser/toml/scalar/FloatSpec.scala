@@ -1,8 +1,10 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser.toml.scalar
 
-import dev.librecybernetics.parser.*
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
+
+import dev.librecybernetics.parser.*
+import dev.librecybernetics.parser.toml.scalar
 
 class FloatSpec extends AnyWordSpec {
   "Float" when {
@@ -35,7 +37,7 @@ class FloatSpec extends AnyWordSpec {
         "+inf"                 -> Double.PositiveInfinity,
         "-inf"                 -> Double.NegativeInfinity
       )) foreach { (s, d) =>
-        s in genericSuccess(Float.float)(s, d)
+        s in genericSuccess(scalar.float)(s, d)
       }
     }
 
@@ -46,7 +48,7 @@ class FloatSpec extends AnyWordSpec {
         "-nan" -> Double.NaN
       ) foreach { (s, d) =>
         s in {
-          val Right("", r) = Float.float.parse(s): @unchecked
+          val Right("", r) = scalar.float.parse(s): @unchecked
           assert(r.isNaN)
         }
       }
@@ -66,7 +68,7 @@ class FloatSpec extends AnyWordSpec {
         "7.e" -> error,
         "3.e+20" -> error
       ) foreach { (s, message) =>
-        s in genericFailure(Float.float)(s, message*)
+        s in genericFailure(scalar.float)(s, message*)
       }
     }
   }

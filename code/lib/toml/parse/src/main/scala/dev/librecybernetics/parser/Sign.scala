@@ -1,4 +1,4 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser
 
 import cats.parse.Parser
 

@@ -1,4 +1,4 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser.toml.scalar
 
 import cats.parse.Parser
 
@@ -7,12 +7,12 @@ import dev.librecybernetics.parser.*
 private val singleQuote = Parser.char('\'')
 private val tripleSingleQuote = Parser.string("'''").withContext("tripleSingleQuote")
 
-val simpleLiteral: Parser[String] =
+private[toml] val simpleLiteral: Parser[String] =
   Parser
     .charsWhile(c => !(Set('\'', '\n') contains c))
     .surroundedBy(singleQuote)
 
-val multilineLiteral: Parser[String] =
+private[toml] val multilineLiteral: Parser[String] =
   (
     newline.?.with1 *> (
       (Parser.not(tripleSingleQuote).with1 *> Parser.anyChar).rep.string |

@@ -1,13 +1,14 @@
-package dev.librecybernetics.parser.toml
+package dev.librecybernetics.parser.toml.collection
 
 import cats.data.NonEmptyList
 import cats.parse.{Parser, Parser0}
 
 import dev.librecybernetics.parser.*
-import dev.librecybernetics.parser.toml.base.*
+import dev.librecybernetics.parser.toml.*
+import dev.librecybernetics.parser.toml.scalarValues
 import dev.librecybernetics.types.TOML
 
-object Array:
+private[toml] object Array:
   val bracketStart: Parser[Unit]  = bracketOpen.surroundedBy((emptyOrComment).rep0 ~ spaces).withContext("bracket-start")
   val bracketEnd: Parser[Unit]    = bracketClose.between(emptyOrComment.rep0 ~ spaces, Parser.unit).withContext("bracket-end")
   val trailingComma: Parser[Unit] =

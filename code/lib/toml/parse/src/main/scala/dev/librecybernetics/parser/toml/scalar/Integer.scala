@@ -1,9 +1,9 @@
-package dev.librecybernetics.parser.toml.base
+package dev.librecybernetics.parser.toml.scalar
 
 import scala.language.postfixOps
 
-import cats.parse.Parser
 import cats.data.NonEmptyList
+import cats.parse.Parser
 
 import dev.librecybernetics.parser.*
 
@@ -16,25 +16,25 @@ private def toBigInt(radix: Int)(
     .getOrElse(identity[BigInt])
   transformSign(BigInt(string, radix))
 
-val Binary = GenericInteger(
+private[toml] val Binary = GenericInteger(
   2,
   Parser.string("0b"),
   ('0' to '1').toSet
 )
 
-val Octal = GenericInteger(
+private[toml] val Octal = GenericInteger(
   8,
   Parser.string("0o"),
   ('0' to '7').toSet
 )
 
-val Decimal = GenericInteger(
+private[toml] val Decimal = GenericInteger(
   10,
   Parser.unit,
   latinDecimalDigits
 )
 
-val Hexadecimal = GenericInteger(
+private[toml] val Hexadecimal = GenericInteger(
   16,
   Parser.string("0x"),
   hexDigit
@@ -43,7 +43,7 @@ val Hexadecimal = GenericInteger(
 private val nonDecimal: Parser[Unit] =
   (sign.?.with1 ~ Parser.char('0') ~ Parser.charIn(Set('b', 'o', 'x'))).void
 
-val integer: Parser[BigInt] =
+private[toml] val integer: Parser[BigInt] =
   (
     Parser.peek(nonDecimal).with1 *>
       Hexadecimal.integer.backtrack |
