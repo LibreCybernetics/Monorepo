@@ -49,4 +49,17 @@ val integer: Parser[BigInt] =
       Hexadecimal.integer.backtrack |
       Octal.integer.backtrack |
       Binary.integer.backtrack
-  ).backtrack | Decimal.integer.backtrack
+  ).backtrack |
+    Decimal.integer.backtrack
+      // Spec doesn't want leading zeros in decimal integers
+      .withString
+      .flatMap { (integer, literal) =>
+        val withoutSign = literal.dropWhile(Set('-', '+'))
+        val zeros       = withoutSign.takeWhile(Set('0', '_').contains).filterNot(_ == '_')
+        val followed    = withoutSign.dropWhile(_ == '0').headOption
+
+        val zeroFollowedByDigit = zeros.nonEmpty && followed.exists(_ != '.')
+        if (zeros.length > 1 || zeroFollowedByDigit) {
+          Parser.failWith("leading zero in integer")
+        } else Parser.pure(integer)
+      }
