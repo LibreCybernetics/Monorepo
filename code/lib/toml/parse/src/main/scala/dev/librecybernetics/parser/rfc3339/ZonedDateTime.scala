@@ -17,7 +17,7 @@ import dev.librecybernetics.parser.toml.base.*
   * time-offset     = "Z" / time-numoffset
   * ```
   */
-val timeOffset: Parser[(Sign, Byte, Byte)] =
+private val timeOffset: Parser[(Sign, Byte, Byte)] =
   (
     sign,
     digit.rep(2).string.map(_.toByte),
@@ -25,12 +25,16 @@ val timeOffset: Parser[(Sign, Byte, Byte)] =
     digit.rep(2).string.map(_.toByte)
   ).mapN { case (s, d1, (), d2) => (s, d1, d2) }
 
-def transformSign(s: Sign, b: Byte): Int =
+private def transformSign(s: Sign, b: Byte): Int =
   s match
     case Sign.Minus => -b
     case Sign.Plus  => b
 
-val offsetDateTime: Parser[OffsetDateTime] =
+/** full-time = partial-time time-offset
+  *
+  * full-date "T" full-time
+  */
+private[parser] val offsetDateTime: Parser[OffsetDateTime] =
   (dateTime ~ (Parser.char('Z').map(Left(_)).backtrack | timeOffset.map(Right(_))))
     .map {
       case (dateTime, Left(()))                   =>
