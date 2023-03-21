@@ -7,7 +7,7 @@ import dev.librecybernetics.parser.toml.collection.*
 import dev.librecybernetics.types.TOML
 import dev.librecybernetics.types.toml.semigroupTOMLMap
 
-object Toml:
+private[parser] object Toml:
   val toml: Parser[TOML] =
     emptyOrComment.rep0.with1 *>
       (spaces.with1 *>

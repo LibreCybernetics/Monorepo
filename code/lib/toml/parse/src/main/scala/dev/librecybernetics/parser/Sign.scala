@@ -2,10 +2,10 @@ package dev.librecybernetics.parser
 
 import cats.parse.Parser
 
-enum Sign:
+private[parser] enum Sign:
   case Plus, Minus
 
-val plus: Parser[Sign.Plus.type]   = Parser.char('+').map(_ => Sign.Plus)
-val minus: Parser[Sign.Minus.type] = Parser.char('-').map(_ => Sign.Minus)
+private[parser] val plus: Parser[Sign.Plus.type]   = Parser.char('+').map(_ => Sign.Plus)
+private[parser] val minus: Parser[Sign.Minus.type] = Parser.char('-').map(_ => Sign.Minus)
 
-val sign: Parser[Sign] = plus | minus
+private[parser] val sign: Parser[Sign] = plus | minus

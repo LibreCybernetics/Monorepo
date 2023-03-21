@@ -1,8 +1,8 @@
-package dev.librecybernetics.parser.toml
+package dev.librecybernetics.parser
 
 import cats.data.NonEmptyList
 import cats.parse.Parser
 
 extension (p: Parser[NonEmptyList[String]])
-  def underscoresRemoved: Parser[String] =
+  private[parser] def underscoresRemoved: Parser[String] =
     p.map(_.toList.mkString(""))
