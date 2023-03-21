@@ -1,0 +1,5 @@
+jdk:
+  - openjdk11
+install:
+  - cd code/
+  - sbt "tomlJVM/publishM2" "tomlJS/publishM2" "tomlNative/publishM2"
