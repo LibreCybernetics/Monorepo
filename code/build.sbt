@@ -87,7 +87,7 @@ lazy val `social-ontology` =
       )
     )
 
-lazy val tomlVersion = "0.1.0-SNAPSHOT"
+lazy val tomlVersion = "0.1.0-M1"
 
 lazy val toml =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
