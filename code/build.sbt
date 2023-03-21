@@ -2,8 +2,10 @@
 
 lazy val Scala3Version = "3.2.2"
 
-ThisBuild / scalaVersion := Scala3Version
 ThisBuild / organization := "dev.librecybernetics"
+
+ThisBuild / scalaVersion := Scala3Version
+ThisBuild / versionScheme := Some("semver-spec")
 
 val sharedSettings = Seq(
   scalaVersion := Scala3Version,
@@ -85,6 +87,18 @@ lazy val `social-ontology` =
       )
     )
 
+lazy val tomlVersion = "0.1.0-SNAPSHOT"
+
+lazy val toml =
+  crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .aggregate(
+      `toml-core`,
+      `toml-parse`
+    )
+    .settings(
+      version := tomlVersion
+    )
+
 lazy val `toml-core` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
@@ -92,6 +106,7 @@ lazy val `toml-core` =
     .settings(sharedSettings)
     .settings(
       name := "toml-core",
+      version := tomlVersion,
       libraryDependencies ++= Seq(
         "org.typelevel"     %%% "cats-core"       % catsVersion,
         "io.github.cquiroz" %%% "scala-java-time" % scalaJavaTimeVersion
@@ -106,6 +121,7 @@ lazy val `toml-parse` =
     .settings(sharedSettings)
     .settings(
       name := "toml-parse",
+      version := tomlVersion,
       libraryDependencies ++= Seq(
         "org.typelevel" %%% "cats-parse"         % catsParseVersion,
         "org.scalatest" %%% "scalatest"          % scalatestVersion % Test,
