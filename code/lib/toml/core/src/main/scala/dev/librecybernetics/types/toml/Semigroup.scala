@@ -26,12 +26,12 @@ private def combineNested(x: TOML, y: TOML): TOML =
       throw new IllegalArgumentException("cant combine unu")
   end match
 
-given semigroupTOMLArray: Semigroup[TOML.Array] with
+given Semigroup[TOML.Array] with
   override def combine(x: TOML.Array, y: TOML.Array): TOML.Array =
     (x, y) match
       case (TOML.Array(arrX), TOML.Array(arrY)) => TOML.Array(arrX ++ arrY)
 
-given semigroupTOMLMap: Semigroup[TOML.Map] with
+given Semigroup[TOML.Map] with
   override def combine(x: TOML.Map, y: TOML.Map): TOML.Map =
     (x, y) match
       case (TOML.Map(mapX), TOML.Map(mapY)) =>

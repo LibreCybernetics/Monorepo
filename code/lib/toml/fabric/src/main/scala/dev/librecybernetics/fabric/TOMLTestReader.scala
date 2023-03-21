@@ -10,8 +10,6 @@ given testReader: Reader[TOML] = Reader[TOML](
     // Simple
     case TOML.Boolean(boolean) =>
       Obj("type" -> "bool", "value" -> Str(boolean.toString))
-    case TOML.Comment(comment) =>
-      Obj("type" -> "comment", "value" -> Str(comment))
     case TOML.String(string)   =>
       Obj("type" -> "string", "value" -> Str(string))
     case TOML.Integer(integer) =>
