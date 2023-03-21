@@ -2,7 +2,7 @@
 
 ## Applications
 
-### Conceptual
+### Conceptualization
 
 #### Tech Worker Coop Hub with:
 
@@ -15,7 +15,13 @@
 
 ## Libs
 
-### Conceptual
+### In-development
+
+#### TOML
+
+[Sub-project](code/lib/toml/)
+
+### Conceptualization
 
 - Unsigned (Unsigned Integral Types)
-- TOML
+
