@@ -9,9 +9,9 @@ import dev.librecybernetics.types.TOML
 
 // TODO: Change `F[_]: [F[_]] =>> MonadError[F, Error]` to `F[_]: MonadError[_, Error]` or similar
 @unused
-def parseTOML[F[_]: [F[_]] =>> MonadError[F, Error]](
-    s: String
+def readTOML[F[_]: [F[_]] =>> MonadError[F, Error]](
+                                                     input: String
 ): F[TOML] =
-  toml.Toml.toml.parse(s) match
+  toml.Toml.toml.parse(input) match
     case Left(err)        => MonadError.apply.raiseError(err)
     case Right((_, toml)) => MonadError.apply.pure(toml)

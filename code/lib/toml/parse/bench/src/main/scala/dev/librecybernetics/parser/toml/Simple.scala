@@ -1,6 +1,10 @@
 package dev.librecybernetics.parser.toml
 
+import cats.implicits.*
+import cats.parse.Parser.Error
 import org.openjdk.jmh.annotations.*
+
+import dev.librecybernetics.parser.readTOML
 
 @State(Scope.Benchmark)
 object Simple:
@@ -81,4 +85,4 @@ object Simple:
 class Simple:
   @Benchmark
   def main(): Unit =
-    val Right(_) = Toml.toml.parse(Simple.sample) : @unchecked
+    val Right(_) = readTOML[Either[Error, _]](Simple.sample): @unchecked

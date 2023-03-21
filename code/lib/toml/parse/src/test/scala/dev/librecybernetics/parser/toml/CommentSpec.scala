@@ -11,13 +11,13 @@ class CommentSpec extends AnyWordSpec {
     "Valid comment" should {
       "Parse Simple" in {
         val Right(("", r)) = comment.parse("# test"): @unchecked
-        r shouldEqual TOML.Comment("test")
+        r shouldEqual "test"
       }
 
       "Parse Multiline" in {
         val Right(("", r)) = comment.parse("""# test
             |# multi-line""".stripMargin): @unchecked
-        r shouldEqual TOML.Comment("test\nmulti-line")
+        r shouldEqual "test\nmulti-line"
       }
     }
 

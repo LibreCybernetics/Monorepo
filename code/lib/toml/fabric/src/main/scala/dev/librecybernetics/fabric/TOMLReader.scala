@@ -9,7 +9,6 @@ given reader: Reader[TOML] = Reader[TOML](
   {
     // Simple
     case TOML.Boolean(boolean) => Bool(boolean)
-    case TOML.Comment(string)  => Str(string)
     case TOML.String(string)   => Str(string)
     case TOML.Integer(integer) => NumInt(integer.toLong)
     case TOML.Float(double)    => NumDec(BigDecimal(double))

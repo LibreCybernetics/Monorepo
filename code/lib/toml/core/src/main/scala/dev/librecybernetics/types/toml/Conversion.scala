@@ -4,6 +4,8 @@ import java.time.{LocalTime, LocalDate, LocalDateTime, OffsetDateTime}
 
 import dev.librecybernetics.types.TOML
 
+// Scalar
+
 given Conversion[Boolean, TOML.Boolean] with
   override def apply(n: Boolean): TOML.Boolean = TOML.Boolean(n)
 
@@ -34,6 +36,8 @@ given Conversion[BigDecimal, TOML.Float] with
 given Conversion[String, TOML.String] with
   override def apply(x: String): TOML.String = TOML.String(x)
 
+// Temporal
+
 given Conversion[LocalTime, TOML.LocalTime] with
   override def apply(x: LocalTime): TOML.LocalTime = TOML.LocalTime(x)
 
@@ -41,12 +45,12 @@ given Conversion[LocalDate, TOML.LocalDate] with
   override def apply(x: LocalDate): TOML.LocalDate = TOML.LocalDate(x)
 
 given Conversion[LocalDateTime, TOML.LocalDateTime] with
-
   override def apply(x: LocalDateTime): TOML.LocalDateTime = TOML.LocalDateTime(x)
 
 given Conversion[OffsetDateTime, TOML.OffsetDateTime] with
-
   override def apply(x: OffsetDateTime): TOML.OffsetDateTime = TOML.OffsetDateTime(x)
+
+// Collection
 
 given Conversion[Seq[TOML], TOML.Array] with
   override def apply(x: Seq[TOML]): TOML.Array = TOML.Array(x)

@@ -8,7 +8,7 @@ import cats.parse.Parser
 import dev.librecybernetics.parser.*
 import dev.librecybernetics.parser.toml.*
 import dev.librecybernetics.types.TOML
-import dev.librecybernetics.types.toml.semigroupTOMLMap
+import dev.librecybernetics.types.toml.given
 
 private[toml] object ArrayOfTables:
   val bracketStart: Parser[Unit] =
