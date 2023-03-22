@@ -1,15 +1,15 @@
 package dev.librecybernetics.toml
 
-import cats.effect.{IO, IOApp}
 import cats.effect.std.Console
+import cats.effect.{IO, IOApp}
 import cats.implicits.*
+import cats.parse.Parser
+import fs2.*
+import fs2.io.*
 import mouse.all.*
 
-import fs2.io.*
-import fs2.*
-
 import dev.librecybernetics.fabric.testReader
-import dev.librecybernetics.parser.toml.Toml
+import dev.librecybernetics.parser.readTOML
 
 // TODO: Move somewhere else
 extension [A, B](either: Either[A, B])
@@ -19,14 +19,12 @@ extension [A, B](either: Either[A, B])
       case Right(b) => Right(b)
 
 object TomlTest extends IOApp.Simple:
-  override def run =
+  override def run: IO[Unit] =
     for
-      inputString <- stdinUtf8[IO](1024).compile.string
+      inputString <- stdinUtf8[IO](1024)(using IO.asyncForIO).compile.string
+      toml        <- (inputString |> readTOML[Either[Parser.Error, *]])
+                       .mapLeft(err => new Exception(show"$err")) |>
+                       IO.fromEither
 
-      parsed <- (inputString |> Toml.toml.parse)
-                  .mapLeft(err => new Exception(show"$err")) |>
-                  IO.fromEither
-
-      (_, toml) = parsed
-      _        <- Console[IO].println(testReader.read(toml).toString)
+      _ <- Console[IO].println(testReader.read(toml).toString)
     yield ()
