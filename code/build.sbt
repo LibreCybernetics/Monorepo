@@ -87,6 +87,7 @@ lazy val tomlVersion = "0.1.0-SNAPSHOT"
 
 lazy val toml =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .crossType(CrossType.Pure)
     .in(file("lib/toml/"))
     .enablePlugins(ScalaUnidocPlugin)
     .aggregate(
@@ -116,6 +117,21 @@ lazy val `toml-core` =
       )
     )
 
+lazy val `toml-fabric` =
+  crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("lib/toml/fabric"))
+    .dependsOn(`toml-core`)
+    .settings(sharedSettings)
+    .settings(
+      name := "toml-fabric",
+      libraryDependencies ++= Seq(
+        "org.typelevel" %%% "fabric-core"        % Version.fabric,
+        "org.scalatest" %%% "scalatest"          % Version.scalatest % Test,
+        "org.scalatest" %%% "scalatest-wordspec" % Version.scalatest % Test
+      )
+    )
+
 lazy val `toml-parse` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
@@ -139,21 +155,6 @@ lazy val `toml-parse-bench` =
     .dependsOn(`toml-parse`)
     .settings(sharedSettings)
     .enablePlugins(JmhPlugin)
-
-lazy val `toml-fabric` =
-  crossProject(JVMPlatform, NativePlatform, JSPlatform)
-    .crossType(CrossType.Pure)
-    .in(file("lib/toml/fabric"))
-    .dependsOn(`toml-core`)
-    .settings(sharedSettings)
-    .settings(
-      name := "toml-fabric",
-      libraryDependencies ++= Seq(
-        "org.typelevel" %%% "fabric-core"        % Version.fabric,
-        "org.scalatest" %%% "scalatest"          % Version.scalatest % Test,
-        "org.scalatest" %%% "scalatest-wordspec" % Version.scalatest % Test
-      )
-    )
 
 lazy val `toml-tomltest` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
