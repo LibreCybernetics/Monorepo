@@ -77,17 +77,30 @@ lazy val `social-ontology` =
       )
     )
 
+//======//
+// TOML //
+//======//
+
+// Aggregation
+
 lazy val tomlVersion = "0.1.0-SNAPSHOT"
 
 lazy val toml =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .in(file("lib/toml/"))
+    .enablePlugins(ScalaUnidocPlugin)
     .aggregate(
       `toml-core`,
       `toml-parse`
     )
     .settings(
-      version := tomlVersion
+      version                                    := tomlVersion,
+      ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(
+        thisProject.value.aggregate*
+      )
     )
+
+// Sub-projects
 
 lazy val `toml-core` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
@@ -164,6 +177,10 @@ lazy val `toml-tomltest` =
       nativeGC   := "commix",
       nativeLTO  := "thin"
     )
+
+//==========//
+// Unsigned //
+//==========//
 
 lazy val `unsigned-core` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
