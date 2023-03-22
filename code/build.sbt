@@ -1,14 +1,24 @@
 // Globals
 
-lazy val Scala3Version = "3.2.2"
-
 ThisBuild / organization := "dev.librecybernetics"
+ThisBuild / licenses     := Seq(
+  "LicenseRef-Anti-Capitalist Software License-1.4" -> url("https://anticapitalist.software/"),
+  "LicenseRef-Cooperative Softawre License"         -> url("https://lynnesbian.space/csl/formatted/"),
+  "Parity-7.0.0"                                    -> url("https://paritylicense.com/versions/7.0.0")
+)
 
-ThisBuild / scalaVersion := Scala3Version
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/LibreCybernetics/Monorepo"),
+    "scm:git@github.com:LibreCybernetics/Monorepo.git"
+  )
+)
+
 ThisBuild / versionScheme := Some("semver-spec")
+ThisBuild / scalaVersion  := Version.scala
 
 val sharedSettings = Seq(
-  scalaVersion := Scala3Version,
+  scalaVersion := Version.scala,
   scalacOptions ++= Seq(
     "-explain",
     "-explain-types",
@@ -23,26 +33,6 @@ val sharedSettings = Seq(
 )
 
 wartremoverErrors ++= Warts.unsafe
-
-//==========//
-// Versions //
-//==========//
-
-// Typelevel Deps
-
-lazy val catsVersion          = "2.9.0"
-lazy val catsEffectVersion    = "3.4.8"
-lazy val catsParseVersion     = "0.3.9"
-lazy val fs2Version           = "3.6.1"
-lazy val fabricVersion        = "1.10.3"
-lazy val mouseVersion         = "1.2.1"
-lazy val scalacheckVersion    = "1.17.0"
-lazy val scalaJavaTimeVersion = "2.5.0"
-lazy val scodecVersion        = "2.2.1"
-
-// Other Deps
-
-lazy val scalatestVersion = "3.2.15"
 
 //=================//
 // Upstream issues //
@@ -68,9 +58,9 @@ lazy val network =
     .settings(
       name := "network",
       libraryDependencies ++= Seq(
-        "org.scalatest"     %%% "scalatest"          % scalatestVersion       % Test,
-        "org.scalatest"     %%% "scalatest-wordspec" % scalatestVersion       % Test,
-        "org.scalatestplus" %%% "scalacheck-1-17"    % s"$scalatestVersion.0" % Test
+        "org.scalatest"     %%% "scalatest"          % Version.scalatest          % Test,
+        "org.scalatest"     %%% "scalatest-wordspec" % Version.scalatest          % Test,
+        "org.scalatestplus" %%% "scalacheck-1-17"    % Version.scalatestPlusCheck % Test
       )
     )
 
@@ -81,9 +71,9 @@ lazy val `social-ontology` =
     .settings(
       name := "social-ontology",
       libraryDependencies ++= Seq(
-        "org.scalatest"     %%% "scalatest"          % scalatestVersion       % Test,
-        "org.scalatest"     %%% "scalatest-wordspec" % scalatestVersion       % Test,
-        "org.scalatestplus" %%% "scalacheck-1-17"    % s"$scalatestVersion.0" % Test
+        "org.scalatest"     %%% "scalatest"          % Version.scalatest          % Test,
+        "org.scalatest"     %%% "scalatest-wordspec" % Version.scalatest          % Test,
+        "org.scalatestplus" %%% "scalacheck-1-17"    % Version.scalatestPlusCheck % Test
       )
     )
 
@@ -105,11 +95,11 @@ lazy val `toml-core` =
     .in(file("lib/toml/core"))
     .settings(sharedSettings)
     .settings(
-      name := "toml-core",
+      name    := "toml-core",
       version := tomlVersion,
       libraryDependencies ++= Seq(
-        "org.typelevel"     %%% "cats-core"       % catsVersion,
-        "io.github.cquiroz" %%% "scala-java-time" % scalaJavaTimeVersion
+        "org.typelevel"     %%% "cats-core"       % Version.cats,
+        "io.github.cquiroz" %%% "scala-java-time" % Version.scalaJavaTime
       )
     )
 
@@ -120,12 +110,12 @@ lazy val `toml-parse` =
     .dependsOn(`toml-core`)
     .settings(sharedSettings)
     .settings(
-      name := "toml-parse",
+      name    := "toml-parse",
       version := tomlVersion,
       libraryDependencies ++= Seq(
-        "org.typelevel" %%% "cats-parse"         % catsParseVersion,
-        "org.scalatest" %%% "scalatest"          % scalatestVersion % Test,
-        "org.scalatest" %%% "scalatest-wordspec" % scalatestVersion % Test
+        "org.typelevel" %%% "cats-parse"         % Version.catsParse,
+        "org.scalatest" %%% "scalatest"          % Version.scalatest % Test,
+        "org.scalatest" %%% "scalatest-wordspec" % Version.scalatest % Test
       )
     )
 
@@ -146,9 +136,9 @@ lazy val `toml-fabric` =
     .settings(
       name := "toml-fabric",
       libraryDependencies ++= Seq(
-        "org.typelevel" %%% "fabric-core"        % fabricVersion,
-        "org.scalatest" %%% "scalatest"          % scalatestVersion % Test,
-        "org.scalatest" %%% "scalatest-wordspec" % scalatestVersion % Test
+        "org.typelevel" %%% "fabric-core"        % Version.fabric,
+        "org.scalatest" %%% "scalatest"          % Version.scalatest % Test,
+        "org.scalatest" %%% "scalatest-wordspec" % Version.scalatest % Test
       )
     )
 
@@ -161,9 +151,9 @@ lazy val `toml-tomltest` =
     .settings(
       name := "toml-tomltest",
       libraryDependencies ++= Seq(
-        "org.typelevel" %%% "cats-effect" % catsEffectVersion,
-        "org.typelevel" %%% "mouse"       % mouseVersion,
-        "co.fs2"        %%% "fs2-io"      % fs2Version
+        "org.typelevel" %%% "cats-effect" % Version.catsEffect,
+        "org.typelevel" %%% "mouse"       % Version.mouse,
+        "co.fs2"        %%% "fs2-io"      % Version.fs2
       )
     )
     .jsSettings(
@@ -183,10 +173,10 @@ lazy val `unsigned-core` =
     .settings(
       name := "unsigned-core",
       libraryDependencies ++= Seq(
-        "org.typelevel"     %%% "cats-core"          % catsVersion,
-        "org.scalatest"     %%% "scalatest"          % scalatestVersion       % Test,
-        "org.scalatest"     %%% "scalatest-wordspec" % scalatestVersion       % Test,
-        "org.scalatestplus" %%% "scalacheck-1-17"    % s"$scalatestVersion.0" % Test
+        "org.typelevel"     %%% "cats-core"          % Version.cats,
+        "org.scalatest"     %%% "scalatest"          % Version.scalatest          % Test,
+        "org.scalatest"     %%% "scalatest-wordspec" % Version.scalatest          % Test,
+        "org.scalatestplus" %%% "scalacheck-1-17"    % Version.scalatestPlusCheck % Test
       )
     )
 
@@ -199,7 +189,7 @@ lazy val `unsigned-scalacheck` =
     .settings(
       name                := "unsigned-scalacheck",
       libraryDependencies +=
-        "org.scalacheck" %%% "scalacheck" % scalacheckVersion
+        "org.scalacheck" %%% "scalacheck" % Version.scalacheck
     )
 
 lazy val zlib =
@@ -211,8 +201,8 @@ lazy val zlib =
       libraryDependencies ++=
         Seq(
           "org.scodec"        %%% "scodec-core"        % "2.2.1",
-          "org.scalatest"     %%% "scalatest"          % scalatestVersion       % Test,
-          "org.scalatest"     %%% "scalatest-wordspec" % scalatestVersion       % Test,
-          "org.scalatestplus" %%% "scalacheck-1-17"    % s"$scalatestVersion.0" % Test
+          "org.scalatest"     %%% "scalatest"          % Version.scalatest          % Test,
+          "org.scalatest"     %%% "scalatest-wordspec" % Version.scalatest          % Test,
+          "org.scalatestplus" %%% "scalacheck-1-17"    % Version.scalatestPlusCheck % Test
         )
     )
