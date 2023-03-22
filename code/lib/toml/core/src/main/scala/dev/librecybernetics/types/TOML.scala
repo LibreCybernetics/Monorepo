@@ -13,9 +13,9 @@ import cats.implicits.*
 enum TOML:
   // Scalar
   case Boolean(boolean: scala.Boolean)
-  case Integer(content: BigInt)
+  case Integer(bigInt: BigInt)
   case Float(double: Double)
-  case String(content: Predef.String)
+  case String(string: Predef.String)
   // Temporal
   case LocalTime(localTime: JLocalTime)
   case LocalDate(localDate: JLocalDate)
