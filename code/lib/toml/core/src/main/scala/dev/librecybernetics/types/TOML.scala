@@ -7,9 +7,6 @@ import java.time.{
   OffsetDateTime as JOffsetDateTime
 }
 
-import cats.Semigroup
-import cats.implicits.*
-
 enum TOML:
   // Scalar
   case Boolean(boolean: scala.Boolean)

@@ -3,12 +3,13 @@ package dev.librecybernetics.typeclasses
 import scala.Conversion
 
 import cats.ApplicativeError
+import cats.data.Validated
 import cats.implicits.*
 
 object Decoder:
   enum Error:
-    case InvalidInput(input: String)
-    case InvalidType(input: String, expected: String)
+    case MissingField(name: String)
+    case InvalidType(className: String)
 
 trait Decoder[+T, -E] extends Conversion[E, T]:
   def decode[F[+_]: [M[_]] =>> ApplicativeError[M, Set[Decoder.Error]]](input: E): F[T]
