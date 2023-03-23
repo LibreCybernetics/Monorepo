@@ -2,7 +2,7 @@ package dev.librecybernetics.types.toml
 
 import cats.Show
 
-import dev.librecybernetics.typeclasses.{Decoder, fromConversion}
+import dev.librecybernetics.typeclasses.Decoder
 import dev.librecybernetics.types.TOML
 
 given (using s: Show[String]): Show[TOML.String] with
@@ -11,7 +11,5 @@ given (using s: Show[String]): Show[TOML.String] with
 given encodeStringConversion: Conversion[String, TOML.String] with
   override def apply(x: String): TOML.String = TOML.String(x)
 
-given decodeStringConversion: Conversion[TOML.String, String] with
-  override def apply(x: TOML.String): String = x.string
-
-given Decoder[String, TOML.String] = fromConversion
+given decodeStringConversion: Decoder[String, TOML.String] with
+  override def decode(x: TOML.String): String = x.string
