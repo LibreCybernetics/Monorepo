@@ -2,11 +2,8 @@ package dev.librecybernetics.typeclasses
 
 import scala.Conversion
 
-trait Decoder[+T, -E] {
+trait Decoder[+T, -E] extends Conversion[E, T]{
   def decode(input: E): T
 
-  def apply(input: E): T = decode(input)
+  override def apply(input: E): T = decode(input)
 }
-
-given fromConversion[T, E](using c: Conversion[E, T]): Decoder[T, E] with
-  override def decode(input: E): T = c(input)
