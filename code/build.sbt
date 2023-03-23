@@ -112,8 +112,10 @@ lazy val `toml-core` =
       name    := "toml-core",
       version := tomlVersion,
       libraryDependencies ++= Seq(
-        "org.typelevel"     %%% "cats-core"       % Version.cats,
-        "io.github.cquiroz" %%% "scala-java-time" % Version.scalaJavaTime
+        "org.typelevel"     %%% "cats-core"          % Version.cats,
+        "io.github.cquiroz" %%% "scala-java-time"    % Version.scalaJavaTime,
+        "org.scalatest"     %%% "scalatest"          % Version.scalatest % Test,
+        "org.scalatest"     %%% "scalatest-wordspec" % Version.scalatest % Test
       )
     )
 
