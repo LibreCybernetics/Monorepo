@@ -1,6 +1,6 @@
 package dev.librecybernetics.types.toml
 
-import cats.Show
+import cats.{ApplicativeError, Show}
 
 import dev.librecybernetics.typeclasses.Decoder
 import dev.librecybernetics.types.TOML
@@ -12,4 +12,6 @@ given encodeStringConversion: Conversion[String, TOML.String] with
   override def apply(x: String): TOML.String = TOML.String(x)
 
 given decodeStringConversion: Decoder[String, TOML.String] with
-  override def decode(x: TOML.String): String = x.string
+  override def decode[F[+_]: [M[_]] =>> ApplicativeError[M, Set[Decoder.Error]]](
+      x: TOML.String
+  ): F[String] = ApplicativeError.apply.pure(x.string)
