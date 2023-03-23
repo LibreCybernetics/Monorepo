@@ -10,7 +10,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 import dev.librecybernetics.typeclasses.Decoder
 import dev.librecybernetics.types.TOML
-import dev.librecybernetics.types.toml.given
+import dev.librecybernetics.types.toml.{*, given}
 
 class DecoderSpec extends AnyWordSpec {
   "Decoder" should {
@@ -19,17 +19,24 @@ class DecoderSpec extends AnyWordSpec {
 
       given decoderUser: Decoder[User, TOML.Map] with
         def decode[F[+_]: [M[_]] =>> ApplicativeError[M, Set[Decoder.Error]]](toml: TOML.Map): F[User] =
-          val result: Validated[Set[Decoder.Error], User] = (
-            Validated.fromOption(
-              toml.map.get("name").collect[String] { case s: TOML.String => s },
-              Set(Decoder.Error.InvalidInput("no name"))
-            ),
-            Validated.fromOption(
-              toml.map.get("email").collect[String] { case s: TOML.String => s },
-              Set(Decoder.Error.InvalidInput("no email"))
-            )
-          ).mapN(User.apply)
-          ApplicativeError.apply.fromValidated(result)
+          ApplicativeError.apply.fromValidated((
+            toml
+              .getField("name")
+              .andThen { _.decodeString[String] },
+            toml
+              .getField("email")
+              .andThen { _.decodeString[String] }
+          ).mapN(User.apply))
+
+      val toml: TOML.Map = TOML.Map(Map(
+          "name" -> "John Doe",
+          "email" -> "john@example.com"
+        )
+      )
+
+      toml.decodeMap[User] match
+        case Validated.Valid(user) => user shouldEqual User("John Doe", "john@example.com")
+        case Validated.Invalid(errors) => fail(s"Errors: $errors")
     }
   }
 }
