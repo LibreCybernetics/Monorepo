@@ -8,7 +8,7 @@ import dev.librecybernetics.types.TOML
 import dev.librecybernetics.types.toml.given
 
 private[parser] object Toml:
-  val toml: Parser[TOML] =
+  val toml: Parser[TOML.Map] =
     emptyOrComment.rep0.with1 *>
       (spaces.with1 *>
         (ArrayOfTables.arrayOfTables.backtrack | table.backtrack | keyValue.backtrack)).backtrack

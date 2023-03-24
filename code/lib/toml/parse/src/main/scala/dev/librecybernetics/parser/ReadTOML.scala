@@ -11,7 +11,7 @@ import dev.librecybernetics.types.TOML
 @unused
 def readTOML[F[_]: [F[_]] =>> MonadError[F, Error]](
                                                      input: String
-): F[TOML] =
+): F[TOML.Map] =
   toml.Toml.toml.parse(input) match
     case Left(err)        => MonadError.apply.raiseError(err)
     case Right((_, toml)) => MonadError.apply.pure(toml)
