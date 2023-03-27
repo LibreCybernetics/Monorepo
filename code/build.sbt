@@ -50,6 +50,7 @@ wartremoverErrors ++= Warts.unsafe
 lazy val network =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
+    .in(file("lib/network/"))
     .dependsOn(
       `unsigned-core`,
       `unsigned-scalacheck` % Test
@@ -67,6 +68,7 @@ lazy val network =
 lazy val `social-ontology` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
+    .in(file("lib/social-ontology/"))
     .settings(sharedSettings)
     .settings(
       name := "social-ontology",
@@ -215,6 +217,7 @@ lazy val `unsigned-scalacheck` =
 lazy val zlib =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
+    .in(file("lib/zlib/"))
     .settings(sharedSettings)
     .settings(
       name := "git",
