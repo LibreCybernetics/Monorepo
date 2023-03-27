@@ -19,5 +19,6 @@ enum TOML:
   case LocalDateTime(localDateTime: JLocalDateTime)
   case OffsetDateTime(offsetDateTime: JOffsetDateTime)
   // Recursive
-  case Array(array: Seq[TOML])
+  case ScalarArray(array: Seq[TOML])
+  case ArrayOfTables(array: Seq[TOML])
   case Map(map: Predef.Map[Predef.String, TOML])

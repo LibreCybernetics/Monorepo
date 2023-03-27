@@ -6,8 +6,8 @@ import dev.librecybernetics.parser.*
 import dev.librecybernetics.parser.toml.collection.ArrayOfTables
 import dev.librecybernetics.types.TOML
 
-class ArrayOfTablesSpec extends AnyWordSpec {
-  "ArrayOfTables" when {
+class ArrayOfTablesOfTablesSpec extends AnyWordSpec {
+  "ArrayOfTablesOfTables" when {
     "Valid Input" should {
       val input1         =
         """[[products]]
@@ -25,7 +25,7 @@ class ArrayOfTablesSpec extends AnyWordSpec {
       Map(
         input1 -> TOML.Map(
           Map(
-            "products" -> TOML.Array(
+            "products" -> TOML.ArrayOfTables(
               Seq(
                 TOML.Map(
                   Map(
@@ -39,7 +39,7 @@ class ArrayOfTablesSpec extends AnyWordSpec {
         ),
         input2 -> TOML.Map(
           Map(
-            "products" -> TOML.Array(
+            "products" -> TOML.ArrayOfTables(
               Seq(
                 TOML.Map(Map.empty)
               )
@@ -48,7 +48,7 @@ class ArrayOfTablesSpec extends AnyWordSpec {
         ),
         input3 -> TOML.Map(
           Map(
-            "products" -> TOML.Array(
+            "products" -> TOML.ArrayOfTables(
               Seq(
                 TOML.Map(
                   Map(

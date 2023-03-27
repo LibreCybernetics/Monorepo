@@ -32,20 +32,20 @@ class IntegrationSpec extends AnyWordSpec {
         """.stripMargin                                 ->
           TOML.Map(
             Map(
-              "dates"    -> TOML.Array(
+              "dates"    -> TOML.ScalarArray(
                 Seq(
                   OffsetDateTime.of(1987, 7, 5, 17, 45, 0, 0, ZoneOffset.UTC),
                   OffsetDateTime.of(1979, 5, 27, 7, 32, 0, 0, ZoneOffset.UTC),
                   OffsetDateTime.of(2006, 6, 1, 11, 0, 0, 0, ZoneOffset.UTC)
                 )
               ),
-              "comments" -> TOML.Array(Seq(1, 2)),
-              "nest"     -> TOML.Array(
+              "comments" -> TOML.ScalarArray(Seq(1, 2)),
+              "nest"     -> TOML.ScalarArray(
                 Seq(
-                  TOML.Array(
+                  TOML.ScalarArray(
                     Seq(
-                      TOML.Array(Seq("a")),
-                      TOML.Array(Seq(1, 2, TOML.Array(Seq(3))))
+                      TOML.ScalarArray(Seq("a")),
+                      TOML.ScalarArray(Seq(1, 2, TOML.ScalarArray(Seq(3))))
                     )
                   )
                 )
@@ -93,20 +93,20 @@ class IntegrationSpec extends AnyWordSpec {
               "database" -> TOML.Map(
                 Map(
                   "server"         -> "192.168.1.1",
-                  "ports"          -> TOML.Array(Seq(8000, 8001, 8002)),
+                  "ports"          -> TOML.ScalarArray(Seq(8000, 8001, 8002)),
                   "connection_max" -> 5000,
                   "enabled"        -> true
                 )
               ),
               "clients"  -> TOML.Map(
                 Map(
-                  "data"  -> TOML.Array(
+                  "data"  -> TOML.ScalarArray(
                     Seq(
-                      TOML.Array(Seq("gamma", "delta")),
-                      TOML.Array(Seq(1, 2))
+                      TOML.ScalarArray(Seq("gamma", "delta")),
+                      TOML.ScalarArray(Seq(1, 2))
                     )
                   ),
-                  "hosts" -> TOML.Array(
+                  "hosts" -> TOML.ScalarArray(
                     Seq(
                       "alpha",
                       "omega"
@@ -225,7 +225,7 @@ class IntegrationSpec extends AnyWordSpec {
                     "version" -> "1.0.0"
                   )
                 ),
-              "dependencies" -> TOML.Array(
+              "dependencies" -> TOML.ArrayOfTables(
                 List(
                   TOML.Map(
                     Map(
@@ -263,7 +263,7 @@ class IntegrationSpec extends AnyWordSpec {
                   )
                 )
               ),
-              "endpoints"    -> TOML.Array(
+              "endpoints"    -> TOML.ArrayOfTables(
                 List(
                   TOML.Map(
                     Map(
@@ -302,7 +302,7 @@ class IntegrationSpec extends AnyWordSpec {
                     "path"  -> "/var/log/toml_parser.log"
                   )
                 ),
-              "users"        -> TOML.Array(
+              "users"        -> TOML.ArrayOfTables(
                 List(
                   TOML.Map(
                     Map(
