@@ -29,7 +29,7 @@ private[toml] object ArrayOfTables:
       // TODO: Validate not reusing keys
       transformDottedKey(
         key,
-        TOML.Array(
+        TOML.ArrayOfTables(
           Seq(
             values.reduceOption(_ combine _).getOrElse(TOML.Map(Map.empty))
           )

@@ -18,17 +18,18 @@ given testReader: Reader[TOML] = Reader[TOML](
       Obj("type" -> "float", "value" -> Str(double.toString))
 
     // Temporal
-    case TOML.LocalTime(localTime)         =>
+    case TOML.LocalTime(localTime)          =>
       Obj("type" -> "time-local", "value" -> Str(localTime.toString))
-    case TOML.LocalDate(localDate)         =>
+    case TOML.LocalDate(localDate)          =>
       Obj("type" -> "time-date", "value" -> Str(localDate.toString))
-    case TOML.LocalDateTime(localDateTime) =>
+    case TOML.LocalDateTime(localDateTime)  =>
       Obj("type" -> "datetime-local", "value" -> Str(localDateTime.toString))
     case TOML.OffsetDateTime(zonedDateTime) =>
       Obj("type" -> "datetime", "value" -> Str(zonedDateTime.toString))
 
     // Recursive
-    case TOML.Array(arr) => Arr(arr.map(_.json).toVector)
-    case TOML.Map(map)   => Obj(map.view.mapValues(_.json).toMap)
+    case TOML.ScalarArray(arr)   => Arr(arr.map(_.json).toVector)
+    case TOML.ArrayOfTables(arr) => Arr(arr.map(_.json).toVector)
+    case TOML.Map(map)           => Obj(map.view.mapValues(_.json).toMap)
   }
 )

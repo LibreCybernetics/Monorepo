@@ -20,8 +20,10 @@ given Conversion[OffsetDateTime, TOML.OffsetDateTime] with
 
 // Collection
 
-given Conversion[Seq[TOML], TOML.Array] with
-  override def apply(x: Seq[TOML]): TOML.Array = TOML.Array(x)
+given Conversion[Seq[TOML], TOML.ScalarArray] with
+  override def apply(x: Seq[TOML]): TOML.ScalarArray = TOML.ScalarArray(x)
+given Conversion[Seq[TOML], TOML.ArrayOfTables] with
+  override def apply(x: Seq[TOML]): TOML.ArrayOfTables = TOML.ArrayOfTables(x)
 
 given Conversion[(String, String), TOML.Map] with
   override def apply(t: (String, String)): TOML.Map =
