@@ -1,0 +1,78 @@
+#+TITLE: Scala 3 Meta-programming
+
+* Inline
+
+* Compiletime-ops
+
+** constValue
+
+Lower value type to value
+
+```scala
+import scala.compiletime.constValue
+import scala.compiletime.ops.int.S
+
+transparent inline def toValueType[N]: Int =
+  inline constValue[N] match
+    case 0 => 0
+    case _: S[p] => 1 + toValueType[p]
+```
+
+```repl
+lazy val entero: 10 = ???
+
+toValueType[entero.type]
+> val res3: Int = 10
+```
+
+** erasedValue
+
+```scala
+import scala.compiletime.constValue
+import scala.compiletime.ops.int.S
+
+transparent inline def toValueType[N]: Int =
+  inline erasedValue[N] match
+    case 0 => 0
+    case _: S[p] => 1 + toValueType[p]
+```
+
+```repl
+lazy val entero: 10 = ???
+
+toValueType[entero.type]
+> val res3: Int = 10
+```
+
+** summonFrom / summonInline
+
+Example with cats.Show, generating a Show for a Tuple
+
+```
+transparent inline def showForTuple[T <: Tuple]: Show[T] =
+  inline erasedValue[T] match
+    case _: EmptyTuple => (new Show[EmptyTuple] {
+      override def show(n: EmptyTuple): String = ""
+    }).asInstanceOf[Show[T]]
+
+    case _: (t *: EmptyTuple) => (new Show[t *: EmptyTuple] {
+      val showHead = summonInline[Show[t]]
+
+      override def show(tup: t *: EmptyTuple): String = showHead.show(tup.head)
+    }).asInstanceOf[Show[T]]
+
+    case _: (t *: ts) => (new Show[t *: ts] {
+      val showHead = summonInline[Show[t]]
+      val showTail = showForTuple[ts]
+
+      override def show(tup: t *: ts): String =
+        showHead.show(tup.head) + ", " + showTail.show(tup.tail)
+    }).asInstanceOf[Show[T]]
+```
+
+summonFrom (where the summon is written) vs summonInline (where inlined function is called)
+
+
+* References
+- [[https://docs.scala-lang.org/scala3/reference/metaprogramming/index.html][Scala 3 Documentation on Metaprogramming]]
+- [[youtube:https://www.youtube.com/watch?v=J3VRzMvqWeo][Xebia Functional — Metaprogramming in Scala 3: Inline]]
