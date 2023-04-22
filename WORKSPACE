@@ -53,6 +53,19 @@ http_archive(
     sha256 = rules_scala_hash,
 )
 
+# bazelbuild/rules_jvm_external
+
+
+RULES_JVM_EXTERNAL_TAG = "5.2"
+RULES_JVM_EXTERNAL_SHA = "3824ac95d9edf8465c7a42b7fcb88a5c6b85d2bac0e98b941ba13f235216f313"
+
+http_archive(
+    name = "rules_jvm_external",
+    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
+    sha256 = RULES_JVM_EXTERNAL_SHA,
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
+)
+
 # tweag/rules_nixpkgs
 
 rules_nixpkgs_version = "4dddbafba508cd2dffd95b8562cab91c9336fe36"
@@ -113,13 +126,40 @@ nixpkgs_java_configure(
 rules_java_toolchains()
 
 #
+# JVM Deps
+#
+
+load("@rules_jvm_external//:repositories.bzl", "rules_jvm_external_deps")
+
+rules_jvm_external_deps()
+
+load("@rules_jvm_external//:setup.bzl", "rules_jvm_external_setup")
+
+rules_jvm_external_setup()
+
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+
+maven_install(
+  artifacts = [
+    "org.typelevel:cats-core_3:2.9.0",
+  ],
+  repositories = [
+    "https://repo1.maven.org/maven2",
+  ],
+  fetch_sources = True,
+)
+
+#
 # Scala
 #
 # Reference: https://github.com/bazelbuild/rules_scala/tree/v5.0.0#getting-started
 
 load("@io_bazel_rules_scala//:scala_config.bzl", "scala_config")
 
-scala_config(scala_version = "3.2.1")
+scala_config(
+  scala_version = "3.2.1",
+  enable_compiler_dependency_tracking = True,
+)
 
 load("@io_bazel_rules_scala//scala:scala.bzl", "rules_scala_setup", "rules_scala_toolchain_deps_repositories")
 
