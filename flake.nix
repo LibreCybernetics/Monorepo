@@ -12,18 +12,18 @@
 
           overlays = [ devshell.overlays.default ];
         };
+        jdk = pkgs.jdk11;
       in rec {
         config = {
           env = [{
             name = "JAVA_HOME";
-            value = "${pkgs.jdk11.home}";
+            value = "${jdk.home}";
           }];
           
           packages = with pkgs;[
+            stdenv.cc
             bazel_6
-            gcc12
-            jdk11
-            protobuf
+            jdk
           ];
         };
 

@@ -94,6 +94,7 @@ rules_proto_toolchains()
 load("@rules_java//java:repositories.bzl", "rules_java_dependencies", "rules_java_toolchains")
 
 rules_java_dependencies()
+rules_java_toolchains()
 
 # Nixpkgs
 
@@ -110,20 +111,6 @@ nixpkgs_local_repository(
     nix_flake_lock_file = "//:flake.lock",
     nix_file_deps = ["//:flake.lock"],
 )
-
-# Nix + Java Toolchain
-
-load("@io_tweag_rules_nixpkgs//nixpkgs:nixpkgs.bzl", "nixpkgs_java_configure")
-
-nixpkgs_java_configure(
-    repository = "@nixpkgs",
-    attribute_path = "jdk11.home",
-    toolchain = True,
-    toolchain_name = "nixpkgs_java",
-    toolchain_version = "11",
-)
-
-rules_java_toolchains()
 
 #
 # JVM Deps
@@ -149,10 +136,7 @@ maven_install(
   fetch_sources = True,
 )
 
-#
-# Scala
-#
-# Reference: https://github.com/bazelbuild/rules_scala/tree/v5.0.0#getting-started
+# Base Scala
 
 load("@io_bazel_rules_scala//:scala_config.bzl", "scala_config")
 
@@ -169,9 +153,3 @@ rules_scala_toolchain_deps_repositories(fetch_sources = True)
 load("@io_bazel_rules_scala//scala:toolchains.bzl", "scala_register_toolchains")
 
 scala_register_toolchains()
-
-load("@io_bazel_rules_scala//testing:scalatest.bzl", "scalatest_repositories", "scalatest_toolchain")
-
-scalatest_repositories()
-scalatest_toolchain()
-
