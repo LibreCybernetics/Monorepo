@@ -65,6 +65,31 @@ lazy val network =
       )
     )
 
+lazy val `parse-utils` =
+  crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("lib/parse-utils/"))
+    .settings(sharedSettings)
+    .settings(
+      name := "parse-utils",
+      libraryDependencies ++= Seq(
+        "org.typelevel" %%% "cats-parse" % Version.catsParse
+      )
+    )
+
+lazy val rfc3339 =
+  crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("lib/rfc3339/"))
+    .dependsOn(`parse-utils`)
+    .settings(sharedSettings)
+    .settings(
+      name := "rfc3339",
+      libraryDependencies ++= Seq(
+        "io.github.cquiroz" %%% "scala-java-time" % Version.scalaJavaTime
+      )
+    )
+
 lazy val `social-ontology` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
@@ -140,7 +165,7 @@ lazy val `toml-parse` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("lib/toml/parse"))
-    .dependsOn(`toml-core`)
+    .dependsOn(rfc3339, `toml-core`)
     .settings(sharedSettings)
     .settings(
       name    := "toml-parse",
