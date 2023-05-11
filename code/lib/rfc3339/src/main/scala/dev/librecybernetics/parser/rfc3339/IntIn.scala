@@ -5,8 +5,8 @@ import cats.parse.Parser
 
 import dev.librecybernetics.parser.*
 
-private def intIn(range: Range, context: String): Parser[Int] =
-  digit.rep(2, 2).string.map(_.toInt).flatMap {
+inline private def intIn(range: Range, context: String): Parser[Int] =
+  digit.repExactly(2).string.map(_.toInt).flatMap {
     case i if range contains i =>
       Parser.pure(i)
     case i                     =>

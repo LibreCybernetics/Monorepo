@@ -24,7 +24,7 @@ class DateSpec extends AnyWordSpec {
       "2023-03-32" -> "context: full-date, must fail: 32 out of range(Range 1 to 31) for date-mday",
       "2023-00-18" -> "context: full-date, must fail: 0 out of range(Range 1 to 12) for date-month",
       "2023-13-18" -> "context: full-date, must fail: 13 out of range(Range 1 to 12) for date-month",
-      "2023-02-30" -> "context: full-date, must fail: 2023-2-30 is not a valid gregorian calendar date",
+      "2023-02-30" -> "context: full-date, must fail: 30 out of range(Range 1 to 29) for date-mday",
       "2023-2-18" -> "context: full-date, must be a char within the range of: ['0', '9']",
       "2023-03-8" -> "context: full-date, must be a char within the range of: ['0', '9']"
       ) foreach { (s, m) =>
