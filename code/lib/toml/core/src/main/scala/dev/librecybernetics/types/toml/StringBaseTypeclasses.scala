@@ -11,7 +11,18 @@ given (using s: Show[String]): Show[TOML.String] with
 given encodeStringConversion: Conversion[String, TOML.String] with
   override def apply(x: String): TOML.String = TOML.String(x)
 
-given decodeStringConversion: Decoder[String, TOML.String] with
+given decodeStringFromString: Decoder[String, TOML.String] with
   override def decode[F[+_]: [M[_]] =>> ApplicativeError[M, Set[Decoder.Error]]](
-      x: TOML.String
-  ): F[String] = ApplicativeError.apply.pure(x.string)
+      s: TOML.String
+  ): F[String] = ApplicativeError.apply.pure(s.string)
+
+given decodeStringFromTOML: Decoder[String, TOML] with
+  override def decode[
+      F[+_]: [M[_]] =>> ApplicativeError[M, Set[Decoder.Error]]
+  ](
+      toml: TOML
+  ): F[String] = toml match
+    case s: TOML.String => decodeStringFromString.decode(s)
+    case _              =>
+      ApplicativeError[F, Set[Decoder.Error]]
+        .raiseError(Set(Decoder.Error.InvalidType(toml.getClass.getSimpleName)))
