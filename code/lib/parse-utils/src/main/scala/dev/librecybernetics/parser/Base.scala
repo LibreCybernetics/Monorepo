@@ -15,9 +15,11 @@ private[parser] val equal: Parser[Unit]        = Parser.char('=')
 private[parser] val hash: Parser[Unit]         = Parser.char('#')
 private[parser] val newline: Parser[Unit]      = Parser.char('\n')
 private[parser] val space: Parser[Unit]        = Parser.char(' ')
+private[parser] val tab: Parser[Unit]          = Parser.char('\t')
 private[parser] val underscore: Parser[Unit]   = Parser.char('_')
 
-private[parser] val digit: Parser[Char] = Parser.charIn(latinDecimalDigits)
+private[parser] val digit: Parser[Char]      = Parser.charIn(latinDecimalDigits)
+private[parser] val whitespace: Parser[Unit] = space | tab
 
 // Spaces / Lines
 

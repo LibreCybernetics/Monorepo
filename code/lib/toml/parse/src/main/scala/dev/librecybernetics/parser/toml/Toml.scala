@@ -15,4 +15,4 @@ private[parser] object Toml:
         .withContext("toml-segment")
         .repSep(newline ~ emptyOrComment.rep0)
         .map(nel => nel.reduce) <*
-      emptyOrComment.rep0 <* ((space | newline).rep0 ~ Parser.end)
+      emptyOrComment.rep0 <* ((whitespace | newline).rep0 ~ Parser.end)
