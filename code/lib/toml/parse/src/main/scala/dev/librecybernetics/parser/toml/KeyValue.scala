@@ -7,12 +7,22 @@ import cats.parse.Parser
 import dev.librecybernetics.parser.*
 import dev.librecybernetics.types.TOML
 
+/** ```
+  * keyval-sep = ws %x3D ws ; =
+  * ```
+  */
 private val assignment: Parser[Unit] =
-  equal.surroundedBy(spaces)
+  equal.surroundedBy(whitespaces)
 
+
+/**
+ * ```
+ * keyval = key keyval-sep val
+ * ```
+ */
 private[toml] val keyValue: Parser[TOML.Map] =
   (
-    spaces.with1 *> key,
+    whitespaces.with1 *> key,
     assignment *> allValues <* spaces <* comment.?
   )
     .mapN { transformDottedKey }
