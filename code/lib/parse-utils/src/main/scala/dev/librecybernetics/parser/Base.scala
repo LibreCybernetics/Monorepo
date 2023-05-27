@@ -23,7 +23,10 @@ private[parser] val whitespace: Parser[Unit] = space | tab
 
 // Spaces / Lines
 
-private[parser] val spaces: Parser0[Int]            = space.rep0.map(_.length)
-private[parser] val newlineOrEnd: Parser0[Unit]     = newline | Parser.end
-private[parser] val emptyLine: Parser[Unit]         = (spaces.with1 ~ newline).void
+private[parser] val spaces: Parser0[Int]       = space.rep0.map(_.length)
+private[parser] val tabs: Parser0[Int]         = space.rep0.map(_.length)
+private[parser] val whitespaces: Parser0[Unit] = whitespace.rep0.void
+
 private[parser] val anyUntilNewline: Parser[String] = Parser.charsWhile(_ != '\n')
+private[parser] val emptyLine: Parser[Unit]         = (whitespaces.with1 ~ newline).void
+private[parser] val newlineOrEnd: Parser0[Unit]     = newline | Parser.end
