@@ -254,3 +254,22 @@ lazy val zlib =
           "org.scalatestplus" %%% "scalacheck-1-17"    % Version.scalatestPlusCheck % Test
         )
     )
+
+//==========//
+// Fugitiva //
+//==========//
+
+lazy val fugitiva =
+  crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("app/fugitiva"))
+    .settings(sharedSettings)
+    .settings(
+      name := "fugitiva",
+      libraryDependencies ++=
+        Seq(
+          "org.http4s" %% "http4s-ember-client" % Version.http4s,
+          "org.http4s" %% "http4s-ember-server" % Version.http4s,
+          "org.http4s" %% "http4s-dsl" % Version.http4s,
+        )
+    )
