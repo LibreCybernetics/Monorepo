@@ -268,6 +268,7 @@ lazy val fugitiva =
       name := "fugitiva",
       libraryDependencies ++=
         Seq(
+          "io.getquill" %% "quill-jasync-postgres" % Version.protoquill,
           "org.http4s" %% "http4s-ember-client" % Version.http4s,
           "org.http4s" %% "http4s-ember-server" % Version.http4s,
           "org.http4s" %% "http4s-dsl" % Version.http4s,
