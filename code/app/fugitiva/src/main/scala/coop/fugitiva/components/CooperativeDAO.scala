@@ -14,6 +14,8 @@ import coop.fugitiva.util.futureToIO
 trait CooperativeDAO:
   def getCooperatives: IO[Seq[Cooperative]]
   def getCooperative(id: CooperativeId): IO[Option[Cooperative]]
+  def getCooperative(name: String): IO[Option[Cooperative]]
+end CooperativeDAO
 
 object CooperativeDAO:
   private object CooperativeQueries:
@@ -25,6 +27,11 @@ object CooperativeDAO:
     ): Quoted[EntityQuery[Cooperative]] =
       quote(getCooperatives.filter(_.id == ctx.lift(id)))
 
+    def getCooperative[D <: Idiom, N <: NamingStrategy](name: String)(using
+        ctx: Context[D, N]
+    ): Quoted[EntityQuery[Cooperative]] =
+      quote(getCooperatives.filter(_.name == ctx.lift(name)))
+
   case class PostgresJAsync()(using ctx: PostgresJAsyncContext[SnakeCase]) extends CooperativeDAO:
     import ctx.*
 
@@ -33,5 +40,8 @@ object CooperativeDAO:
 
     override def getCooperative(id: CooperativeId): IO[Option[Cooperative]] =
       ctx.run(CooperativeQueries.getCooperative(id)).map(_.headOption)
+
+    override def getCooperative(name: String): IO[Option[Cooperative]] =
+      ctx.run(CooperativeQueries.getCooperative(name)).map(_.headOption)
   end PostgresJAsync
 end CooperativeDAO

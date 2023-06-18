@@ -13,15 +13,21 @@ class CooperativeDAOSpec extends AsyncWordSpec with AsyncIOSpec {
 
   "CooperativeDAO" when {
     "Query" should {
-      "cooperatives" in {
-        cooperativeDAO.getCooperatives.asserting { cooperatives =>
-          cooperatives should contain(Cooperative(1, "Autodefensa Alimentaria"))
+      "all" in {
+        cooperativeDAO.getCooperatives.asserting {
+          _ should contain(Cooperative(1, "Autodefensa Alimentaria"))
         }
       }
 
-      "cooperative" in {
-        cooperativeDAO.getCooperative(1).asserting { cooperative =>
-          cooperative shouldBe Some(Cooperative(1, "Autodefensa Alimentaria"))
+      "by id" in {
+        cooperativeDAO.getCooperative(1).asserting {
+          _ shouldEqual Some(Cooperative(1, "Autodefensa Alimentaria"))
+        }
+      }
+
+      "by name" in {
+        cooperativeDAO.getCooperative("Autodefensa Alimentaria").asserting {
+          _ shouldEqual Some(Cooperative(1, "Autodefensa Alimentaria"))
         }
       }
     }
