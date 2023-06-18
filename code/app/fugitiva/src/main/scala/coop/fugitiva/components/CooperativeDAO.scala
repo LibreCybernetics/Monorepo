@@ -25,8 +25,7 @@ object CooperativeDAO:
     ): Quoted[EntityQuery[Cooperative]] =
       quote(getCooperatives.filter(_.id == ctx.lift(id)))
 
-  object PostgresJAsync extends CooperativeDAO:
-    given ctx: PostgresJAsyncContext[SnakeCase] = PostgresJAsyncContext(SnakeCase, "quill")
+  case class PostgresJAsync()(using ctx: PostgresJAsyncContext[SnakeCase]) extends CooperativeDAO:
     import ctx.*
 
     override def getCooperatives: IO[Seq[Cooperative]] =
@@ -36,16 +35,3 @@ object CooperativeDAO:
       ctx.run(CooperativeQueries.getCooperative(id)).map(_.headOption)
   end PostgresJAsync
 end CooperativeDAO
-
-object CooperativeComponentTest extends IOApp.Simple {
-  override def run: IO[Unit] =
-    for
-      _ <- IO(println("Running test"))
-      _ <- IO(println("Cooperatives:"))
-      _ <- CooperativeDAO.PostgresJAsync.getCooperatives.map(_.foreach(println))
-      _ <- IO(println("Cooperative 1:"))
-      _ <- CooperativeDAO.PostgresJAsync.getCooperative(1).map(println)
-      _ <- IO(println("Cooperative 2:"))
-      _ <- CooperativeDAO.PostgresJAsync.getCooperative(2).map(println)
-    yield ()
-}
