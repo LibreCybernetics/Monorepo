@@ -1,15 +1,15 @@
 package coop.fugitiva.components
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 
+import cats.implicits.*
 import cats.effect.{Async, IOApp}
 import io.getquill.*
 import io.getquill.idiom.Idiom
 import io.getquill.context.Context
 
 import coop.fugitiva.domain.*
-import coop.fugitiva.util.futureToIO
+import coop.fugitiva.util.futureToAsync
 
 trait CooperativeDAO[F[_]: Async]:
   def getCooperatives: F[Seq[Cooperative]]
@@ -32,17 +32,22 @@ object CooperativeDAO:
     ): Quoted[EntityQuery[Cooperative]] =
       quote(getCooperatives.filter(_.name == ctx.lift(name)))
 
-  case class PostgresJAsync[F[_]]()(using ctx: PostgresJAsyncContext[SnakeCase], f: Async[F]) extends
-    CooperativeDAO[F]:
+  case class PostgresJAsync[F[_]]()(using ctx: PostgresJAsyncContext[SnakeCase], f: Async[F]) extends CooperativeDAO[F]:
     import ctx.*
 
     override def getCooperatives: F[Seq[Cooperative]] =
-      ctx.run(CooperativeQueries.getCooperatives)
+      f.executionContext.flatMap { implicit ec =>
+        ctx.run(CooperativeQueries.getCooperatives)
+      }
 
     override def getCooperative(id: CooperativeId): F[Option[Cooperative]] =
-      ctx.run(CooperativeQueries.getCooperative(id)).map(_.headOption)
+      f.executionContext.flatMap { implicit ec =>
+        ctx.run(CooperativeQueries.getCooperative(id)).map(_.headOption)
+      }
 
     override def getCooperative(name: String): F[Option[Cooperative]] =
-      ctx.run(CooperativeQueries.getCooperative(name)).map(_.headOption)
+      f.executionContext.flatMap { implicit ec =>
+        ctx.run(CooperativeQueries.getCooperative(name)).map(_.headOption)
+      }
   end PostgresJAsync
 end CooperativeDAO
