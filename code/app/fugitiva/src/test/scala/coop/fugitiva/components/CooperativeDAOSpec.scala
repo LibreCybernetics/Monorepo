@@ -9,7 +9,7 @@ import org.scalatest.wordspec.*
 import coop.fugitiva.domain.Cooperative
 
 class CooperativeDAOSpec extends AsyncWordSpec with AsyncIOSpec {
-  val cooperativeDAO = CooperativeDAO.PostgresJAsync()(using coop.fugitiva.PostgresContext)
+  val cooperativeDAO: CooperativeDAO.PostgresJAsync[IO] = CooperativeDAO.PostgresJAsync[IO]()(using coop.fugitiva.PostgresContext)
 
   "CooperativeDAO" when {
     "Query" should {
