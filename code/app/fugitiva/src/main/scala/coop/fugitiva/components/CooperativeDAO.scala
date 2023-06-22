@@ -2,19 +2,25 @@ package coop.fugitiva.components
 
 import scala.language.implicitConversions
 
-import cats.implicits.*
+import cats.ApplicativeError
+import cats.data.Validated
 import cats.effect.{Async, IOApp}
+import cats.implicits.*
 import io.getquill.*
-import io.getquill.idiom.Idiom
 import io.getquill.context.Context
+import io.getquill.idiom.Idiom
 
 import coop.fugitiva.domain.*
-import coop.fugitiva.util.futureToAsync
+import coop.fugitiva.util.{RecordNotFound, found, futureToAsync}
 
 trait CooperativeDAO[F[_]: Async]:
   def getCooperatives: F[Seq[Cooperative]]
-  def getCooperative(id: CooperativeId): F[Option[Cooperative]]
-  def getCooperative(name: String): F[Option[Cooperative]]
+  def getCooperative[E[_]: [E[_]] =>> ApplicativeError[E, RecordNotFound[CooperativeId]]](
+      id: CooperativeId
+  ): F[E[Cooperative]]
+  def getCooperative[E[_]: [E[_]] =>> ApplicativeError[E, RecordNotFound[String]]](
+      name: String
+  ): F[E[Cooperative]]
 end CooperativeDAO
 
 object CooperativeDAO:
@@ -32,7 +38,10 @@ object CooperativeDAO:
     ): Quoted[EntityQuery[Cooperative]] =
       quote(getCooperatives.filter(_.name == ctx.lift(name)))
 
-  case class PostgresJAsync[F[_]]()(using ctx: PostgresJAsyncContext[SnakeCase], f: Async[F]) extends CooperativeDAO[F]:
+  case class PostgresJAsync[F[_]]()(using
+      ctx: PostgresJAsyncContext[SnakeCase],
+      f: Async[F]
+  ) extends CooperativeDAO[F]:
     import ctx.*
 
     override def getCooperatives: F[Seq[Cooperative]] =
@@ -40,14 +49,18 @@ object CooperativeDAO:
         ctx.run(CooperativeQueries.getCooperatives)
       }
 
-    override def getCooperative(id: CooperativeId): F[Option[Cooperative]] =
+    override def getCooperative[E[_]: [E[_]] =>> ApplicativeError[E, RecordNotFound[CooperativeId]]](
+        id: CooperativeId
+    ): F[E[Cooperative]] =
       f.executionContext.flatMap { implicit ec =>
-        ctx.run(CooperativeQueries.getCooperative(id)).map(_.headOption)
+        ctx.run(CooperativeQueries.getCooperative(id)).map(_.found(id))
       }
 
-    override def getCooperative(name: String): F[Option[Cooperative]] =
+    override def getCooperative[E[_]: [E[_]] =>> ApplicativeError[E, RecordNotFound[String]]](
+        name: String
+    ): F[E[Cooperative]] =
       f.executionContext.flatMap { implicit ec =>
-        ctx.run(CooperativeQueries.getCooperative(name)).map(_.headOption)
+        ctx.run(CooperativeQueries.getCooperative(name)).map(_.found(name))
       }
   end PostgresJAsync
 end CooperativeDAO

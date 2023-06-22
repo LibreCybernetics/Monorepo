@@ -1,5 +1,6 @@
 package coop.fugitiva.components
 
+import cats.data.Validated.Valid
 import cats.effect.*
 import cats.effect.testing.scalatest.AsyncIOSpec
 import org.scalatest.*
@@ -21,13 +22,13 @@ class CooperativeDAOSpec extends AsyncWordSpec with AsyncIOSpec {
 
       "by id" in {
         cooperativeDAO.getCooperative(1).asserting {
-          _ shouldEqual Some(Cooperative(1, "Autodefensa Alimentaria"))
+          _ shouldEqual Right(Cooperative(1, "Autodefensa Alimentaria"))
         }
       }
 
       "by name" in {
         cooperativeDAO.getCooperative("Autodefensa Alimentaria").asserting {
-          _ shouldEqual Some(Cooperative(1, "Autodefensa Alimentaria"))
+          _ shouldEqual Right(Cooperative(1, "Autodefensa Alimentaria"))
         }
       }
     }
