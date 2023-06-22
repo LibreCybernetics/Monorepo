@@ -16,6 +16,7 @@ ThisBuild / scmInfo := Some(
 
 ThisBuild / versionScheme := Some("semver-spec")
 ThisBuild / scalaVersion  := Version.scala
+Global / onChangedBuildSource := ReloadOnSourceChanges
 
 val sharedSettings = Seq(
   scalaVersion := Version.scala,
@@ -27,6 +28,7 @@ val sharedSettings = Seq(
     "-feature",
     "-unchecked",
     // Extra flags
+    "-language:implicitConversions",
     "-Ykind-projector:underscores",
     "-Xfatal-warnings"
   )

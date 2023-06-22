@@ -1,7 +1,5 @@
 package coop.fugitiva.components
 
-import scala.language.implicitConversions
-
 import cats.ApplicativeError
 import cats.data.Validated
 import cats.effect.{Async, IOApp}
