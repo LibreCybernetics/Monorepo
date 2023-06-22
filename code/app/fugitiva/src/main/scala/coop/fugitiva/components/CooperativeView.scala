@@ -8,7 +8,8 @@ object CooperativeView:
   def apply(cooperative: Cooperative): Frag =
     FugitivaTemplate(
       Some(cooperative.name),
-      pre(cooperative.toString)
+      h1(cooperative.name),
+      cooperative.byline.fold(div())(h2(_))
     )
 
 end CooperativeView

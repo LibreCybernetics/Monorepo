@@ -23,6 +23,7 @@ CREATE TABLE public.cooperative (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     url text NOT NULL,
+    byline text,
     CONSTRAINT cooperative_url_check CHECK ((url ~ '^[\w\d_\-]+$'::text))
 );
 
@@ -98,4 +99,5 @@ ALTER TABLE ONLY public.schema_migrations
 
 INSERT INTO public.schema_migrations (version) VALUES
     ('20230617211306'),
-    ('20230622233123');
+    ('20230622233123'),
+    ('20230622235120');
