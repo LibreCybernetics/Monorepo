@@ -14,8 +14,8 @@ ThisBuild / scmInfo := Some(
   )
 )
 
-ThisBuild / versionScheme := Some("semver-spec")
-ThisBuild / scalaVersion  := Version.scala
+ThisBuild / versionScheme     := Some("semver-spec")
+ThisBuild / scalaVersion      := Version.scala
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 val sharedSettings = Seq(
@@ -270,10 +270,13 @@ lazy val fugitiva =
       name := "fugitiva",
       libraryDependencies ++=
         Seq(
-          "io.getquill"    %% "quill-jasync-postgres"         % Version.protoquill,
+          "com.lihaoyi"   %%% "scalatags"                     % Version.scalatags,
+          ("io.getquill"   %% "quill-jasync-postgres"         % Version.protoquill)
+            .exclude("org.scalameta", "scalafmt-core_2.13"),
           "org.http4s"    %%% "http4s-ember-client"           % Version.http4s,
           "org.http4s"    %%% "http4s-ember-server"           % Version.http4s,
           "org.http4s"    %%% "http4s-dsl"                    % Version.http4s,
+          "org.http4s"    %%% "http4s-scalatags"              % Version.http4sScalatags,
           "org.scalatest" %%% "scalatest"                     % Version.scalatest         % Test,
           "org.scalatest" %%% "scalatest-wordspec"            % Version.scalatest         % Test,
           "org.typelevel"  %% "cats-effect-testing-scalatest" % Version.catsEffectTesting % Test
