@@ -280,5 +280,7 @@ lazy val fugitiva =
           "org.scalatest" %%% "scalatest"                     % Version.scalatest         % Test,
           "org.scalatest" %%% "scalatest-wordspec"            % Version.scalatest         % Test,
           "org.typelevel"  %% "cats-effect-testing-scalatest" % Version.catsEffectTesting % Test
-        )
+        ),
+
+      reStart / mainClass := Some("coop.fugitiva.Backend")
     )

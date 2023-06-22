@@ -3,7 +3,8 @@ package coop.fugitiva
 import cats.effect.IO
 import cats.syntax.all.*
 import org.http4s.dsl.io.*
-import org.http4s.{HttpRoutes, Response}
+import org.http4s.{Charset, Headers, HttpRoutes, MediaType, Response}
+import org.http4s.headers.`Content-Type`
 import org.http4s.implicits.*
 import org.http4s.scalatags.scalatagsEncoder
 import scalatags.Text.all.*
@@ -20,7 +21,11 @@ val cooperativeRoute = HttpRoutes.of[IO] { case GET -> Root / "cooperative" / In
   yield cooperative match
     case Right(cooperative) =>
       Response.apply(
-        body = scalatagsEncoder.toEntity(CooperativeView(cooperative)).body
+        body = scalatagsEncoder.toEntity(CooperativeView(cooperative)).body,
+        headers = Headers(
+          // TODO: add automagically?
+          `Content-Type`(MediaType.text.html, Charset.`UTF-8`)
+        )
       )
     case Left(err)          =>
       Response.apply(
