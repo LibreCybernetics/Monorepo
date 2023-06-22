@@ -21,7 +21,9 @@ CREATE TABLE public.cooperative (
     id smallint NOT NULL,
     name text NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    url text NOT NULL,
+    CONSTRAINT cooperative_url_check CHECK ((url ~ '^[\w\d_\-]+$'::text))
 );
 
 
@@ -70,6 +72,14 @@ ALTER TABLE ONLY public.cooperative
 
 
 --
+-- Name: cooperative cooperative_url_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cooperative
+    ADD CONSTRAINT cooperative_url_key UNIQUE (url);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -87,4 +97,5 @@ ALTER TABLE ONLY public.schema_migrations
 --
 
 INSERT INTO public.schema_migrations (version) VALUES
-    ('20230617211306');
+    ('20230617211306'),
+    ('20230622233123');
