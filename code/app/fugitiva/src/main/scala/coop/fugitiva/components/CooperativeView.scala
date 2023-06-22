@@ -6,9 +6,9 @@ import coop.fugitiva.domain.Cooperative
 
 object CooperativeView:
   def apply(cooperative: Cooperative): Frag =
-    html(
-      head(),
-      body(cooperative.toString)
+    FugitivaTemplate(
+      Some(cooperative.name),
+      pre(cooperative.toString)
     )
 
 end CooperativeView
