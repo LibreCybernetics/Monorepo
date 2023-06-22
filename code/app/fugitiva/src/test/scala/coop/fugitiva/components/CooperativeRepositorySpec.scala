@@ -1,6 +1,5 @@
 package coop.fugitiva.components
 
-import cats.data.Validated.Valid
 import cats.effect.*
 import cats.effect.testing.scalatest.AsyncIOSpec
 import org.scalatest.*
@@ -9,8 +8,9 @@ import org.scalatest.wordspec.*
 
 import coop.fugitiva.domain.Cooperative
 
-class CooperativeDAOSpec extends AsyncWordSpec with AsyncIOSpec {
-  val cooperativeDAO: CooperativeDAO.PostgresJAsync[IO] = CooperativeDAO.PostgresJAsync[IO]()(using coop.fugitiva.PostgresContext)
+class CooperativeRepositorySpec extends AsyncWordSpec with AsyncIOSpec {
+  val cooperativeDAO: CooperativeRepository.PostgresJAsync[IO] =
+    CooperativeRepository.PostgresJAsync[IO]()(using coop.fugitiva.PostgresContext)
 
   "CooperativeDAO" when {
     "Query" should {

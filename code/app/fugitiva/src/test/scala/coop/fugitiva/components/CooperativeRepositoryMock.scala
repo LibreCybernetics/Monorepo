@@ -8,14 +8,14 @@ import cats.implicits.*
 import coop.fugitiva.domain.{Cooperative, CooperativeId}
 import coop.fugitiva.util.{RecordNotFound, found}
 
-object CooperativeDAOMock:
-  def empty[F[_]](using f: Async[F]): F[CooperativeDAOMock[F]] =
-    Ref.of(Set.empty[Cooperative]).map(CooperativeDAOMock.apply)
+object CooperativeRepositoryMock:
+  def empty[F[_]](using f: Async[F]): F[CooperativeRepositoryMock[F]] =
+    Ref.of(Set.empty[Cooperative]).map(CooperativeRepositoryMock.apply)
 
-case class CooperativeDAOMock[F[_]](
+case class CooperativeRepositoryMock[F[_]](
     data: Ref[F, Set[Cooperative]]
 )(using f: Async[F])
-    extends CooperativeDAO[F]:
+    extends CooperativeRepository[F]:
   override def getCooperatives: F[Seq[Cooperative]] =
     data.get.map(_.toSeq)
 
