@@ -16,8 +16,8 @@ val indexRoute = HttpRoutes.of[IO] { case GET -> Root =>
   Ok("Hello world.")
 }
 
-val cooperativeRoute = HttpRoutes.of[IO] { case GET -> Root / "cooperative" / IntVar(id) =>
-  for cooperative <- CooperativeRepository.PostgresJAsync[IO]().getCooperative(CooperativeId(id))
+val cooperativeRoute = HttpRoutes.of[IO] { case GET -> Root / "cooperativa" / url =>
+  for cooperative <- CooperativeRepository.PostgresJAsync[IO]().getCooperative(url)
   yield cooperative match
     case Right(cooperative) =>
       Response.apply(

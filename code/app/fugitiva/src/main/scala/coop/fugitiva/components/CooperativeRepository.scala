@@ -26,15 +26,25 @@ object CooperativeRepository:
     val getCooperatives: Quoted[EntityQuery[Cooperative]] =
       quote(query[Cooperative])
 
-    def getCooperative[D <: Idiom, N <: NamingStrategy](id: CooperativeId)(using
+    def getCooperative[
+        D <: Idiom,
+        N <: NamingStrategy
+    ](
+        id: CooperativeId
+    )(using
         ctx: Context[D, N]
     ): Quoted[EntityQuery[Cooperative]] =
       quote(getCooperatives.filter(_.id == ctx.lift(id)))
 
-    def getCooperative[D <: Idiom, N <: NamingStrategy](name: String)(using
+    def getCooperative[
+        D <: Idiom,
+        N <: NamingStrategy
+    ](
+        url: String
+    )(using
         ctx: Context[D, N]
     ): Quoted[EntityQuery[Cooperative]] =
-      quote(getCooperatives.filter(_.name == ctx.lift(name)))
+      quote(getCooperatives.filter(_.url == ctx.lift(url)))
 
   case class PostgresJAsync[F[_]]()(using
       ctx: PostgresJAsyncContext[SnakeCase],
@@ -57,10 +67,10 @@ object CooperativeRepository:
       }
 
     override def getCooperative[E[_]: [E[_]] =>> ApplicativeError[E, RecordNotFound[String]]](
-        name: String
+        url: String
     ): F[E[Cooperative]] =
       f.executionContext.flatMap { implicit ec =>
-        ctx.run(Queries.getCooperative(name)).map(_.found(name))
+        ctx.run(Queries.getCooperative(url)).map(_.found(url))
       }
   end PostgresJAsync
 end CooperativeRepository
