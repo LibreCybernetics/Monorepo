@@ -13,7 +13,7 @@ import io.getquill.idiom.Idiom
 import coop.fugitiva.domain.*
 import coop.fugitiva.util.{RecordNotFound, found, futureToAsync}
 
-trait CooperativeDAO[F[_]: Async]:
+trait CooperativeRepository[F[_]: Async]:
   def getCooperatives: F[Seq[Cooperative]]
   def getCooperative[E[_]: [E[_]] =>> ApplicativeError[E, RecordNotFound[CooperativeId]]](
       id: CooperativeId
@@ -21,10 +21,10 @@ trait CooperativeDAO[F[_]: Async]:
   def getCooperative[E[_]: [E[_]] =>> ApplicativeError[E, RecordNotFound[String]]](
       name: String
   ): F[E[Cooperative]]
-end CooperativeDAO
+end CooperativeRepository
 
-object CooperativeDAO:
-  private object CooperativeQueries:
+object CooperativeRepository:
+  private object Queries:
     val getCooperatives: Quoted[EntityQuery[Cooperative]] =
       quote(query[Cooperative])
 
@@ -41,26 +41,28 @@ object CooperativeDAO:
   case class PostgresJAsync[F[_]]()(using
       ctx: PostgresJAsyncContext[SnakeCase],
       f: Async[F]
-  ) extends CooperativeDAO[F]:
+  ) extends CooperativeRepository[F]:
     import ctx.*
 
     override def getCooperatives: F[Seq[Cooperative]] =
       f.executionContext.flatMap { implicit ec =>
-        ctx.run(CooperativeQueries.getCooperatives)
+        ctx.run(Queries.getCooperatives)
       }
 
-    override def getCooperative[E[_]: [E[_]] =>> ApplicativeError[E, RecordNotFound[CooperativeId]]](
+    override def getCooperative[
+        E[_]: [E[_]] =>> ApplicativeError[E, RecordNotFound[CooperativeId]]
+    ](
         id: CooperativeId
     ): F[E[Cooperative]] =
       f.executionContext.flatMap { implicit ec =>
-        ctx.run(CooperativeQueries.getCooperative(id)).map(_.found(id))
+        ctx.run(Queries.getCooperative(id)).map(_.found(id))
       }
 
     override def getCooperative[E[_]: [E[_]] =>> ApplicativeError[E, RecordNotFound[String]]](
         name: String
     ): F[E[Cooperative]] =
       f.executionContext.flatMap { implicit ec =>
-        ctx.run(CooperativeQueries.getCooperative(name)).map(_.found(name))
+        ctx.run(Queries.getCooperative(name)).map(_.found(name))
       }
   end PostgresJAsync
-end CooperativeDAO
+end CooperativeRepository
