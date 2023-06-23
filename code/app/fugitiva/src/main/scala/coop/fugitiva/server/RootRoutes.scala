@@ -24,22 +24,32 @@ val indexRoute = HttpRoutes.of[IO] { case GET -> Root =>
   )
 }
 
-val cooperativeRoute = HttpRoutes.of[IO] { case GET -> Root / "cooperativa" / url =>
-  for cooperative <- CooperativeRepository.PostgresJAsync[IO]().getCooperative(url)
-  yield cooperative match
-    case Right(cooperative) =>
-      Response(
-        body = scalatagsEncoder.toEntity(CooperativeView(cooperative)).body,
-        headers = Headers(
-          // TODO: add automagically?
-          `Content-Type`(MediaType.text.html, Charset.`UTF-8`)
+val cooperativeRoute = HttpRoutes.of[IO] {
+  case GET -> Root / "cooperativas"      =>
+    for cooperatives <- CooperativeRepository.PostgresJAsync[IO]().getCooperatives
+    yield Response(
+      body = scalatagsEncoder.toEntity(CooperativesView(cooperatives.toSet)).body,
+      headers = Headers(
+        // TODO: add automagically?
+        `Content-Type`(MediaType.text.html, Charset.`UTF-8`)
+      )
+    )
+  case GET -> Root / "cooperativa" / url =>
+    for cooperative <- CooperativeRepository.PostgresJAsync[IO]().getCooperative(url)
+    yield cooperative match
+      case Right(cooperative) =>
+        Response(
+          body = scalatagsEncoder.toEntity(CooperativeView(cooperative)).body,
+          headers = Headers(
+            // TODO: add automagically?
+            `Content-Type`(MediaType.text.html, Charset.`UTF-8`)
+          )
         )
-      )
-    case Left(err)          =>
-      Response(
-        status = NotFound,
-        body = scalatagsEncoder.toEntity(html(body(err.toString))).body
-      )
+      case Left(err)          =>
+        Response(
+          status = NotFound,
+          body = scalatagsEncoder.toEntity(html(body(err.toString))).body
+        )
 }
 
 val rootRouter = (indexRoute <+> cooperativeRoute).orNotFound
