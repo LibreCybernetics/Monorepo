@@ -13,14 +13,22 @@ import coop.fugitiva.components.*
 import coop.fugitiva.domain.*
 
 val indexRoute = HttpRoutes.of[IO] { case GET -> Root =>
-  Ok("Hello world.")
+  IO.pure(
+    Response(
+      body = scalatagsEncoder.toEntity(IndexView()).body,
+      headers = Headers(
+        // TODO: add automagically?
+        `Content-Type`(MediaType.text.html, Charset.`UTF-8`)
+      )
+    )
+  )
 }
 
 val cooperativeRoute = HttpRoutes.of[IO] { case GET -> Root / "cooperativa" / url =>
   for cooperative <- CooperativeRepository.PostgresJAsync[IO]().getCooperative(url)
   yield cooperative match
     case Right(cooperative) =>
-      Response.apply(
+      Response(
         body = scalatagsEncoder.toEntity(CooperativeView(cooperative)).body,
         headers = Headers(
           // TODO: add automagically?
@@ -28,7 +36,7 @@ val cooperativeRoute = HttpRoutes.of[IO] { case GET -> Root / "cooperativa" / ur
         )
       )
     case Left(err)          =>
-      Response.apply(
+      Response(
         status = NotFound,
         body = scalatagsEncoder.toEntity(html(body(err.toString))).body
       )
