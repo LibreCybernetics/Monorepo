@@ -1,8 +1,7 @@
-package coop.fugitiva.components
-
-import scalatags.Text.all.*
+package coop.fugitiva.components.views
 
 import coop.fugitiva.domain.Cooperative
+import scalatags.Text.all.*
 
 object CooperativeView:
   def apply(cooperative: Cooperative): Frag =

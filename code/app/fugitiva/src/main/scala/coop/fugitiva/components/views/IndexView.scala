@@ -1,4 +1,4 @@
-package coop.fugitiva.components
+package coop.fugitiva.components.views
 
 import scalatags.Text.all.*
 

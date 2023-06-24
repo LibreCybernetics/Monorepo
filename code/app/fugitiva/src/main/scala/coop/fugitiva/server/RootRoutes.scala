@@ -8,8 +8,9 @@ import org.http4s.headers.`Content-Type`
 import org.http4s.implicits.*
 import org.http4s.scalatags.scalatagsEncoder
 import scalatags.Text.all.*
-
 import coop.fugitiva.components.*
+import coop.fugitiva.components.repository.CooperativeRepository
+import coop.fugitiva.components.views.{CooperativeView, CooperativesView, IndexView}
 import coop.fugitiva.domain.*
 
 val indexRoute = HttpRoutes.of[IO] { case GET -> Root =>
