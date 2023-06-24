@@ -1,15 +1,15 @@
-package coop.fugitiva.components
+package coop.fugitiva.components.repository
 
 import cats.ApplicativeError
 import cats.data.Validated
 import cats.effect.{Async, IOApp}
 import cats.implicits.*
+import coop.fugitiva.components.repository.CooperativeRepository
+import coop.fugitiva.domain.*
+import coop.fugitiva.util.{RecordNotFound, found, futureToAsync}
 import io.getquill.*
 import io.getquill.context.Context
 import io.getquill.idiom.Idiom
-
-import coop.fugitiva.domain.*
-import coop.fugitiva.util.{RecordNotFound, found, futureToAsync}
 
 trait CooperativeRepository[F[_]: Async]:
   def getCooperatives: F[Seq[Cooperative]]

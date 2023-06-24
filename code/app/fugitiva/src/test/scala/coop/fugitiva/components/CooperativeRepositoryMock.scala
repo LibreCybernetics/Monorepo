@@ -4,7 +4,7 @@ import cats.ApplicativeError
 import cats.data.Validated
 import cats.effect.{Async, Ref}
 import cats.implicits.*
-
+import coop.fugitiva.components.repository.CooperativeRepository
 import coop.fugitiva.domain.{Cooperative, CooperativeId}
 import coop.fugitiva.util.{RecordNotFound, found}
 

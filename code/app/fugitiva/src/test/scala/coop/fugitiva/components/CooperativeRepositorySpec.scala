@@ -2,10 +2,10 @@ package coop.fugitiva.components
 
 import cats.effect.*
 import cats.effect.testing.scalatest.AsyncIOSpec
+import coop.fugitiva.components.repository.CooperativeRepository
 import org.scalatest.*
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.*
-
 import coop.fugitiva.domain.Cooperative
 
 class CooperativeRepositorySpec extends AsyncWordSpec with AsyncIOSpec {
