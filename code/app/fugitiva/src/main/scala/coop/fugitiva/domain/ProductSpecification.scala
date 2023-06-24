@@ -1,7 +1,5 @@
 package coop.fugitiva.domain
 
-opaque type ProductSpecificationId = Int
-
 case class ProductSpecification(
     id: ProductSpecificationId,
     owner: CooperativeId,
@@ -10,13 +8,15 @@ case class ProductSpecification(
 
 case class ProductSpecificationInheritance(
     id: ProductSpecificationId,
-    parent: ProductSpecificationId
+    inheritsFrom: ProductSpecificationId
 )
 
-case class ProductData(
+case class ProductSpecificationData(
     specification: ProductSpecification,
-    parents: Set[ProductData]
+    parents: Set[ProductSpecification]
 )
 
 // ProductSpecification
-// Pan -> Pan de Ajo
+// Pan -> Pan de Ajo   -> Pan de Ajo de 500gr
+//  \--> Pan de 500gr /
+
