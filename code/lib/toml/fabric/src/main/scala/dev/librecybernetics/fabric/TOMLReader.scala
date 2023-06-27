@@ -5,8 +5,8 @@ import fabric.rw.*
 
 import dev.librecybernetics.types.TOML
 
-given reader: Reader[TOML] = Reader[TOML](
-  {
+given reader: Reader[TOML] = new Reader[TOML]:
+  override def read(t: TOML): Json = t match
     // Simple
     case TOML.Boolean(boolean) => Bool(boolean)
     case TOML.String(string)   => Str(string)
@@ -20,8 +20,7 @@ given reader: Reader[TOML] = Reader[TOML](
     case TOML.OffsetDateTime(zonedDateTime) => Str(zonedDateTime.toString)
 
     // Recursive
-    case TOML.ScalarArray(arr)   => Arr(arr.map(_.json).toVector)
-    case TOML.ArrayOfTables(arr) => Arr(arr.map(_.json).toVector)
-    case TOML.Map(map)           => Obj(map.view.mapValues(_.json).toMap)
-  }
-)
+    case TOML.ScalarArray(arr)   => Arr(arr.map(read).toVector)
+    case TOML.ArrayOfTables(arr) => Arr(arr.map(read).toVector)
+    case TOML.Map(map)           => Obj(map.view.mapValues(read).toMap)
+  end read
