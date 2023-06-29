@@ -82,7 +82,7 @@ lazy val `parse-utils` =
 lazy val rfc3339 =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
-    .in(file("lib/rfc3339/"))
+    .in(file("lib/rfc/3339/"))
     .dependsOn(`parse-utils`)
     .settings(sharedSettings)
     .settings(
@@ -95,7 +95,7 @@ lazy val rfc3339 =
 lazy val rfc4648 =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
-    .in(file("lib/rfc4648/"))
+    .in(file("lib/rfc/4648/"))
     .settings(sharedSettings)
     .settings(
       name := "rfc4648",
