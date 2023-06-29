@@ -92,6 +92,20 @@ lazy val rfc3339 =
       )
     )
 
+lazy val rfc4648 =
+  crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("lib/rfc4648/"))
+    .settings(sharedSettings)
+    .settings(
+      name := "rfc4648",
+      libraryDependencies ++= Seq(
+        "org.scalatest"     %%% "scalatest"          % Version.scalatest          % Test,
+        "org.scalatest"     %%% "scalatest-wordspec" % Version.scalatest          % Test,
+        "org.scalatestplus" %%% "scalacheck-1-17"    % Version.scalatestPlusCheck % Test
+      )
+    )
+
 lazy val `social-ontology` =
   crossProject(JVMPlatform, NativePlatform, JSPlatform)
     .crossType(CrossType.Pure)
