@@ -210,6 +210,26 @@ lazy val `toml-tomltest` =
       nativeLTO  := "thin"
     )
 
+//========//
+// uuidv7 //
+//========//
+
+lazy val uuidv7 =
+  crossProject(JVMPlatform, NativePlatform, JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("lib/uuidv7/"))
+    .settings(sharedSettings)
+    .settings(
+      name := "typeid",
+      libraryDependencies ++= Seq(
+        "org.typelevel"     %%% "cats-effect"        % Version.catsEffect,
+        "io.github.cquiroz" %%% "scala-java-time"    % Version.scalaJavaTime,
+        "org.scalatest"     %%% "scalatest"          % Version.scalatest          % Test,
+        "org.scalatest"     %%% "scalatest-wordspec" % Version.scalatest          % Test,
+        "org.scalatestplus" %%% "scalacheck-1-17"    % Version.scalatestPlusCheck % Test
+      )
+    )
+
 //==========//
 // Unsigned //
 //==========//
@@ -267,7 +287,7 @@ lazy val fugitiva =
     .in(file("app/fugitiva"))
     .settings(sharedSettings)
     .settings(
-      name := "fugitiva",
+      name                := "fugitiva",
       libraryDependencies ++=
         Seq(
           "com.lihaoyi"   %%% "scalatags"                     % Version.scalatags,
@@ -281,6 +301,5 @@ lazy val fugitiva =
           "org.scalatest" %%% "scalatest-wordspec"            % Version.scalatest         % Test,
           "org.typelevel"  %% "cats-effect-testing-scalatest" % Version.catsEffectTesting % Test
         ),
-
       reStart / mainClass := Some("coop.fugitiva.Backend")
     )
