@@ -1,5 +1,7 @@
 .bloop/
 .bsp/
+.direnv/
+.idea/
 .metals/
 project/
 target/
