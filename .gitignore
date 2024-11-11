@@ -6,3 +6,7 @@
 # Editors
 
 .idea
+
+# Languages
+
+node_modules
