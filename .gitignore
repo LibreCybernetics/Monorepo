@@ -1,0 +1,8 @@
+# Devenv
+
+.devenv*
+.direnv
+
+# Editors
+
+.idea
