@@ -22,6 +22,7 @@
                 devshells.default = {
                     packages = [
                         pkgs.sbt
+                        pkgs.scalafmt
                     ];
                 };
 
