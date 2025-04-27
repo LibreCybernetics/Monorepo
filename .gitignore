@@ -6,4 +6,5 @@
 
 # Outputs
 .bsp
+.direnv
 target
