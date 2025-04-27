@@ -1,0 +1,9 @@
+# Version Control
+.jj
+
+# IDEs
+.idea
+
+# Outputs
+.bsp
+target
