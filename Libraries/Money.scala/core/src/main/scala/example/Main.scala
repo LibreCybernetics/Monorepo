@@ -35,8 +35,8 @@ def main(args: String*): Unit = {
     case (currencyCode1: CurrencyCodes, currencyCode2: CurrencyCodes) =>
       val a = Money(10, currencyCode1)
       val b = Money(20, currencyCode2)
-      val result = a + b
-      val r = Money(10, "MXN") + Money(20, "MXN")
+      val result: Eithe = a + b
+      val r: Money["MXN"] = Money(10, "MXN") + Money(20, "MXN")
       println(s"Result: $result")
   }
 }
