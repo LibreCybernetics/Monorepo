@@ -1,33 +1,67 @@
 package example
 
 import scala.util.NotGiven
+import scala.compiletime.summonFrom
 
 type ISOCurrencyCodes = "MXN" | "USD"
 type CurrencyCodes = ISOCurrencyCodes
 
-type EqOrNeq[A, B] = A =:= B | NotGiven[A =:= B]
-type Result[CurrencyCodeA, CurrencyCodeB, E <: EqOrNeq[CurrencyCodeA, CurrencyCodeB]] = E match
-  case CurrencyCodeA =:= CurrencyCodeB => Money[CurrencyCodeA]
-  case NotGiven[CurrencyCodeA =:= CurrencyCodeB] => Either[String, Money[CurrencyCodeA]]
-end Result
-
-case class Money[ICurrencyCode <: CurrencyCodes](
+case class Money[CurrencyCode <: CurrencyCodes](
     amount: BigDecimal,
-    currency: ICurrencyCode
-) {
-  type CurrencyCode = ICurrencyCode
+    currency: CurrencyCode
+)
 
-  def +[OCurrencyCode <: CurrencyCodes](
-      other: Money[OCurrencyCode]
-  )(using ev: EqOrNeq[CurrencyCode, OCurrencyCode]): Result[CurrencyCode, OCurrencyCode, ev.type] =
-    ev match
-      case eq: (CurrencyCode =:= OCurrencyCode) =>
-        Money(amount + other.amount, currency)
-      case neq: NotGiven[CurrencyCode =:= OCurrencyCode] =>
-        if (currency == other.currency) Right(Money(amount + other.amount, currency))
-        else Left("Currencies don't match")
-    end match
-}
+object Money:
+  def safeOp[CurrencyCode <: CurrencyCodes](
+      op: BigDecimal => BigDecimal => BigDecimal
+  )(a: Money[CurrencyCode], b: Money[CurrencyCode]): Money[CurrencyCode] =
+    Money(op(a.amount)(b.amount), a.currency)
+
+  def unsafeOp[
+      CurrencyCodeA <: CurrencyCodes,
+      CurrencyCodeB <: CurrencyCodes
+  ](
+      op: BigDecimal => BigDecimal => BigDecimal
+  )(
+      a: Money[CurrencyCodeA],
+      b: Money[CurrencyCodeB]
+  ): Either[String, Money[CurrencyCodeA]] =
+    if (a.currency == b.currency)
+      Right(Money(op(a.amount)(b.amount), a.currency))
+    else Left(s"Cannot do operation on mixed ${a.currency} and ${b.currency}")
+
+  /** Performs an operation between two amounts of money. The operation is
+    * handled safely if the currencies match, otherwise handled as unsafe.
+    *
+    * Thanks to Daniel Ciocîrlan (Rock the JVM), Dawid Łakomy, Oron Port
+    * (DFiant, Scala SIP Committee) for guidance on summonFrom usage for this
+    * use case.
+    *
+    * @param op
+    *   A curried operation to be applied.
+    */
+  transparent inline def op[
+      CurrencyCodeA <: CurrencyCodes,
+      CurrencyCodeB <: CurrencyCodes
+  ](op: BigDecimal => BigDecimal => BigDecimal)(
+      a: Money[CurrencyCodeA],
+      b: Money[CurrencyCodeB]
+  ) =
+    summonFrom {
+      case eq: (CurrencyCodeA =:= CurrencyCodeB) =>
+        // TODO: Use eq to change the type rather than .asInstanceOf
+        safeOp(op)(a, b.asInstanceOf[Money[CurrencyCodeA]])
+      case neq: NotGiven[CurrencyCodeA =:= CurrencyCodeB] =>
+        unsafeOp(op)(a, b)
+    }
+
+  extension [CurrencyCodeA <: CurrencyCodes](a: Money[CurrencyCodeA])
+    transparent inline def +[CurrencyCodeB <: CurrencyCodes](
+        b: Money[CurrencyCodeB]
+    ) =
+      op((a: BigDecimal) => a + _)(a, b)
+  end extension
+end Money
 
 @main
 def main(args: String*): Unit = {
@@ -37,7 +71,12 @@ def main(args: String*): Unit = {
     case (currencyCode1: CurrencyCodes, currencyCode2: CurrencyCodes) =>
       val a = Money(10, currencyCode1)
       val b = Money(20, currencyCode2)
-      val r: Money["MXN"] = Money(10, "MXN") + Money(20, "MXN")
-      val r2: Either[String, Money["MXN"]] = Money(10, "MXN") + Money(20, "USD")
+      val r_dynamic = a + b
+      println(s"Result Dynamic: $r_dynamic")
+      val r_same: Money[?] = Money(10, "MXN") + Money(20, "MXN")
+      println(s"Known Result Same: $r_same")
+      val r_diff: Either[String, Money[?]] =
+        Money(10, "MXN") + Money(20, "USD")
+      println(s"Known Result Diff: $r_diff")
   }
 }
