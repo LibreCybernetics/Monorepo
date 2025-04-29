@@ -36,6 +36,10 @@ object Money:
     * Thanks to Daniel Ciocîrlan (Rock the JVM), Dawid Łakomy, Oron Port
     * (DFiant, Scala SIP Committee) for guidance on summonFrom usage for this
     * use case.
+   *
+   *  Ref: https://github.com/scala/scala3/issues/23065#issuecomment-2838049601
+   *  Ref: https://rockthejvm.slack.com/archives/C010Q93136X/p1745908246504409?thread_ts=1745883490.640999&cid=C010Q93136X
+   *  Ref: https://discord.com/channels/1329817491249299526/1331325047230562366/1366712799119806574
     *
     * @param op
     *   A curried operation to be applied.
