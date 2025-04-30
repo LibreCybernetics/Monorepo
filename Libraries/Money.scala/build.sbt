@@ -6,7 +6,10 @@ ThisBuild / scalaVersion := scalaLatestLTS
 
 lazy val core = (projectMatrix in file("core"))
   .settings(
-    name := "money-core"
+    name := "money-core",
+    libraryDependencies ++= Seq(
+      "org.typelevel" %% "cats-core" % "2.13.0"
+    )
   )
   .jvmPlatform(scalaVersions = scalaVersions)
   .jsPlatform(scalaVersions = scalaVersions)

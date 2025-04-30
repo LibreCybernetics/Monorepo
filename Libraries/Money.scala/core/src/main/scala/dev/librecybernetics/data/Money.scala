@@ -3,6 +3,8 @@ package dev.librecybernetics.data
 import scala.compiletime.summonFrom
 import scala.util.NotGiven
 
+import cats.ApplicativeError
+
 case class Money[ICurrencyCode <: CurrencyCode](
     amount: BigDecimal,
     currency: ICurrencyCode
@@ -16,16 +18,17 @@ object Money:
 
   def unsafeOp[
       CurrencyCodeA <: CurrencyCode,
-      CurrencyCodeB <: CurrencyCode
+      CurrencyCodeB <: CurrencyCode,
+      F[_]: [FI[_]] =>> ApplicativeError[FI, String]
   ](
       op: BigDecimal => BigDecimal => BigDecimal
   )(
       a: Money[CurrencyCodeA],
       b: Money[CurrencyCodeB]
-  ): Either[String, Money[CurrencyCodeA]] =
+  ): F[Money[CurrencyCodeA]] =
     if (a.currency == b.currency)
-      Right(Money(op(a.amount)(b.amount), a.currency))
-    else Left(s"Cannot do operation on mixed ${a.currency} and ${b.currency}")
+      ApplicativeError().pure(Money(op(a.amount)(b.amount), a.currency))
+    else ApplicativeError().raiseError(s"Cannot do operation on mixed ${a.currency} and ${b.currency}")
 
   /** Performs an operation between two amounts of money. The operation is
     * handled safely if the currencies match, otherwise handled as unsafe.
