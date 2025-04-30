@@ -14,8 +14,7 @@ def main(args: String*): Unit = {
       println(s"Result Dynamic: $r_dynamic")
       val r_same: Money[?] = Money(10, "MXN") + Money(20, "MXN")
       println(s"Known Result Same: $r_same")
-      val r_diff: Either[String, Money[?]] =
-        Money(10, "MXN") + Money(20, "USD")
+      val r_diff = Money(10, "MXN") + Money(20, "USD")
       println(s"Known Result Diff: $r_diff")
   }
 }
